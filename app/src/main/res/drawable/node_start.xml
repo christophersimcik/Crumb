@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="3dp"
+        android:height="37.5dp"
+        android:gravity="center_horizontal"
+        android:top="37.5dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/hilight" />
+        </shape>
+    </item>
+    <item
+        android:width="25dp"
+        android:height="25dp"
+        android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="@color/default_light" />
+        </shape>
+    </item>
+
+</layer-list>

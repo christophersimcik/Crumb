@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+    <LinearLayout
+        android:id="@+id/start_time_contaner"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical">
+        <androidx.emoji.widget.EmojiEditText
+            android:textColor="@color/default_dark"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:textSize="22dp"
+            android:id="@+id/name_edit_text"
+            android:hint="Name" />
+        <TextView
+            android:id="@+id/header_start_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:gravity="center"
+            android:text="Start Time" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_hour"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_toLeftOf="@id/semi_colon"
+                android:background="@drawable/light_border"
+                android:gravity="center"
+                android:padding="2dp"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/semi_colon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text=" : "
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/text_minute"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_toRightOf="@id/semi_colon"
+                android:background="@drawable/light_border"
+                android:gravity="center"
+                android:padding="2dp"
+                android:textSize="24sp" />
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@+id/text_minute">
+            <View
+                android:id="@+id/meridian_image"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginBottom="5dp"
+                android:layout_above="@id/text_meridian"
+                android:layout_centerHorizontal="true"/>
+            <TextView
+                android:id="@+id/text_meridian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:textSize="14sp" />
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/divider" />
+
+        <com.example.tightboules.TimeScroll
+            android:id="@+id/custom_time_selector"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/divider" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

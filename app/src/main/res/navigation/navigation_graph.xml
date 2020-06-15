@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/scheduleFragment">
+    <fragment
+        android:id="@+id/scheduleFragment"
+        android:name="com.example.tightboules.ScheduleFragment"
+        android:label="ScheduleFragment">
+        <action
+            android:id="@+id/action_scheduleFragment_to_intervalFragment"
+            app:destination="@id/intervalFragment"
+            />
+        <action
+            android:id="@+id/action_scheduleFragment_to_savedRecipeFragment"
+            app:destination="@id/savedRecipeFragment"
+            />
+        <argument
+            android:name="parent_id"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_scheduleFragment_to_playFragment"
+            app:destination="@id/playFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/intervalFragment"
+        android:name="com.example.tightboules.IntervalFragment"
+        android:label="IntervalFragment">
+        <action
+            android:id="@+id/action_intervalFragment_to_scheduleFragment"
+            app:destination="@id/scheduleFragment" />
+    </fragment>
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.example.tightboules.MainActivity"
+        android:label="MainActivity" />
+    <fragment
+        android:id="@+id/savedRecipeFragment"
+        android:name="com.example.tightboules.SavedRecipeFragment"
+        android:label="SavedRecipeFragment">
+        <action
+            android:id="@+id/action_savedRecipeFragment_to_scheduleFragment"
+            app:destination="@id/scheduleFragment" />
+        <action
+            android:id="@+id/action_savedRecipeFragment_to_intervalFragment"
+            app:destination="@id/intervalFragment" />
+        <action
+            android:id="@+id/action_savedRecipeFragment_to_playFragment"
+            app:destination="@id/playFragment" />
+        <action
+            android:id="@+id/action_savedRecipeFragment_to_intervalFragment2"
+            app:destination="@id/intervalFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/playFragment"
+        android:name="com.example.tightboules.PlayFragment"
+        android:label="PlayFragment" />
+</navigation>

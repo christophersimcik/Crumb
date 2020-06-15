@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:background="@drawable/border_straight"
+    android:padding="5dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:background="@drawable/border_straight_dark"
+        android:padding="5dp">
+
+        <TextView
+            android:id="@+id/notes_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="Notes"
+            android:textSize="20sp" />
+
+        <ScrollView
+            android:id="@+id/description_input_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_above="@id/dismiss_button"
+            android:layout_below="@id/notes_header"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
+
+            <androidx.emoji.widget.EmojiEditText
+                android:id="@+id/input_text_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:hint="Enter Notes" />
+
+        </ScrollView>
+
+        <Button
+            android:id="@+id/dismiss_button"
+            android:layout_width="250px"
+            android:layout_height="125px"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/dimsiss_button_selector"
+            android:text="DISMISS" />
+
+        <Button
+            android:id="@+id/confirm_button"
+            android:layout_width="250px"
+            android:layout_height="125px"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/confirm_button_selector"
+            android:text="SUBMIT" />
+    </RelativeLayout>
+</FrameLayout>

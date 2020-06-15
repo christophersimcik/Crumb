@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/main_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/main_border">
+
+        <ImageButton
+            android:id="@+id/duplicate_button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:visibility="invisible"
+            android:scaleType="centerInside"
+            android:layout_marginBottom="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/circle_selector"
+            android:src="@drawable/copy_img_color_selector" />
+
+        <ImageButton
+            android:id="@+id/edit_button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/notes_button"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/circle_selector"
+            android:scaleType="fitCenter"
+            android:src="@drawable/text_edit_selector"
+            android:visibility="invisible" />
+
+        <ImageButton
+            android:id="@+id/notes_button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/circle_selector"
+            android:scaleType="fitCenter"
+            android:src="@drawable/description_img_color_selector"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:text="Recipes">
+        </TextView>
+
+        <fragment
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/heading"
+            android:layout_marginBottom="20dp"
+            android:padding="10dp"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/navigation_graph" />
+    </RelativeLayout>
+
+    <com.example.tightboules.ButtonNew
+        android:id="@+id/add_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        android:stateListAnimator="@null" />
+
+</RelativeLayout>

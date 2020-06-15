@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <RelativeLayout
+        android:id="@+id/step_dialog_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:background="@drawable/border_straight_dark"
+        android:padding="10dp">
+
+        <androidx.emoji.widget.EmojiEditText
+            android:id="@+id/step_name_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="5dp"
+            android:ellipsize="end"
+            android:hint="Name"
+            android:singleLine="true"
+            android:textColor="@color/default_dark"
+            android:textSize="14sp" />
+
+        <ScrollView
+            android:id="@+id/step_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_below="@id/step_name_field"
+            android:layout_marginTop="5dp">
+
+            <androidx.emoji.widget.EmojiEditText
+                android:id="@+id/step_notes_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Notes"
+                android:textColor="@color/default_dark"
+                android:textSize="14sp" />
+
+        </ScrollView>
+
+        <View
+            android:id="@+id/view_b"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_below="@id/step_scroll_view"
+            android:background="@drawable/divider" />
+
+        <TextView
+            android:id="@+id/time_from_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/view_b"
+            android:layout_marginTop="5dp"
+            android:textSize="14sp" />
+
+        <View
+            android:id="@+id/view_c"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/time_from_start"
+            android:background="@color/hilight" />
+
+        <TextView
+            android:id="@+id/time_from_last"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/view_c"
+            android:layout_marginTop="5dp"
+            android:textSize="14sp" />
+
+        <View
+            android:id="@+id/view_d"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/time_from_last"
+            android:background="@color/hilight" />
+
+        <TextView
+            android:id="@+id/percentage_of_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/view_d"
+            android:layout_marginTop="5dp"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/dismiss_button"
+            android:layout_width="250px"
+            android:layout_height="125px"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/dimsiss_button_selector"
+            android:text="DISMISS" />
+
+        <Button
+            android:id="@+id/confirm_button"
+            android:layout_width="250px"
+            android:layout_height="125px"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/confirm_button_selector"
+            android:text="SUBMIT" />
+    </RelativeLayout>
+
+</FrameLayout>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding='10dp'>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.emoji.widget.EmojiTextView
+                android:id="@+id/play_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="7dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="20dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/play_name"
+                android:background="@drawable/divider" />
+        </RelativeLayout>
+
+        <com.example.tightboules.MyProgressBar
+            android:id="@+id/total_progrss_bar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" />
+        <TextView
+            android:id="@+id/text_end_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="7dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/default_dark"
+            android:textSize="12dp" />
+        <TextView
+            android:id="@+id/text_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:text="X steps in X minutes "
+            android:textColor="@color/default_dark"
+            android:textSize="14dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/divider" />
+    </LinearLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp" />
+
+</LinearLayout>
