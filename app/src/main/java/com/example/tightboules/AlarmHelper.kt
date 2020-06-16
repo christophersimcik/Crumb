@@ -112,6 +112,7 @@ class AlarmHelper(sharedPreferences: SharedPreferences) {
             }
             calendars.add(calendar)
             bundles.add(createBundle(list[0]))
+            //nklh f
             sharedPreferences.edit().putLong(START_TIME, calendar.timeInMillis).commit()
             for (item in 1..list.size - 1) {
                 targetTime = startTime.plusMinutes(list[item].span)
@@ -125,6 +126,7 @@ class AlarmHelper(sharedPreferences: SharedPreferences) {
                 calendars.add(myCalendar)
                 bundles.add(createBundle(list[item]))
                 startTime = targetTime
+                System.out.println("MILLIS" + targetTime.toDateTime().millis)
             }
         }
         return calendars

@@ -35,8 +35,13 @@ class PlayAdapter(val mContext: Context, val viewModel: PlayViewModel) :
     val alarmHelper = AlarmHelper(mContext.getSharedPreferences(SharedViewModel.SHARED_PREFERENCES, 0))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val interval = mData.get(position)
         holder.name.text = mData.get(position).name
-        holder.makeDuration(mData,position)
+        System.out.println("TV 1 = " + holder.makeDuration(mData,position))
+        System.out.println("TV 2 = " + mData.get(position).alarm_time)
+        System.out.println("TV START = " + viewModel.start)
+        holder.makeDuration(mData, position)
+        holder.myStart = mData.get(position).alarm_time
         holder.putName(mData.get(position).name)
         if (position == 0) {
             holder.progressBar.setIsFirst(true)
@@ -215,12 +220,13 @@ class PlayAdapter(val mContext: Context, val viewModel: PlayViewModel) :
             }
         }
 
-        fun makeDuration(list: List<Interval>, position: Int) {
+        fun makeDuration(list: List<Interval>, position: Int) : Long {
             var dur = 0
             for (index in 0..position) {
                 dur += list.get(index).span
             }
             myStart = (start + (dur * 60000))
+            return myStart
         }
     }
 

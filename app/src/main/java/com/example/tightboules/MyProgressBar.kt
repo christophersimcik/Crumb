@@ -12,6 +12,7 @@ class MyProgressBar @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private var outterPath: Path? = null
+    private val defaultLight = context.resources.getColor(R.color.default_light, null)
     private val defaultDark = context.resources.getColor(R.color.default_dark, null)
     private val transparent = Color.TRANSPARENT
     private val semiTransparent = context.resources.getColor(R.color.semi_transparent, null)
@@ -19,9 +20,10 @@ class MyProgressBar @JvmOverloads constructor(
     private var backGroundColors: IntArray? = null
     private var backGroundPositions: FloatArray? = null
     private var foreGroundColors = intArrayOf(transparent, transparent, semiTransparent)
-    private var foreGroundPositions = floatArrayOf(0f, 0f, 0f)
+    private var foreGroundPosition = 0f
     private var message = ""
     private var offset = 0f
+    var active = false
 
     private val test = hashMapOf(
         0 to PorterDuff.Mode.DST,
@@ -52,8 +54,15 @@ class MyProgressBar @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         if (initialized) {
-            drawCircle(canvas)
-            drawForeGround(canvas)
+            if (active) {
+                drawBackground(canvas)
+                drawCircle(canvas)
+                drawForeGround(canvas)
+
+            } else {
+                drawCircle(canvas)
+                canvas?.drawColor(semiTransparent)
+            }
             drawMessage(canvas)
         }
     }
@@ -62,12 +71,14 @@ class MyProgressBar @JvmOverloads constructor(
         val max = ((backGroundPositions?.size) ?: 1) - 1
         for (i in 0..max) {
             paint.color = backGroundColors?.get(i) ?: Color.LTGRAY
-            paint.alpha = 150
+            paint.alpha = 200
             val position = backGroundPositions?.get(i) ?: 0f
             val x = reMap((width).toFloat() * position)
-            canvas?.drawCircle(x, height.toFloat() / 2f, offset, paint)
+            canvas?.drawCircle(x,height.toFloat()/2f, offset, paint)
         }
     }
+
+
 
     private fun reMap(oldPos: Float): Float {
         return ((oldPos * ((width - offset - 2) - offset)) / (width)) + offset
@@ -87,20 +98,16 @@ class MyProgressBar @JvmOverloads constructor(
 
     private fun drawForeGround(canvas: Canvas?) {
         paint.style = Paint.Style.FILL
-        paint.setShader(
-            LinearGradient(
-                0f,
-                myHeight / 2,
-                myWidth,
-                myHeight / 2,
-                foreGroundColors,
-                foreGroundPositions,
-                Shader.TileMode.CLAMP
-            )
-        )
-        paint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
-        canvas?.drawPath(outterPath, paint)
-        paint.setXfermode(null);
+        val x = reMap((width).toFloat() * foreGroundPosition)
+        paint.color = defaultLight
+        val rect = RectF()
+        rect.set(x-5f,0f,x+5f,height.toFloat())
+        canvas?.drawRect(rect,paint)
+    }
+
+    private fun drawBackground(canvas: Canvas?){
+        paint.color = context.resources.getColor(R.color.default_light_darker,null)
+        canvas?.drawPath(outterPath,paint)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -132,6 +139,7 @@ class MyProgressBar @JvmOverloads constructor(
         return path
     }
 
+
     private fun updateForegoundPosition(progress: Long, start: Long, end: Long) {
         var position = 0f
         val span = end - start
@@ -145,9 +153,7 @@ class MyProgressBar @JvmOverloads constructor(
                 position = 1f
             }
         }
-        foreGroundPositions[0] = 0f
-        foreGroundPositions[1] = position
-        foreGroundPositions[2] = position
+        foreGroundPosition = position
     }
 
     private fun getBackgroundPositions(list: List<Interval>): FloatArray {

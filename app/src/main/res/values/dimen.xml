@@ -12,5 +12,6 @@
     <dimen name="floating_border_radius">3dp</dimen>
     <dimen name="floating_border_stroke_width">2dp</dimen>
     <dimen name="tail_width">5dp</dimen>
+    <dimen name="text_sz">10sp</dimen>
     <dimen name="circular_button_stroke_width">2dp</dimen>
 </resources>

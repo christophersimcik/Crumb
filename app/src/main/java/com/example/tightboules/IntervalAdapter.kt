@@ -11,6 +11,7 @@ import android.graphics.drawable.LayerDrawable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.*
@@ -67,20 +68,15 @@ class IntervalAdapter(mContext: Context, viewModel: IntervalViewModel, getDialog
         holder.day.text = getDay(step.time)
         holder.time.text = getTime(step.time)
         holder.merdian.text = getMeridian(step.time, holder)
-        val tempText = step.span.toString() + " Mins from last"
-        val txt = SpannableString(tempText)
-        txt.setSpan(RelativeSizeSpan(.75f),1, tempText.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-        txt.setSpan(ForegroundColorSpan(mContext.resources.getColor(R.color.inactive_light,null)),1, tempText.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-        holder.span.setText(txt)
+        holder.span.setText(getSpan(step.span).append(" from last"))
         if(step.percentage > 0f){
-            holder.percentage.text = DecimalFormat("#").format(step.percentage * 100) + "%"
+            holder.percentage.text = DecimalFormat("#.#").format(step.percentage * 100) + "%"
         }else{
             holder.percentage.text = "Start"
         }
-        val seqTmp = "step " + step.sequence.toString()
+        val seqTmp = "Step " + step.sequence.toString()
         val seqTxt = SpannableString(seqTmp)
-        seqTxt.setSpan(RelativeSizeSpan(.75f),0,seqTmp.length-1,Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
-        seqTxt.setSpan(ForegroundColorSpan(mContext.resources.getColor(R.color.inactive_light,null)),0,seqTmp.length-1,Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+        seqTxt.setSpan(AbsoluteSizeSpan(25),0,4,Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
         holder.sequence.setText(seqTxt)
         if (position == steps.size - 1) {
             holder.setDrawables(true, step.color)
@@ -209,6 +205,60 @@ class IntervalAdapter(mContext: Context, viewModel: IntervalViewModel, getDialog
 
     interface GetInputDialog {
         fun showInputDialog()
+    }
+
+    fun getSpan(minutes: Int): SpannableStringBuilder {
+        val decimalFormat = DecimalFormat("#")
+        val stringBuilder = SpannableStringBuilder()
+        val days = Math.floor((minutes / 1440).toDouble())
+        var hours = Math.floor((minutes % 1440) / 60.toDouble())
+        val mins = Math.floor((minutes % 1440) % 60.toDouble())
+        if (days >= 1.0) {
+            stringBuilder.append(
+                decimalFormat.format(days),
+                AbsoluteSizeSpan(50),
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            stringBuilder.append(
+                " Day" + checkPlurality(days),
+                RelativeSizeSpan(.5f),
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+        }
+        if (hours >= 1.0) {
+            stringBuilder.append(
+                " " + decimalFormat.format(hours),
+                AbsoluteSizeSpan(50),
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            stringBuilder.append(
+                " Hr" + checkPlurality(hours),
+                RelativeSizeSpan(.5f),
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+
+        }
+        if (mins >= 0.0) {
+            stringBuilder.append(
+                " " + decimalFormat.format(mins),
+                AbsoluteSizeSpan(50),
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            stringBuilder.append(
+                " Min" + checkPlurality(mins),
+                RelativeSizeSpan(.5f),
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+        }
+        return stringBuilder
+    }
+
+    fun checkPlurality(number: Double): String {
+        if (number == 1.0) {
+            return ""
+        } else {
+            return "s"
+        }
     }
 
 }

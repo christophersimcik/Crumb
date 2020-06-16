@@ -17,6 +17,16 @@
         android:background="@drawable/circle_selector"
         android:src="@drawable/description_img_color_selector" />
 
+    <TextView
+        android:id="@+id/step_percentage_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="20dp"
+        android:textSize="12.5dp"
+        android:gravity="center" />
+
     <LinearLayout
         android:layout_centerInParent="true"
         android:layout_width="match_parent"
@@ -98,21 +108,13 @@
 
             <TextView
                 android:id="@+id/step_span_text"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:gravity="start" />
 
             <TextView
-                android:id="@+id/step_percentage_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center" />
-
-            <TextView
                 android:id="@+id/step_sequence_text"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end" />

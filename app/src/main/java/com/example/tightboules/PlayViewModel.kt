@@ -78,10 +78,12 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
         val end = (start + ((duration ?: 0) * 60000))
         val relativeStartTime = start - now
         if (relativeStartTime > 0) {
+            view.active = false
             relativeEndTime.postValue("* Recipe Is Not In Progress Yet")
             val message = convertMillisToText(relativeStartTime)
             view.setMessage(message)
         } else {
+            view.active = true
             view.setMessage("")
             if (end - now > 0) {
                 relativeEndTime.postValue(convertMillisToText(end - now))
@@ -148,7 +150,6 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
         val hours = (millis % 86400000) / 3600000
         val mins = (millis % 86400000 % 3600000) / 60000
         val secs = (millis % 86400000 % 3600000 % 60000) / 1000
-        System.out.println("secs = " + secs)
         var dayString = ""
         var hourString = ""
         var minString = ""

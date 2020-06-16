@@ -141,9 +141,23 @@ class MyItemProgressBar @JvmOverloads constructor(
         }
         invalidate()
     }
+    private fun updateForegoundPosition(progress: Long, start: Long, end: Long) {
+        var position = 0f
+        val span = end - start
+        val pos = progress - start
+        if (span != 0L) {
+            position = (pos.toFloat() / span.toFloat())
+            if (position < 0f) {
+                position = 0f
+            }
+            if (position > 1f) {
+                position = 1f
+            }
+        }
+        this.position = position
+    }
 
-
-    private fun updateForegoundPosition(now: Long, start: Long, end: Long) {
+   /* private fun updateForegoundPosition(now: Long, start: Long, end: Long) {
         val span: Long
         var pos: Long
         if (isFirst) {
@@ -165,9 +179,8 @@ class MyItemProgressBar @JvmOverloads constructor(
         } else {
             position = 1f
         }
-        System.out.println("is first = " + isFirst)
         this.position = position
-    }
+    }*/
 
     private fun drawMessage(canvas: Canvas?) {
         paint.style = Paint.Style.FILL

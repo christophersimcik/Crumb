@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [Schedule::class, Interval::class], version = 1, exportSchema = false)
+    entities = [Schedule::class, Interval::class], version = 2, exportSchema = false)
 
 abstract class DatabaseScheduler : RoomDatabase() {
     abstract fun getScheduleDao(): ScheduleDao
