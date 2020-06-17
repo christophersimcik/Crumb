@@ -145,17 +145,15 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
     }
 
     fun checkIfLaunchedByAlarm(navController: NavController, intent: Intent) {
-        val bundle = Bundle()
         if (intent.hasExtra(AlarmHelper.PARENT_ID)) {
             val parentID = intent.getLongExtra(AlarmHelper.PARENT_ID, 0)
             val details = intent.getBundleExtra(AlarmHelper.DETAILS)
-            bundle.putLong(AlarmHelper.PARENT_ID, parentID)
-            bundle.putBoolean(AlarmHelper.ALARM_IS_ACTIVE, true)
-            if (intent.hasExtra(AlarmHelper.DETAILS)) {
-                bundle.putString(details.getString(AlarmHelper.NAME), "No Name")
-                bundle.putString(details.getString(AlarmHelper.DESCRIPTION), "No Details")
-            }
-            navController.navigate(R.id.action_scheduleFragment_to_playFragment, bundle)
+            val myBundle = Bundle()
+            myBundle.putLong(AlarmHelper.PARENT_ID, parentID)
+            myBundle.putBoolean(AlarmHelper.ALARM_IS_ACTIVE, true)
+            myBundle.putString(AlarmHelper.NAME, details.getString(AlarmHelper.NAME))
+            myBundle.putString(AlarmHelper.DESCRIPTION, details.getString(AlarmHelper.DESCRIPTION))
+            navController.navigate(R.id.action_scheduleFragment_to_playFragment, myBundle)
         } else {
             viewModelScope.launch {
                 val parentID: Long

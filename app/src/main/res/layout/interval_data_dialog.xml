@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="5dp"
-        android:background="@drawable/border_straight_dark"
         android:padding="10dp">
 
         <androidx.emoji.widget.EmojiEditText
@@ -96,7 +95,6 @@
             android:layout_gravity="center"
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp"
             android:background="@drawable/dimsiss_button_selector"
             android:text="DISMISS" />
 
@@ -109,7 +107,6 @@
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
             android:background="@drawable/confirm_button_selector"
             android:text="SUBMIT" />
     </RelativeLayout>

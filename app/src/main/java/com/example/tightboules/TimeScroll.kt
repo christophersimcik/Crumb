@@ -5,6 +5,9 @@ import android.graphics.*
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import kotlin.text.StringBuilder
 
@@ -13,6 +16,8 @@ class TimeScroll @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+
+    var canBuzz = true
 
     val DAY = 0
     val HR = 1
@@ -85,6 +90,11 @@ class TimeScroll @JvmOverloads constructor(
         }
         System.out.println(" up hours = " + hrs)
         return (midD * 1440) - 1440 + hrs + minsVal
+    }
+
+    override fun invalidate() {
+        System.out.println("midH invalid = "  + midH)
+        super.invalidate()
     }
 
     fun getValues(total: Int): Array<Int> {
@@ -231,10 +241,6 @@ class TimeScroll @JvmOverloads constructor(
         }
     }
 
-    interface LongClickObserver {
-        fun onLongClicked(y: Float)
-    }
-
     open inner class TimeFrame() {
         open val min = 0
         open val max = Int.MAX_VALUE
@@ -262,6 +268,7 @@ class TimeScroll @JvmOverloads constructor(
         open fun changeValue() {}
 
         open fun initValues(start: Int) {
+
             val less = if (start - 1 > this.min) {
                 start - 1
             } else {
@@ -275,6 +282,9 @@ class TimeScroll @JvmOverloads constructor(
             this.values[0] = more
             this.values[1] = start
             this.values[2] = less
+            for(int in values){
+                System.out.println("timer =" + int)
+            }
         }
 
         open fun settle() {
@@ -327,7 +337,9 @@ class TimeScroll @JvmOverloads constructor(
                 if (points[i].y == defaultY[MID]) {
                     pause = true
                     Handler().postDelayed(Runnable { pause = false }, 25)
-                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    if(canBuzz) {
+                        performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    }
                 }
                 if (points[i].y < defaultY[HI] - spacer / 2) {
                     values[i] = values[posDecr(i)] - 1
@@ -347,8 +359,11 @@ class TimeScroll @JvmOverloads constructor(
                 if (points[i].y == defaultY[MID]) {
                     pause = true
                     Handler().postDelayed(Runnable { pause = false }, 25)
-                    System.out.println("** i" + i)
-                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    if(canBuzz) {
+                        if(canBuzz) {
+                            performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                        }
+                    }
                 }
                 if (points[i].y > height + spacer / 2) {
                     values[i] = values[posIncr(i)] + 1
@@ -462,7 +477,11 @@ class TimeScroll @JvmOverloads constructor(
                     pause = true
                     midD = values[i]
                     Handler().postDelayed(Runnable { pause = false }, 25)
-                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    if(canBuzz) {
+                        if(canBuzz) {
+                            performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                        }
+                    }
                 }
                 if (points[i].y > height + spacer / 2) {
                     values[i] = values[posIncr(i)] + 1
@@ -483,7 +502,9 @@ class TimeScroll @JvmOverloads constructor(
                     pause = true
                     midD = values[i]
                     Handler().postDelayed(Runnable { pause = false }, 25)
-                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    if(canBuzz) {
+                        performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    }
                 }
                 if (points[i].y < defaultY[HI] - spacer / 2) {
                     values[i] = values[posDecr(i)] - 1
@@ -519,19 +540,14 @@ class TimeScroll @JvmOverloads constructor(
         }
 
         override fun initValues(start: Int) {
-            val less = if (start - 1 > min) {
-                start - 1
-            } else {
-                max
-            }
-            val more = if (start + 1 < max) {
-                start + 1
-            } else {
-                min
-            }
-            values[0] = more
-            values[1] = start
-            values[2] = less
+            val mid = start
+            val top : Int
+            if(mid + 1 < this.max){top = mid + 1} else { top = this.min}
+            val bot : Int
+            if(mid - 1 > this.min){ bot = mid  - 1} else { bot = this.max}
+            values[0] = top
+            values[1] = mid
+            values[2] = bot
         }
     }
 
@@ -540,10 +556,29 @@ class TimeScroll @JvmOverloads constructor(
         override val max = 12
         override val myWidth = width * .2f
         override val values = arrayOf(max - 1, max, min)
+
         override fun initPoints() {
             points[0].x = xS[HR]; points[0].y = defaultY[0]
             points[1].x = xS[HR]; points[1].y = defaultY[1]
             points[2].x = xS[HR]; points[2].y = defaultY[2]
+        }
+
+        override fun initValues(start: Int) {
+            val less : Int
+            if (start - 1 > this.min) {
+                less = start - 1
+            } else {
+                less = this.max
+            }
+            val more : Int
+            if (start + 1 < this.max) {
+                more = start + 1
+            } else {
+                more = this.min
+            }
+            values[0] = more
+            values[1] = start
+            values[2] = less
         }
 
         override fun settle() {
@@ -591,7 +626,9 @@ class TimeScroll @JvmOverloads constructor(
                     pause = true
                     midH = values[i]
                     Handler().postDelayed(Runnable { pause = false }, 25)
-                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    if(canBuzz) {
+                        performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    }
                 }
                 if (points[i].y > height + spacer / 2) {
                     values[i] = values[posIncr(i)] + 1
@@ -613,7 +650,9 @@ class TimeScroll @JvmOverloads constructor(
                     pause = true
                     midH = values[i]
                     Handler().postDelayed(Runnable { pause = false }, 25)
-                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    if(canBuzz) {
+                        performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    }
                 }
                 if (points[i].y < defaultY[HI] - spacer / 2) {
                     values[i] = values[posDecr(i)] - 1
@@ -661,6 +700,28 @@ class TimeScroll @JvmOverloads constructor(
             }
         }
 
+        override fun initValues(start: Int) {
+            val less : Int
+            if (start - 1 > this.min) {
+                less = start - 1
+            } else {
+                less = this.max
+            }
+            val more : Int
+            if (start + 1 < this.max) {
+                more = start + 1
+            } else {
+                more = this.min
+            }
+            values[0] = more
+            values[1] = start
+            values[2] = less
+            for(int in values){
+                System.out.println("min =" + int)
+            }
+        }
+
+
         override fun initPoints() {
             points[0].x = xS[MIN]; points[0].y = defaultY[0]
             points[1].x = xS[MIN]; points[1].y = defaultY[1]
@@ -705,7 +766,9 @@ class TimeScroll @JvmOverloads constructor(
                     pause = true
                     midM = values[i]
                     Handler().postDelayed(Runnable { pause = false }, 25)
-                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    if(canBuzz) {
+                        performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    }
                 }
                 if (points[i].y > height + spacer / 2) {
                     values[i] = values[posIncr(i)] + 1
@@ -727,7 +790,9 @@ class TimeScroll @JvmOverloads constructor(
                     pause = true
                     midM = values[i]
                     Handler().postDelayed(Runnable { pause = false }, 25)
-                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    if(canBuzz) {
+                        performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    }
                 }
                 if (points[i].y < defaultY[HI] - spacer / 2) {
                     values[i] = values[posDecr(i)] - 1
@@ -751,15 +816,15 @@ class TimeScroll @JvmOverloads constructor(
         val mrds = arrayOf("AM", "PM")
 
         override fun initValues(start: Int) {
-            val less = if (start - 1 > min) {
+            val less = if (start - 1 > this.min) {
                 start - 1
             } else {
-                max
+                this.max
             }
-            val more = if (start + 1 < max) {
+            val more = if (start + 1 < this.max) {
                 start + 1
             } else {
-                min
+                this.min
             }
             values[0] = more
             values[1] = start
@@ -821,7 +886,11 @@ class TimeScroll @JvmOverloads constructor(
                     pause = true
                     midMrd = values[i]
                     Handler().postDelayed(Runnable { pause = false }, 25)
-                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    if(canBuzz) {
+                        if(canBuzz) {
+                            performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                        }
+                    }
                 }
                 if (points[i].y > height + spacer / 2) {
                     values[i] = values[posIncr(i)] + 1
@@ -843,7 +912,11 @@ class TimeScroll @JvmOverloads constructor(
                     pause = true
                     midMrd = values[i]
                     Handler().postDelayed(Runnable { pause = false }, 25)
-                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    if(canBuzz) {
+                        if(canBuzz) {
+                            performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                        }
+                    }
                 }
 
                 if (points[i].y < defaultY[HI] - spacer / 2) {
@@ -856,6 +929,7 @@ class TimeScroll @JvmOverloads constructor(
                     centerValue = values[i]
                 }
             }
+
             invalidate()
         }
 
@@ -888,6 +962,33 @@ class TimeScroll @JvmOverloads constructor(
         fun onActionUp()
         fun onMove()
         fun onLayoutCompleted(timeScroll: TimeScroll)
+    }
+
+    fun incrementUntil(time: Array<Int>) {
+        canBuzz = false
+        if (time[1] > midH) {
+            while (midH != time[1]) {
+                sections[1].incr()
+            }
+        } else {
+            while (midH != time[1]) {
+                sections[1].decr()
+            }
+        }
+        // minutes
+        if (time[2] > midM) {
+            while (midM != time[2]) {
+                sections[2].incr()
+            }
+        } else {
+            while (midM != time[2]) {
+                sections[2].decr()
+            }
+        }
+        while(time[3] != midMrd){
+            sections[3].incr()
+        }
+        canBuzz = true
     }
 
 }

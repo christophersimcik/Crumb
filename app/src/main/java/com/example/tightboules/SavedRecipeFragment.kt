@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.emoji.widget.EmojiEditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -14,7 +15,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
+import org.joda.time.DateTime
 import java.text.DecimalFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
     KeyboardDetection.KeyBoardObserver, TextInputDialog.InputDialogListener,
@@ -28,6 +32,7 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
     lateinit var timeSelector: TimeScroll
     lateinit var myView: View
     lateinit var editName: EmojiEditText
+    lateinit var nowButton : ImageButton
 
     val textDisplayDialog: TextDisplayDialog by lazy { TextDisplayDialog() }
     val textInputDialog: TextInputDialog by lazy { TextInputDialog() }
@@ -72,8 +77,8 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
 
     val startObserver: Observer<Interval> by lazy {
         Observer<Interval> { step: Interval ->
-            dataRetrieved = true
             val times = getValues(step.time)
+            dataRetrieved = true
             hourText.text = times[1].toString()
             hourText.invalidate()
             minText.text = DecimalFormat("00").format(times[2])
@@ -101,6 +106,7 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
         Observer<List<Interval>> { steps: List<Interval> ->
             savedRecipeAdapter.setData(steps as ArrayList<Interval>)
             savedRecipeAdapter.notifyDataSetChanged()
+
         }
     }
 
@@ -133,11 +139,7 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
         scrollObserver = scrollingCallback
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         layoutCompleted = false
         dataRetrieved = false
         myView = layoutInflater.inflate(R.layout.saved_recipe_fragment, container, false)
@@ -147,6 +149,22 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
         meridianText = myView.findViewById(R.id.text_meridian)
         meridianImage = myView.findViewById(R.id.meridian_image)
         timeSelector = myView.findViewById(R.id.custom_time_selector)
+        nowButton = myView.findViewById(R.id.now_button)
+        nowButton.setOnClickListener {
+            val now = getTimeAsMinutes()
+            val times = getValues(now)
+            hourText.text = times[1].toString()
+            hourText.invalidate()
+            minText.text = DecimalFormat("00").format(times[2])
+            minText.invalidate()
+            meridianText.text = when (times[3]) {0 -> "AM"; 1 -> "PM"; else -> "n/a" }
+            meridianText.invalidate()
+            meridianImage.background = getMeridianImage(meridianText.text.toString())
+            meridianImage.invalidate()
+            viewModel.update(now)
+            timeSelector.incrementUntil(times)
+            Toast.makeText(requireContext(), "Now", Toast.LENGTH_SHORT).show()
+        }
         val recyclerView = myView.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = CustomLayoutManager(context)
         recyclerView.adapter = savedRecipeAdapter
@@ -175,10 +193,6 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
         textInputDialog.setTargetFragment(this, 0)
         stepDetailDialog.setTargetFragment(this, 0)
         return myView
-    }
-
-    private fun updateValues(interval: Interval) {
-        interval.time = timeSelector.getTotal()
     }
 
     fun getMeridianImage(meridian: String): Drawable? {
@@ -226,11 +240,11 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
             0 -> "AM"; 1 -> "PM"; else -> "n/a"
         }
         meridianImage.background = getMeridianImage(meridianText.text.toString())
-        System.out.println("total = " + timeSelector.getTotal())
         viewModel.update(timeSelector.getTotal())
     }
 
     override fun onLayoutCompleted(timeScroll: TimeScroll) {
+        System.out.println("layout completed")
         layoutCompleted = true
         if (dataRetrieved) {
             val time = viewModel.start.value?.time ?: 0
@@ -316,5 +330,9 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
         stepDetailDialog.dismiss()
     }
 
-
+    fun getTimeAsMinutes() : Int{
+        val dateTime = DateTime.now()
+        val millisOfDay = dateTime.millisOfDay
+        return millisOfDay/60000
+    }
 }

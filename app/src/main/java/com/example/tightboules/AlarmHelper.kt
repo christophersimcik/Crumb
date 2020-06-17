@@ -13,8 +13,8 @@ import kotlin.collections.ArrayList
 class AlarmHelper(sharedPreferences: SharedPreferences) {
 
     companion object {
-        val MY_ID = "my_id"
         val NAME = "name"
+        val MY_ID = "my_id"
         val DETAILS = "details"
         val PARENT_ID = "parent_id"
         val START_TIME = "start_time"
@@ -126,7 +126,6 @@ class AlarmHelper(sharedPreferences: SharedPreferences) {
                 calendars.add(myCalendar)
                 bundles.add(createBundle(list[item]))
                 startTime = targetTime
-                System.out.println("MILLIS" + targetTime.toDateTime().millis)
             }
         }
         return calendars

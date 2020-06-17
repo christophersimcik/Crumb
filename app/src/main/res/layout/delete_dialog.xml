@@ -7,8 +7,7 @@
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:padding = "5dp"
-        android:orientation="vertical"
-        android:background="@drawable/border_straight_light">
+        android:orientation="vertical">
         <TextView
             android:id="@+id/declare_type_field"
             android:layout_width="match_parent"

@@ -10,6 +10,7 @@ import android.util.DisplayMetrics
 import android.view.*
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
 
 import java.lang.ClassCastException
 
@@ -19,12 +20,13 @@ class AlarmDialog() : DialogFragment(), TimeScroll.ActionCallback {
     lateinit var layout: View
     val alarmName: TextView by lazy { layout.findViewById<TextView>(R.id.alarm_name_text) }
     val alarmDescription: TextView by lazy { layout.findViewById<TextView>(R.id.alarm_description) }
-    val myFragment: PlayFragment by lazy { getTargetFragment() as PlayFragment }
     val dismissButton: View by lazy { layout.findViewById<View>(R.id.dismiss_button) }
     var initTime = 0
     var isPlaying = false
     val displayMetrics = DisplayMetrics()
     lateinit var mediaPlayer: MediaPlayer
+    var name = "No Name"
+    var description = "No Description"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,12 +52,25 @@ class AlarmDialog() : DialogFragment(), TimeScroll.ActionCallback {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        alarmName.setText(name)
+        alarmDescription.setText(description)
         listener.onDialogCreated()
-        alarmName.text = myFragment.name
-        alarmDescription.text = myFragment.description
         playAlarm()
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    fun show(manager: FragmentManager, tag: String?, name: String, description: String) {
+        if (name.equals("")) {
+            this.name = "No Name Provided"
+        } else {
+            this.name = name
+        }
+        if (description.equals("")) {
+            this.description = " No Description Provided"
+        } else {
+            this.description = description
+        }
+        super.show(manager, tag)
     }
 
     override fun onCancel(dialog: DialogInterface) {

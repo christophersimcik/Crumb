@@ -36,7 +36,6 @@ class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(a
             updateSingle(selected)
             update()
             updateSchedule()
-            adapter.notifyDataSetChanged()
         }
     }
 

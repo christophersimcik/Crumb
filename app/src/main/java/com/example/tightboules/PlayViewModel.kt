@@ -16,13 +16,13 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
     val recipeData = scheduleDao?.getSelectedAsLiveData(id)
     val stepData = intervalDao?.getAllIntervalsInSchedule(id)
     private val alarmHelper = AlarmHelper(application.getSharedPreferences(SharedViewModel.SHARED_PREFERENCES,0))
-    val relativeEndTime = MutableLiveData<String>()
-    val notes = MutableLiveData<String>()
     private val observers = ArrayList<ViewHolderCallback>()
     private var dataRetrieved: Boolean = false
     private val alarmDialog = AlarmDialog()
     lateinit var alarmCancelObserver: AlarmCancelObserver
     lateinit var  activeAlarmsWatcher : ActiveAlarms
+    val relativeEndTime = MutableLiveData<String>()
+    val notes = MutableLiveData<String>()
     val start: Long by lazy {
         application.getSharedPreferences(
             SharedViewModel.SHARED_PREFERENCES,
@@ -79,7 +79,7 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
         val relativeStartTime = start - now
         if (relativeStartTime > 0) {
             view.active = false
-            relativeEndTime.postValue("* Recipe Is Not In Progress Yet")
+            relativeEndTime.postValue("* Recipe Is Not In Progress Yet!")
             val message = convertMillisToText(relativeStartTime)
             view.setMessage(message)
         } else {
@@ -88,7 +88,8 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
             if (end - now > 0) {
                 relativeEndTime.postValue(convertMillisToText(end - now))
             } else {
-                relativeEndTime.postValue("Completed")
+                relativeEndTime.postValue("Completed!")
+                view.active = false
             }
         }
         view.update(now, start, end)
@@ -111,8 +112,8 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
         alarmDialog.isCancelable = false
     }
 
-    fun showAlarmDialog(fragmentManager: FragmentManager) {
-        alarmDialog.show(fragmentManager, "alarm_dialog")
+    fun showAlarmDialog(fragmentManager: FragmentManager, name : String, description : String) {
+        alarmDialog.show(fragmentManager, "alarm", name, description)
     }
 
     fun dismissDialog() {

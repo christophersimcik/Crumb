@@ -76,6 +76,7 @@ class IntervalFragment :
                 viewModel.lastTime = steps.last().time
                 viewModel.lastPositon = steps.lastIndex
             }
+            intervalAdapter.notifyDataSetChanged()
         }
     }
 

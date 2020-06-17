@@ -3,17 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:padding="5dp">
+    android:padding="10dp">
 
     <TextView
         android:id="@+id/notes_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:text="Notes:"
+        android:text="Notes"
         android:textSize="20sp" />
 
     <ImageButton
@@ -28,16 +28,19 @@
         android:background="@drawable/circle_selector"
         android:scaleType="fitCenter"
         android:src="@drawable/text_edit_selector"/>
-
-    <RelativeLayout
+    <View
         android:layout_below="@id/edit_text_button"
         android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:id="@+id/div"
+        android:background="@drawable/divider_light"/>
+
+    <RelativeLayout
+        android:layout_below="@id/div"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginTop="5dp"
-        android:background="@drawable/border_straight_dark"
         android:orientation="vertical"
         android:padding="5dp">
         <ScrollView
@@ -45,8 +48,6 @@
             android:layout_width="match_parent"
             android:layout_height="600px"
             android:layout_alignParentTop="true"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
             android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
             android:padding="10dp">
@@ -63,8 +64,6 @@
             android:layout_width="250px"
             android:layout_height="125px"
             android:layout_gravity="end"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
             android:background="@drawable/dimsiss_button_selector"
             android:text="DISMISS" />
     </RelativeLayout>

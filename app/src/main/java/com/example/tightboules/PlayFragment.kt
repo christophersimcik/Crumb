@@ -47,8 +47,6 @@ class PlayFragment : Fragment(),
     private val durationText: TextView by lazy { myView.findViewById<TextView>(R.id.text_duration) }
     private val endMessageText: TextView by lazy { myView.findViewById<TextView>(R.id.text_end_message) }
 
-    val name = arguments?.getString(AlarmHelper.NAME) ?: "No Name"
-    val description = arguments?.getString(AlarmHelper.DESCRIPTION) ?: "No Details"
     val noteObserver: Observer<String> by lazy {
         Observer<String> { note ->
             when (note) {
@@ -67,7 +65,6 @@ class PlayFragment : Fragment(),
     }
 
     private val stepObserver = Observer<List<Interval>> { list: List<Interval> ->
-        System.out.println("prefs = " + context?.getSharedPreferences(SharedViewModel.SHARED_PREFERENCES,0)?.getInt(AlarmHelper.ACTIVE_ALARMS,0))
         viewModel.updateTotal(list, progressTotal)
         viewModel.hasActiveAlarms()
         playAdapter.setData(list)
@@ -94,21 +91,21 @@ class PlayFragment : Fragment(),
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         myView = inflater.inflate(R.layout.play_fragment, container, false)
         viewModel.stepData?.observe(this.viewLifecycleOwner, stepObserver)
         viewModel.recipeData?.observe(this.viewLifecycleOwner, recipeObserver)
-        viewModel.relativeEndTime?.observe(this.viewLifecycleOwner, endObserver)
+        viewModel.relativeEndTime.observe(this.viewLifecycleOwner, endObserver)
         recyclerView.layoutManager = myLayoutManager
         recyclerView.adapter = playAdapter
         playAdapter.registerStepDialogWatcher(this)
         viewModel.initializeAlarmDialog(this)
+        val bundle = arguments
         if (arguments?.getBoolean(AlarmHelper.ALARM_IS_ACTIVE,false) == true) {
-            viewModel.showAlarmDialog(this.parentFragmentManager)
+            viewModel.showAlarmDialog(
+                this.parentFragmentManager,
+                bundle?.getString(AlarmHelper.NAME,"")?: "",
+                bundle?.getString(AlarmHelper.DESCRIPTION, "")?: "")
         }
         viewModel.registerAlarmCancelObserver(this)
         updateTotal(progressTotal)
@@ -126,7 +123,6 @@ class PlayFragment : Fragment(),
             }
         }
     }
-
 
     fun showNotes() {
         textDisplayDialog.show(parentFragmentManager, "notes_detail")

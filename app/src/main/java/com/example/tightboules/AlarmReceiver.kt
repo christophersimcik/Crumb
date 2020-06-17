@@ -17,8 +17,7 @@ class AlarmReceiver() : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val sharedPreferences = context?.getSharedPreferences(SharedViewModel.SHARED_PREFERENCES, 0)
-        val ringtone =
-            RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM)
+        val ringtone = RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM)
         val newIntent = Intent(context, MainActivity::class.java);
         val parentID = intent?.getLongExtra(AlarmHelper.PARENT_ID, 0L)
         val myID = intent?.getLongExtra(AlarmHelper.MY_ID, 0L)
@@ -34,7 +33,7 @@ class AlarmReceiver() : BroadcastReceiver() {
         newIntent.putExtra(AlarmHelper.PARENT_ID, parentID)
         newIntent.putExtra(AlarmHelper.DETAILS, details)
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context?.startActivity(newIntent)
+        context.startActivity(newIntent)
         mediaPlayer.start()
         mediaPlayer.release()
     }

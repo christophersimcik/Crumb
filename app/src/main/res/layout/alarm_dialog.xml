@@ -9,7 +9,6 @@
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:padding = "10dp"
-        android:background="@drawable/border_straight_dark"
         android:orientation="vertical">
 
         <androidx.emoji.widget.EmojiTextView
@@ -47,13 +46,6 @@
             android:textColor="@color/default_dark"
             android:textSize="14sp" />
         </ScrollView>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="1dp"
-            android:background="@drawable/divider_light"/>
 
         <TextView
             android:id="@+id/dismiss_button"
