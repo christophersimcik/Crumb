@@ -70,6 +70,7 @@ class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(a
     }
 
     suspend fun updateSchedule() {
+
         val list = intervalDao?.getAsList(parentID)
         val schedule = scheduleDao?.getSelected(parentID)
         val steps = list?.size ?: 0

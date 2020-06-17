@@ -174,6 +174,7 @@ class IntervalFragment :
     override fun onConfirm(dialog: Dialog, note: String) {
         viewModel.selected.notes = note
         viewModel.updateName(viewModel.selected)
+        this.dialog.setName("")
         textInputDialog.teardown()
         dialog.dismiss()
     }
@@ -188,11 +189,13 @@ class IntervalFragment :
             viewModel.deleteNew()
         }
         viewModel.newlyCreated = false
+        this.dialog.setName("")
         dialog.dismiss()
     }
 
     override fun stepCanceled(dialog: Dialog) {
         viewModel.newlyCreated = false
+        this.dialog.setName("")
         dialog.dismiss()
     }
 
@@ -200,6 +203,7 @@ class IntervalFragment :
         viewModel.updateSelected(name, time, intervalAdapter)
         recyclerView.smoothScrollToPosition(viewModel.selectedPosition)
         viewModel.newlyCreated = false
+        this.dialog.setName("")
         dialog.dismiss()}
 
     override fun swipeDialogCreated() {}
