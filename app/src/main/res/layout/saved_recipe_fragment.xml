@@ -105,7 +105,7 @@
             android:layout_marginBottom="5dp"
             android:background="@drawable/divider" />
 
-        <com.example.tightboules.TimeScroll
+        <com.example.crumb.TimeScroll
             android:id="@+id/custom_time_selector"
             android:layout_width="300dp"
             android:layout_height="50dp"

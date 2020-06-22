@@ -54,7 +54,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/hilight"/>
 
-            <com.example.tightboules.CustomCheckBox
+            <com.example.crumb.CustomCheckBox
                 android:layout_gravity="center_vertical"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
@@ -62,7 +62,7 @@
 
         </LinearLayout>
 
-        <com.example.tightboules.MyItemProgressBar
+        <com.example.crumb.MyItemProgressBar
             android:id="@+id/my_progerss_bar"
             android:layout_width="match_parent"
             android:layout_height="50dp"

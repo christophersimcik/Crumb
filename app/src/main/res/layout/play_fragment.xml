@@ -35,7 +35,7 @@
                 android:background="@drawable/divider" />
         </RelativeLayout>
 
-        <com.example.tightboules.MyProgressBar
+        <com.example.crumb.MyProgressBar
             android:id="@+id/total_progrss_bar"
             android:layout_width="match_parent"
             android:layout_height="50dp"

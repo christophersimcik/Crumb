@@ -51,7 +51,7 @@
         android:layout_marginBottom="10dp"
         android:background="@color/hilight" />
 
-    <com.example.tightboules.TimeLineView
+    <com.example.crumb.TimeLineView
         android:id="@+id/timeline_view"
         android:layout_width="match_parent"
         android:layout_height="12.5dp" />
