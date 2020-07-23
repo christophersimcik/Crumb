@@ -5,7 +5,7 @@
     app:startDestination="@id/scheduleFragment">
     <fragment
         android:id="@+id/scheduleFragment"
-        android:name="com.example.crumb.ScheduleFragment"
+        android:name="com.example.crumb.Fragments.ScheduleFragment"
         android:label="ScheduleFragment">
         <action
             android:id="@+id/action_scheduleFragment_to_intervalFragment"
@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/intervalFragment"
-        android:name="com.example.crumb.IntervalFragment"
+        android:name="com.example.crumb.Fragments.IntervalFragment"
         android:label="IntervalFragment">
         <action
             android:id="@+id/action_intervalFragment_to_scheduleFragment"
@@ -33,11 +33,11 @@
     </fragment>
     <activity
         android:id="@+id/mainActivity"
-        android:name="com.example.crumb.MainActivity"
+        android:name="com.example.crumb.Activities.MainActivity"
         android:label="MainActivity" />
     <fragment
         android:id="@+id/savedRecipeFragment"
-        android:name="com.example.crumb.SavedRecipeFragment"
+        android:name="com.example.crumb.Fragments.SavedRecipeFragment"
         android:label="SavedRecipeFragment">
         <action
             android:id="@+id/action_savedRecipeFragment_to_scheduleFragment"
@@ -54,6 +54,6 @@
     </fragment>
     <fragment
         android:id="@+id/playFragment"
-        android:name="com.example.crumb.PlayFragment"
+        android:name="com.example.crumb.Fragments.PlayFragment"
         android:label="PlayFragment" />
 </navigation>

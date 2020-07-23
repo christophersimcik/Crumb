@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
-    tools:context=".MainActivity">
+    tools:context=".Activities.MainActivity">
 
     <RelativeLayout
         android:id="@+id/main_container"
@@ -95,7 +95,7 @@
             app:navGraph="@navigation/navigation_graph" />
     </RelativeLayout>
 
-    <com.example.crumb.ButtonNew
+    <com.example.crumb.UI.ButtonNew
         android:id="@+id/add_button"
         android:layout_width="50dp"
         android:layout_height="50dp"
