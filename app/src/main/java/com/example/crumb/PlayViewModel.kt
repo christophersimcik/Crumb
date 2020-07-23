@@ -15,14 +15,17 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
     private val intervalDao: IntervalDao? = database?.getIntervalDao()
     val recipeData = scheduleDao?.getSelectedAsLiveData(id)
     val stepData = intervalDao?.getAllIntervalsInSchedule(id)
+
     private val alarmHelper = AlarmHelper(application.getSharedPreferences(SharedViewModel.SHARED_PREFERENCES,0))
     private val observers = ArrayList<ViewHolderCallback>()
     private var dataRetrieved: Boolean = false
     private val alarmDialog = AlarmDialog()
     lateinit var alarmCancelObserver: AlarmCancelObserver
     lateinit var  activeAlarmsWatcher : ActiveAlarms
+
     val relativeEndTime = MutableLiveData<String>()
     val notes = MutableLiveData<String>()
+
     val start: Long by lazy {
         application.getSharedPreferences(
             SharedViewModel.SHARED_PREFERENCES,

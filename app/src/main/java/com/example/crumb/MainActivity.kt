@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity(), OverrideCheckBoxOnClick, PlayViewModel
     val mainLayout by lazy { findViewById<MainRelativeLayout>(R.id.main_container) }
     val navHostFragment: NavHostFragment by lazy { fragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment }
     val sharedViewModel by lazy { ViewModelProviders.of(this).get(SharedViewModel::class.java) }
+
     val scrollObserver: Observer<Fragment> by lazy {
         Observer<Fragment> { fragment ->
             when (fragment) {
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity(), OverrideCheckBoxOnClick, PlayViewModel
                     addButton.mode = ButtonNew.STEPS
                     addButton.toSquare()
                 }
+
                 ButtonNew.DETAIL -> {
                     topRightOfLeftButton.visibility = View.VISIBLE
                     topRightButton.visibility = View.VISIBLE

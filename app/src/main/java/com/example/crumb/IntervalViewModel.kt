@@ -89,15 +89,19 @@ class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(a
     }
 
     fun delete(position: Int) {
-        val interval = intervalData?.value?.get(position)
-        if (interval != null) {
-            viewModelScope.launch {
-                if (interval.alarm_on) {
-                    alarmHelper.cancelSpecificAlarm(interval, getApplication())
+        if (intervalData?.value?.isNullOrEmpty() ?: true) {
+            return
+        } else {
+            val interval = intervalData?.value?.get(position)
+            if (interval != null) {
+                viewModelScope.launch {
+                    if (interval.alarm_on) {
+                        alarmHelper.cancelSpecificAlarm(interval, getApplication())
+                    }
+                    intervalDao?.delete(interval)
+                    update()
+                    updateSchedule()
                 }
-                intervalDao?.delete(interval)
-                update()
-                updateSchedule()
             }
         }
     }

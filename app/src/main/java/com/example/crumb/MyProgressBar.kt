@@ -107,7 +107,7 @@ class MyProgressBar @JvmOverloads constructor(
 
     private fun drawBackground(canvas: Canvas?){
         paint.color = context.resources.getColor(R.color.default_light_darker,null)
-        canvas?.drawPath(outterPath,paint)
+        canvas?.drawPath(outterPath ?: Path(), paint)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

@@ -87,7 +87,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
             }
             is PlayFragment -> {
                 val fragment = activeFragment as PlayFragment
-                fragment.viewModel.cancel()
+                //fragment.viewModel.cancel()
+                fragment.showDeleteDialog()
+
             }
         }
     }

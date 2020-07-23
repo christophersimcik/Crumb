@@ -14,7 +14,7 @@ import androidx.fragment.app.FragmentManager
 
 import java.lang.ClassCastException
 
-class AlarmDialog() : DialogFragment(), TimeScroll.ActionCallback {
+class AlarmDialog() : DialogFragment() {
 
     lateinit var listener: DeleteDialogListener
     lateinit var layout: View
@@ -72,10 +72,6 @@ class AlarmDialog() : DialogFragment(), TimeScroll.ActionCallback {
         super.show(manager, tag)
     }
 
-    override fun onCancel(dialog: DialogInterface) {
-        super.onCancel(dialog)
-    }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
@@ -85,46 +81,10 @@ class AlarmDialog() : DialogFragment(), TimeScroll.ActionCallback {
         }
     }
 
-    fun getValues(total: Int): Array<Int> {
-        val total = total
-        val days = (total / 1440) + 1
-        var hours = (total % 1440) / 60
-        val mins = total % 1440 % 60
-        var mrd = 0
-        if (hours > 12) {
-            hours = hours - 12
-            mrd = 1
-        }
-        if (hours == 0) {
-            hours = 12
-        }
-        return arrayOf(days, hours, mins, mrd)
-    }
-
     interface DeleteDialogListener {
         fun onDialogCreated()
         fun onDismiss(dialog: Dialog);
         fun onCanceled(dialog: Dialog);
         fun onConfirm(dialog: Dialog, name: String, time: Int);
-    }
-
-    override fun onActionUp() {
-        System.out.println(" im up ")
-    }
-
-    override fun onMove() {
-        System.out.println("move me")
-    }
-
-    override fun onLayoutCompleted(timeScroll: TimeScroll) {
-        timeScroll.setDials(getValues(initTime))
-    }
-
-
-
-    fun animate(){
-
-        dismissButton.scaleX
-        dismissButton.scaleY
     }
 }

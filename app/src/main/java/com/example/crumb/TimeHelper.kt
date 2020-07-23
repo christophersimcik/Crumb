@@ -5,13 +5,12 @@ import android.widget.NumberPicker
 import com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
 import java.text.DecimalFormat
 
-class TimeHelper(val dayPicker : NumberPicker, val hrPicker : NumberPicker, val minPicker : NumberPicker, val mrdnPicker : NumberPicker){
+class TimeHelper(val dayPicker : MaterialNumberPicker, val hrPicker : MaterialNumberPicker, val minPicker : MaterialNumberPicker, val mrdnPicker : MaterialNumberPicker){
 
     private var days = 0
     private var hours = 0
     private var mins = 0
     private var meridian = 0
-    private val meridianPicker = mrdnPicker as MaterialNumberPicker
     private val amColor = "#e39207"
     private val pmColor = "#1f7de0"
 
@@ -43,11 +42,9 @@ class TimeHelper(val dayPicker : NumberPicker, val hrPicker : NumberPicker, val 
         minPicker.value = mins
         mrdnPicker.value = meridian
         if (meridian == 0) {
-            System.out.println("mrd = " + meridian)
-            meridianPicker.separatorColor = Color.parseColor(amColor)
+            mrdnPicker.separatorColor = Color.parseColor(amColor)
         } else {
-            System.out.println("mrd = " + meridian)
-            meridianPicker.separatorColor = Color.parseColor(pmColor)
+            mrdnPicker.separatorColor = Color.parseColor(pmColor)
         }
     }
 

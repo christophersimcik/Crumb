@@ -2,6 +2,7 @@ package com.example.crumb
 
 import android.app.Dialog
 import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
@@ -25,28 +26,27 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
     TextDisplayDialog.DisplayDialogListener, StepDetailDialog.StepDialogListener,
     SavedRecipeAdapter.StepDetailCallback {
 
-    lateinit var hourText: TextView
-    lateinit var minText: TextView
-    lateinit var meridianText: TextView
-    lateinit var meridianImage: View
-    lateinit var daySelector : MaterialNumberPicker
     lateinit var hourSelector : MaterialNumberPicker
+    lateinit var daySelector : MaterialNumberPicker
     lateinit var minSelector : MaterialNumberPicker
     lateinit var mrdSelector : MaterialNumberPicker
-    lateinit var myView: View
     lateinit var editName: EmojiEditText
     lateinit var nowButton: ImageButton
-
-
-    private lateinit var timeHelper :TimeHelper
+    lateinit var meridianText: TextView
+    lateinit var meridianImage: View
+    lateinit var hourText: TextView
+    lateinit var minText: TextView
+    lateinit var myView: View
 
     val textDisplayDialog: TextDisplayDialog by lazy { TextDisplayDialog() }
     val textInputDialog: TextInputDialog by lazy { TextInputDialog() }
     val stepDetailDialog: StepDetailDialog by lazy { StepDetailDialog() }
     val keyboardDetection: KeyboardDetection by lazy { KeyboardDetection(requireActivity()) }
+    lateinit var scrollObserver: ScrollingCallback
+    private lateinit var timeHelper :TimeHelper
     var layoutCompleted = false
     var dataRetrieved = false
-    lateinit var scrollObserver: ScrollingCallback
+
     val imageAM: Drawable by lazy {
         requireActivity().resources.getDrawable(
             R.drawable.am_image,

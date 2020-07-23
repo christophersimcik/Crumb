@@ -39,14 +39,14 @@ class AlarmService : Service() {
 
     private fun getTitle(bundle: Bundle?): String {
         if (bundle != null && bundle.containsKey(AlarmHelper.NAME)) {
-            return bundle.getString(AlarmHelper.NAME)
+            return bundle.getString(AlarmHelper.NAME) ?: "No Step Name"
         }
         return "No Step Name"
     }
 
     private fun getText(bundle: Bundle?): String {
         if (bundle != null && bundle.containsKey(AlarmHelper.DESCRIPTION)) {
-            return bundle.getString(AlarmHelper.DESCRIPTION)
+            return bundle.getString(AlarmHelper.DESCRIPTION) ?: "No Step Description"
         }
         return "No Step Description"
     }

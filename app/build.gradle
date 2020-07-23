@@ -5,14 +5,14 @@ apply plugin: 'kotlin-android-extensions'
 
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
         applicationId "com.simcikc.crumb"
         minSdkVersion 23
-        targetSdkVersion 28
-        versionCode 2
-        versionName "1.1"
+        targetSdkVersion 29
+        versionCode 5
+        versionName "1.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         kotlinOptions {
             jvmTarget = "1.8"
@@ -37,7 +37,7 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
     // emoji
-    implementation "com.android.support:support-emoji:28.0.0"
+    implementation "com.android.support:support-emoji:29.0.0"
 
     //jodatime
     implementation 'net.danlew:android.joda:2.10.3'
@@ -70,7 +70,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
     // notifications
-    implementation "com.android.support:support-compat:28.0.0"
+    implementation "com.android.support:support-compat:29.0.0"
 
     // material number picker
     implementation 'com.github.StephenVinouze:MaterialNumberPicker:1.0.5'

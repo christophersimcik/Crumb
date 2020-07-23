@@ -24,16 +24,17 @@ class DeleteDialog(val type : String) : DialogFragment() {
     lateinit var declare: TextView
     val displayMetrics = DisplayMetrics()
     lateinit var listener: SwipeDeleteDialogListener
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         layout = inflater.inflate(R.layout.delete_dialog, null)
-        confirm = layout.findViewById<Button>(R.id.confirm_button)
-        dismiss = layout.findViewById<Button>(R.id.dismiss_button)
+        confirm = layout.findViewById(R.id.confirm_button)
+        dismiss = layout.findViewById(R.id.dismiss_button)
         declare = layout.findViewById<EmojiEditText>(R.id.declare_type_field)
-        declare.setText("Delete This " + type + " ?")
+        declare.setText(type)
         confirm.setOnClickListener {
             listener.swipeConfirm(this.requireDialog(), position)
         }

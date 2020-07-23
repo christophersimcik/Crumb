@@ -61,7 +61,7 @@ class MyItemProgressBar @JvmOverloads constructor(
     private fun drawBorder(canvas: Canvas?) {
         paint.style = Paint.Style.FILL
         paint.color = default
-        canvas?.drawPath(outterPath, paint)
+        canvas?.drawPath(outterPath ?: Path(), paint)
     }
 
     fun setColor(color : Int){

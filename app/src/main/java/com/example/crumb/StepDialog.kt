@@ -17,21 +17,24 @@ import com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
 import java.lang.ClassCastException
 import java.text.DecimalFormat
 
-class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),KeyboardDetection.KeyBoardObserver {
+class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),
+    KeyboardDetection.KeyBoardObserver {
 
     var myTime = 0
     var initTime = 0
     var isFirst = true
+
+    private var name = ""
     lateinit var layout: View
-    lateinit var dayPicker : MaterialNumberPicker
-    lateinit var hourPicker : MaterialNumberPicker
-    lateinit var minPicker : MaterialNumberPicker
-    lateinit var mrdnPicker : MaterialNumberPicker
+    lateinit var dayPicker: MaterialNumberPicker
+    lateinit var hourPicker: MaterialNumberPicker
+    lateinit var minPicker: MaterialNumberPicker
+    lateinit var mrdnPicker: MaterialNumberPicker
     lateinit var timeHelper: TimeHelper
     private lateinit var interval: Interval
     lateinit var nameInputField: EmojiEditText
     lateinit var listener: DeleteDialogListener
-    private var name = ""
+
     val keyboardDetection = keyboardDetection
 
     init {
@@ -40,9 +43,6 @@ class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),Keyboa
 
     fun show(manager: FragmentManager, tag: String?, time: Int) {
         super.show(manager, tag)
-        System.out.println("working")
-
-
     }
 
     override fun onCreateView(
@@ -58,17 +58,19 @@ class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),Keyboa
         dayPicker = layout.findViewById(R.id.day_selector)
         hourPicker = layout.findViewById(R.id.hour_selector)
         minPicker = layout.findViewById(R.id.min_selector)
+        val df = DecimalFormat("00")
+        minPicker.setFormatter(NumberPicker.Formatter { df.format(it) })
         mrdnPicker = layout.findViewById(R.id.meridian_selector)
-        mrdnPicker.displayedValues = arrayOf("AM","PM")
+        mrdnPicker.displayedValues = arrayOf("AM", "PM")
+
         mrdnPicker.setOnValueChangedListener { numberPicker, i, i2 ->
-            if(i == 0){
-                mrdnPicker.separatorColor = resources.getColor(R.color.pm_color,null)
-            }else{
-                mrdnPicker.separatorColor = resources.getColor(R.color.am_text,null)
+            if (i == 0) {
+                mrdnPicker.separatorColor = resources.getColor(R.color.pm_color, null)
+            } else {
+                mrdnPicker.separatorColor = resources.getColor(R.color.am_text, null)
             }
-            // incoorperate meridian icon ?
-           // meridianImage.background = getMeridianImage(meridianText.text.toString())
         }
+
         timeHelper = TimeHelper(dayPicker, hourPicker, minPicker, mrdnPicker)
         submitButton.setOnClickListener {
             val name = nameInputField.getText().toString()
@@ -87,11 +89,11 @@ class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),Keyboa
         return layout
     }
 
-    fun setName(name : String){
+    fun setName(name: String) {
         this.name = name
     }
 
-    fun getName() : String {
+    fun getName(): String {
         return this.name
     }
 
@@ -102,7 +104,7 @@ class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),Keyboa
 
     override fun onResume() {
         listener.stepDialogCreated()
-        val additionalMinute = if(isFirst) 0 else 1
+        val additionalMinute = if (isFirst) 0 else 1
         timeHelper.setValues(initTime + additionalMinute)
         super.onResume()
 

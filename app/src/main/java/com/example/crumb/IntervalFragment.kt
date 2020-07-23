@@ -27,8 +27,9 @@ class IntervalFragment :
     lateinit var dialog: StepDialog
     lateinit var keyboardDetection : KeyboardDetection
     lateinit var scrollObserver : ScrollingCallback
+    var canCreate = true;
 
-    val deleteDialog: DeleteDialog by lazy { DeleteDialog("Step") }
+    val deleteDialog: DeleteDialog by lazy { DeleteDialog("Delete This Step?") }
 
     val deletSwipe: SwipeToDelete by lazy {
         object : SwipeToDelete(requireContext()) {
@@ -59,7 +60,10 @@ class IntervalFragment :
     val intervalObserver: Observer<List<Interval>> by lazy {
         Observer<List<Interval>> { steps: List<Interval> ->
             if(steps.isEmpty()){
-                viewModel.create()
+                if(canCreate) {
+                    viewModel.create()
+                    canCreate = false
+                }
                 viewModel.lastTime = 0
                 viewModel.lastPositon = 0
             }else {
@@ -81,7 +85,6 @@ class IntervalFragment :
     fun registerScrollObserver(scrollingCallback: ScrollingCallback){
         scrollObserver = scrollingCallback
     }
-
 
     override fun onAttach(context: Context) {
         keyboardDetection = KeyboardDetection(requireActivity())

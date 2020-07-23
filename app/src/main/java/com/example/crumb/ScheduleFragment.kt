@@ -31,7 +31,7 @@ class ScheduleFragment : Fragment(), DeleteDialog.SwipeDeleteDialogListener,
             R.id.nav_host_fragment
         ) as NavHostFragment
     }
-    val deleteDialog: DeleteDialog by lazy { DeleteDialog("Recipe") }
+    val deleteDialog: DeleteDialog by lazy { DeleteDialog("Delete This Recipe?") }
     val deletSwipe: SwipeToDelete by lazy {
         object : SwipeToDelete(requireContext()) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -70,6 +70,7 @@ class ScheduleFragment : Fragment(), DeleteDialog.SwipeDeleteDialogListener,
                 }
             }
         })
+
         val scheduleObserver = Observer<List<Schedule>> {
             if (it.size > 0) {
                 textView.visibility = View.INVISIBLE
@@ -79,6 +80,7 @@ class ScheduleFragment : Fragment(), DeleteDialog.SwipeDeleteDialogListener,
             scheduleAdapter.setData(it as ArrayList<Schedule>)
             scheduleAdapter.notifyDataSetChanged()
         }
+
         viewModel.scheduleData?.observe(viewLifecycleOwner, scheduleObserver)
         callback.fragmentAttached(this)
         deleteDialog.setTargetFragment(this, 0)
@@ -105,7 +107,6 @@ class ScheduleFragment : Fragment(), DeleteDialog.SwipeDeleteDialogListener,
     }
 
     // recipe
-
     override fun recipeDismiss(dialog: Dialog) {
         dialog.dismiss()
     }

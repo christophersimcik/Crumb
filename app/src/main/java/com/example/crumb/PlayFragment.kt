@@ -16,8 +16,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class PlayFragment :
-    Fragment(),
+class PlayFragment : Fragment(),
+    DeleteDialog.SwipeDeleteDialogListener,
     AlarmDialog.DeleteDialogListener,
     TextDisplayDialog.DisplayDialogListener,
     PlayAdapter.StepDetailCallback,
@@ -47,6 +47,7 @@ class PlayFragment :
     private val progressTotal: MyProgressBar by lazy { myView.findViewById<MyProgressBar>(R.id.total_progrss_bar) }
     private val durationText: TextView by lazy { myView.findViewById<TextView>(R.id.text_duration) }
     private val endMessageText: TextView by lazy { myView.findViewById<TextView>(R.id.text_end_message) }
+    private val deleteDialog: DeleteDialog by lazy { DeleteDialog("Cancel All Alarms?") }
 
     val noteObserver: Observer<String> by lazy {
         Observer<String> { note ->
@@ -115,6 +116,7 @@ class PlayFragment :
         callback.fragmentAttached(this)
         viewModel.notes.observe(viewLifecycleOwner, noteObserver)
         textDisplayDialog.setTargetFragment(this, 0)
+        deleteDialog.setTargetFragment(this,0)
         return myView
     }
 
@@ -169,5 +171,26 @@ class PlayFragment :
     override fun onStepDialogCalled(step: Interval) {
         textDisplayDialog.show(parentFragmentManager, "notes_detail")
         viewModel.getIntervalNotes(step)
+    }
+
+    fun showDeleteDialog(){
+        deleteDialog.show(parentFragmentManager, "swipe_delete")
+    }
+
+    override fun swipeDialogCreated() {
+
+    }
+
+    override fun swipeDismiss(dialog: Dialog, position: Int) {
+        deleteDialog.dismiss()
+    }
+
+    override fun swipeCanceled(dialog: Dialog, position: Int) {
+        deleteDialog.dismiss()
+    }
+
+    override fun swipeConfirm(dialog: Dialog, position: Int) {
+        viewModel.cancel()
+        deleteDialog.dismiss()
     }
 }
