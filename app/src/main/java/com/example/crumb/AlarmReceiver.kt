@@ -6,34 +6,32 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.os.Bundle
+import android.os.PowerManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AlarmReceiver() : BroadcastReceiver() {
-
     override fun onReceive(context: Context?, intent: Intent?) {
+        val powerManager = context?.getSystemService(Context.POWER_SERVICE) as PowerManager
+        val wakeLock : PowerManager.WakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "crumb:WakeLock").apply { acquire() }
         val sharedPreferences = context?.getSharedPreferences(SharedViewModel.SHARED_PREFERENCES, 0)
-        val ringtone = RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM)
-        val newIntent = Intent(context, MainActivity::class.java);
-        val parentID = intent?.getLongExtra(AlarmHelper.PARENT_ID, 0L)
+        val parentID = intent?.getLongExtra(AlarmHelper.PARENT_ID,0) ?: 0L
         val myID = intent?.getLongExtra(AlarmHelper.MY_ID, 0L)
-        val details = intent?.getBundleExtra(AlarmHelper.DETAILS)
+        val details = intent?.getBundleExtra(AlarmHelper.DETAILS) ?: Bundle()
         val database = DatabaseScheduler.getInstance(context!!)
         val intervalDao = database?.getIntervalDao()
         val scope = CoroutineScope(Dispatchers.IO)
-        val mediaPlayer = MediaPlayer.create(context, ringtone)
         decrementActiveAlarms(sharedPreferences)
         scope.launch {
             intervalDao?.toggleAlarm(myID ?: 0L)
         }
-        newIntent.putExtra(AlarmHelper.PARENT_ID, parentID)
-        System.out.println("p id = " + parentID)
-        newIntent.putExtra(AlarmHelper.DETAILS, details)
-        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(newIntent)
-        mediaPlayer.start()
-        mediaPlayer.release()
+        val alarmService = Intent(context, AlarmService::class.java)
+        alarmService.putExtra(AlarmHelper.PARENT_ID, parentID)
+        alarmService.putExtra(AlarmHelper.DETAILS, details)
+        context.startService(alarmService)
+        wakeLock.release()
     }
 
     fun decrementActiveAlarms(sharedPreferences: SharedPreferences?) {

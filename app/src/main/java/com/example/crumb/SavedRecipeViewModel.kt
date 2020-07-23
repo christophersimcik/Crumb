@@ -1,6 +1,8 @@
 package com.example.crumb
 
 import android.app.Application
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -26,7 +28,10 @@ class SavedRecipeViewModel(application: Application, parent_id: Long) : AndroidV
 
     fun getStart() {
         viewModelScope.launch {
-            start.postValue(intervalDao?.getStart(parentID))
+            val startData = intervalDao?.getStart(parentID)
+            if(startData != null) {
+                start.postValue(startData)
+            }
         }
     }
 
@@ -139,6 +144,21 @@ class SavedRecipeViewModel(application: Application, parent_id: Long) : AndroidV
             oldSchedule?.steps ?: 0
         )
         return schedule
+    }
+
+    fun shareTextVersionOfRecipe(colors : IntArray, context : Context){
+        val textIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, generateTextVersionOfRecipe(colors))
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(textIntent, "Recipe")
+        context.startActivity(shareIntent)
+    }
+
+    fun generateTextVersionOfRecipe(colors: IntArray) : String{
+        val recipeToText = RecipeToText(intervalData?.value ?: ArrayList(), colors)
+        return recipeToText.getText()
     }
 
 

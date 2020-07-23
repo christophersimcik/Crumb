@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="10dp">
 
@@ -104,14 +105,112 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:background="@drawable/divider" />
+        <LinearLayout
+            android:orientation = "horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textSize="8sp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Day"/>
+            <TextView
+                android:textSize="8sp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:text="Hour"/>
+            <TextView
+                android:textSize="8sp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:text="Min"/>
+            <TextView
+                android:textSize="8sp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:text="Am/Pm"/>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="125dp">
+            <com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="125dp"
+                android:id="@+id/day_selector"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:mnpMinValue="1"
+                app:mnpMaxValue="365"
+                app:mnpTextSize="16sp"
+                app:mnpWrapped="true"
+                app:mnpTextColor="@color/default_dark"
+                app:mnpSeparatorColor="@color/inactive_light"/>
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/inactive_light"/>
+            <com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="125dp"
+                android:id="@+id/hour_selector"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:mnpMinValue="1"
+                app:mnpMaxValue="12"
+                app:mnpTextSize="16sp"
+                app:mnpWrapped="true"
+                app:mnpTextColor="@color/default_dark"
+                app:mnpSeparatorColor="@color/inactive_light"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textSize="20sp"
+                android:text=":"/>
+            <com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="125dp"
+                android:id="@+id/min_selector"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:mnpMinValue="0"
+                app:mnpMaxValue="59"
+                app:mnpTextSize="16sp"
+                app:mnpWrapped="true"
+                app:mnpTextColor="@color/default_dark"
+                app:mnpSeparatorColor="@color/inactive_light"/>
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/inactive_light"/>
+            <com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="125dp"
+                android:id="@+id/meridian_selector"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:mnpMinValue="0"
+                app:mnpMaxValue="1"
+                app:mnpTextSize="16sp"
+                app:mnpWrapped="false"
+                app:mnpTextColor="@color/default_dark"
+                app:mnpSeparatorColor="@color/inactive_light"/>
+    </LinearLayout>
 
-        <com.example.crumb.TimeScroll
-            android:id="@+id/custom_time_selector"
-            android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp" />
+
     </LinearLayout>
 
     <View

@@ -18,13 +18,14 @@ class AlarmDialog() : DialogFragment(), TimeScroll.ActionCallback {
 
     lateinit var listener: DeleteDialogListener
     lateinit var layout: View
+    lateinit var mediaPlayer: MediaPlayer
+
     val alarmName: TextView by lazy { layout.findViewById<TextView>(R.id.alarm_name_text) }
     val alarmDescription: TextView by lazy { layout.findViewById<TextView>(R.id.alarm_description) }
     val dismissButton: View by lazy { layout.findViewById<View>(R.id.dismiss_button) }
     var initTime = 0
     var isPlaying = false
     val displayMetrics = DisplayMetrics()
-    lateinit var mediaPlayer: MediaPlayer
     var name = "No Name"
     var description = "No Description"
 
@@ -38,7 +39,6 @@ class AlarmDialog() : DialogFragment(), TimeScroll.ActionCallback {
         layout = inflater.inflate(R.layout.alarm_dialog, null)
         dismissButton.setOnClickListener {
             listener.onDismiss(requireDialog())
-            cancelAlarm()
         }
         return layout
     }
@@ -55,7 +55,6 @@ class AlarmDialog() : DialogFragment(), TimeScroll.ActionCallback {
         alarmName.setText(name)
         alarmDescription.setText(description)
         listener.onDialogCreated()
-        playAlarm()
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -121,20 +120,7 @@ class AlarmDialog() : DialogFragment(), TimeScroll.ActionCallback {
         timeScroll.setDials(getValues(initTime))
     }
 
-    private fun playAlarm() {
-        val ringtone =
-            RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM)
-        mediaPlayer = MediaPlayer.create(targetFragment?.context, ringtone)
-        mediaPlayer.isLooping = true
-        mediaPlayer.start()
-        isPlaying = true
-    }
 
-    private fun cancelAlarm() {
-        mediaPlayer.stop()
-        mediaPlayer.release()
-        isPlaying = false
-    }
 
     fun animate(){
 

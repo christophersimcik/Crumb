@@ -65,15 +65,17 @@ class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(a
 
         val list = intervalDao?.getAsList(parentID)
         val schedule = scheduleDao?.getSelected(parentID)
-        val steps = list?.size ?: 0
-        val start = list?.first()?.time ?: 0
-        val end = list?.last()?.time ?: 0
-        val duration = end - start
+        if(list != null) {
+            val steps = list?.size ?: 0
+            val start = list?.first()?.time ?: 0
+            val end = list?.last()?.time ?: 0
+            val duration = end - start
 
-        schedule?.steps = steps
-        schedule?.start = start
-        schedule?.end = end
-        schedule?.duration = duration
+            schedule?.steps = steps
+            schedule?.start = start
+            schedule?.end = end
+            schedule?.duration = duration
+        }
 
         if (schedule != null) {
             scheduleDao?.updateSingle(schedule)

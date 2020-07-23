@@ -17,9 +17,11 @@ import androidx.navigation.fragment.NavHostFragment
 import net.danlew.android.joda.JodaTimeAndroid
 
 class MainActivity : AppCompatActivity(), OverrideCheckBoxOnClick, PlayViewModel.ActiveAlarms {
+
     val fragmentManager: FragmentManager by lazy { supportFragmentManager }
     val addButton by lazy { findViewById<ButtonNew>(R.id.add_button) }
     val topLeftButton by lazy { findViewById<ImageButton>(R.id.duplicate_button) }
+    val topRightOfLeftButton by lazy { findViewById<ImageButton>(R.id.share_button)}
     val topRightButton: ImageButton by lazy { findViewById<ImageButton>(R.id.notes_button) }
     val topLeftOfRoghtButton: ImageButton by lazy { findViewById<ImageButton>(R.id.edit_button) }
     val headerTextView: TextView by lazy { findViewById<TextView>(R.id.heading) }
@@ -43,6 +45,7 @@ class MainActivity : AppCompatActivity(), OverrideCheckBoxOnClick, PlayViewModel
 
             when (mode) {
                 ButtonNew.RECIPES -> {
+                    topRightOfLeftButton.visibility = View.INVISIBLE
                     topRightButton.visibility = View.INVISIBLE
                     topLeftButton.visibility = View.INVISIBLE
                     topLeftOfRoghtButton.visibility = View.INVISIBLE
@@ -50,7 +53,9 @@ class MainActivity : AppCompatActivity(), OverrideCheckBoxOnClick, PlayViewModel
                     addButton.mode = ButtonNew.RECIPES
                     addButton.toCircle()
                 }
+
                 ButtonNew.STEPS -> {
+                    topRightOfLeftButton.visibility = View.INVISIBLE
                     topRightButton.visibility = View.INVISIBLE
                     topLeftButton.visibility = View.INVISIBLE
                     topLeftOfRoghtButton.visibility = View.INVISIBLE
@@ -59,6 +64,7 @@ class MainActivity : AppCompatActivity(), OverrideCheckBoxOnClick, PlayViewModel
                     addButton.toSquare()
                 }
                 ButtonNew.DETAIL -> {
+                    topRightOfLeftButton.visibility = View.VISIBLE
                     topRightButton.visibility = View.VISIBLE
                     topLeftButton.setImageDrawable(
                         resources.getDrawable(
@@ -73,6 +79,7 @@ class MainActivity : AppCompatActivity(), OverrideCheckBoxOnClick, PlayViewModel
                     addButton.toRect()
                 }
                 ButtonNew.PLAY -> {
+                    topRightOfLeftButton.visibility = View.INVISIBLE
                     topRightButton.visibility = View.VISIBLE
                     topLeftButton.setImageDrawable(
                         resources.getDrawable(
@@ -88,6 +95,7 @@ class MainActivity : AppCompatActivity(), OverrideCheckBoxOnClick, PlayViewModel
             }
         }
     }
+
     val headerObserver: Observer<String> by lazy {
         Observer { newHeader: String ->
             headerTextView.text = newHeader
@@ -105,6 +113,9 @@ class MainActivity : AppCompatActivity(), OverrideCheckBoxOnClick, PlayViewModel
         }
         topLeftOfRoghtButton.setOnClickListener {
             sharedViewModel.topLeftOfRightButtonClick(navHostFragment.navController)
+        }
+        topRightOfLeftButton.setOnClickListener{
+          sharedViewModel.topRightOfLeftButtonClick()
         }
         addButton.setOnClickListener {
             addButton.imageRotation = 0f
@@ -130,7 +141,7 @@ class MainActivity : AppCompatActivity(), OverrideCheckBoxOnClick, PlayViewModel
         sharedViewModel.checkIfLaunchedByAlarm(navHostFragment.navController, intent)
         sharedViewModel.scrollWatcher.observe(this, scrollObserver)
         getSharedPreferences(SharedViewModel.SHARED_PREFERENCES,0
-        ).registerOnSharedPreferenceChangeListener({ i, key ->
+        ).registerOnSharedPreferenceChangeListener({i, key ->
             when (key) {
                 AlarmHelper.ACTIVE_ALARMS -> {System.out.println(">> Active Alarms")
                 }

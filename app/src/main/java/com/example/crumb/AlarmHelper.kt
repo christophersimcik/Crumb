@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import java.util.*
@@ -31,6 +32,9 @@ class AlarmHelper(sharedPreferences: SharedPreferences) {
 
     fun cancelSpecificAlarm(step: Interval, context: Context): Interval {
         alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intervalDao = DatabaseScheduler.getInstance(context)?.getIntervalDao() as IntervalDao
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch { intervalDao.toggleAlarm(step.id) }
         val intent = Intent(context, AlarmReceiver::class.java)
         val alarmIntent = PendingIntent.getBroadcast(
             context,
@@ -61,7 +65,6 @@ class AlarmHelper(sharedPreferences: SharedPreferences) {
             intent.putExtra(MY_ID, interval.id)
             intent.putExtra(PARENT_ID, myParentId)
             intent.putExtra(DETAILS, createBundle(interval))
-            System.out.println("^^ parent id = " + interval.parentId)
             val alarmIntent = PendingIntent.getBroadcast(context, pendingIntentID, intent, 0)
             alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alarmIntent)
             interval.alarm_on = true
@@ -89,7 +92,15 @@ class AlarmHelper(sharedPreferences: SharedPreferences) {
                 list.get(i).alarm_time = calendars[i].timeInMillis
                 list.get(i).pending_intent_id = counter
                 val alarmIntent = PendingIntent.getBroadcast(context, counter, intent, 0)
-                alarmManager?.setExact(AlarmManager.RTC_WAKEUP, list.get(i).alarm_time, alarmIntent)
+                val build = android.os.Build.VERSION.SDK_INT
+                System.out.println("buildtype = " + build)
+                if(build >= 23){
+                    alarmManager?.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, list.get(i).alarm_time, alarmIntent)
+                    System.out.println("buildtype >= 23 " + build)
+                }else{
+                    alarmManager?.setExact(AlarmManager.RTC_WAKEUP, list.get(i).alarm_time, alarmIntent)
+                    System.out.println("buildtype < 23 " + build)
+                }
                 sharedPreferences.edit().putLong(PARENT_ID, parentID).commit()
                 val count = sharedPreferences.getInt(ACTIVE_ALARMS, 0)
                 sharedPreferences.edit().putInt(ACTIVE_ALARMS, count + 1).commit()
@@ -112,7 +123,12 @@ class AlarmHelper(sharedPreferences: SharedPreferences) {
             list.get(i).alarm_time = calendars[i].timeInMillis
             list.get(i).pending_intent_id = counter
             val alarmIntent = PendingIntent.getBroadcast(context, counter, intent, 0)
-            alarmManager?.setExact(AlarmManager.RTC_WAKEUP, list.get(i).alarm_time, alarmIntent)
+            val build = android.os.Build.VERSION.SDK_INT
+            if(build >= 23){
+                alarmManager?.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, list.get(i).alarm_time, alarmIntent)
+            }else{
+                alarmManager?.setExact(AlarmManager.RTC_WAKEUP, list.get(i).alarm_time, alarmIntent)
+            }
         }
         return list
     }
@@ -160,8 +176,12 @@ class AlarmHelper(sharedPreferences: SharedPreferences) {
 
     fun createBundle(interval: Interval): Bundle {
         val bundle = Bundle()
-        bundle.putString(NAME, interval.name)
-        bundle.putString(DESCRIPTION, interval.notes)
+        System.out.println("name = " + interval.name)
+        System.out.println("notes = " + interval.notes)
+        val name = if(interval.name.equals("")) "No Name" else interval.name
+        val note = if(interval.notes.equals("")) "No Notes" else interval.notes
+        bundle.putString(NAME, name)
+        bundle.putString(DESCRIPTION, note)
         return bundle
     }
 

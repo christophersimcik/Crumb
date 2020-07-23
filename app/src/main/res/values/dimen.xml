@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="min_build_notification_channels">26</dimen>
     <dimen name="my_width">60dp</dimen>
     <dimen name="my_height">60dp</dimen>
     <dimen name="rect_width">95dp</dimen>

@@ -1,19 +1,22 @@
 package com.example.crumb
 
 import android.app.Dialog
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View.OnScrollChangeListener
+import android.widget.*
 import androidx.emoji.widget.EmojiEditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
+import com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
+import kotlinx.android.synthetic.main.saved_recipe_fragment.*
 import org.joda.time.DateTime
+import java.lang.reflect.Field
 import java.text.DecimalFormat
 import kotlin.collections.ArrayList
 
@@ -26,10 +29,16 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
     lateinit var minText: TextView
     lateinit var meridianText: TextView
     lateinit var meridianImage: View
-    lateinit var timeSelector: TimeScroll
+    lateinit var daySelector : MaterialNumberPicker
+    lateinit var hourSelector : MaterialNumberPicker
+    lateinit var minSelector : MaterialNumberPicker
+    lateinit var mrdSelector : MaterialNumberPicker
     lateinit var myView: View
     lateinit var editName: EmojiEditText
-    lateinit var nowButton : ImageButton
+    lateinit var nowButton: ImageButton
+
+
+    private lateinit var timeHelper :TimeHelper
 
     val textDisplayDialog: TextDisplayDialog by lazy { TextDisplayDialog() }
     val textInputDialog: TextInputDialog by lazy { TextInputDialog() }
@@ -74,22 +83,10 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
 
     val startObserver: Observer<Interval> by lazy {
         Observer<Interval> { step: Interval ->
-            val times = getValues(step.time)
+            timeHelper.setValues(step.time)
+            setStartTimeViews()
             dataRetrieved = true
-            hourText.text = times[1].toString()
-            hourText.invalidate()
-            minText.text = DecimalFormat("00").format(times[2])
-            minText.invalidate()
-            meridianText.text = when (times[3]) {
-                0 -> "AM"; 1 -> "PM"; else -> "n/a"
-            }
-            meridianText.invalidate()
-            meridianImage.background = getMeridianImage(meridianText.text.toString())
-            meridianImage.invalidate()
 
-            if (layoutCompleted) {
-                timeSelector.setDials(getValues(step.time))
-            }
         }
     }
 
@@ -136,7 +133,11 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
         scrollObserver = scrollingCallback
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         layoutCompleted = false
         dataRetrieved = false
         myView = layoutInflater.inflate(R.layout.saved_recipe_fragment, container, false)
@@ -145,22 +146,46 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
         minText = myView.findViewById(R.id.text_minute)
         meridianText = myView.findViewById(R.id.text_meridian)
         meridianImage = myView.findViewById(R.id.meridian_image)
-        timeSelector = myView.findViewById(R.id.custom_time_selector)
+        daySelector = myView.findViewById(R.id.day_selector)
+        daySelector.setOnValueChangedListener { numberPicker, i, i2 ->
+            viewModel.update(timeHelper.getMinutesFromViews())
+        }
+        hourSelector = myView.findViewById(R.id.hour_selector)
+        hourSelector.setOnValueChangedListener { numberPicker, i, i2 ->
+            hourText.text = numberPicker.value.toString()
+            viewModel.update(timeHelper.getMinutesFromViews())
+        }
+        minSelector = myView.findViewById(R.id.min_selector)
+        val df = DecimalFormat("00")
+        minSelector.setOnValueChangedListener { numberPicker, i, i2 ->
+            minText.text = df.format(numberPicker.value)
+            viewModel.update(timeHelper.getMinutesFromViews())
+        }
+        minSelector.setFormatter(NumberPicker.Formatter { df.format(it)})
+        mrdSelector = myView.findViewById(R.id.meridian_selector)
+        mrdSelector.displayedValues = arrayOf("AM","PM")
+        mrdSelector.setOnValueChangedListener { numberPicker, i, i2 ->
+            if(i == 0){
+                mrdSelector.separatorColor = resources.getColor(R.color.pm_color,null)
+            }else{
+                mrdSelector.separatorColor = resources.getColor(R.color.am_text,null)
+            }
+            meridianText.text = when(numberPicker.value){
+                0 -> "AM";
+                1 -> "PM";
+                else -> "n/a"
+            }
+            meridianImage.background = getMeridianImage(meridianText.text.toString())
+            viewModel.update(timeHelper.getMinutesFromViews())
+        }
+        timeHelper = TimeHelper(daySelector,hourSelector,minSelector,mrdSelector)
         nowButton = myView.findViewById(R.id.now_button)
         nowButton.setOnClickListener {
             val now = getTimeAsMinutes()
-            val times = getValues(now)
-            hourText.text = times[1].toString()
-            hourText.invalidate()
-            minText.text = DecimalFormat("00").format(times[2])
-            minText.invalidate()
-            meridianText.text = when (times[3]) {0 -> "AM"; 1 -> "PM"; else -> "n/a" }
-            meridianText.invalidate()
-            meridianImage.background = getMeridianImage(meridianText.text.toString())
-            meridianImage.invalidate()
+            timeHelper.setValues(now)
+            setStartTimeViews()
             viewModel.update(now)
-            timeSelector.incrementUntil(times)
-            Toast.makeText(requireContext(), "Now", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Start Time Is Now", Toast.LENGTH_SHORT).show()
         }
         val recyclerView = myView.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = CustomLayoutManager(context)
@@ -183,8 +208,6 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
         viewModel.recipeName?.observe(viewLifecycleOwner, nameObserver)
         viewModel.getStart()
         callback.fragmentAttached(this)
-        timeSelector.unlocked = false
-        timeSelector.register(this)
         keyboardDetection.registerObserver(this)
         textDisplayDialog.setTargetFragment(this, 0)
         textInputDialog.setTargetFragment(this, 0)
@@ -200,44 +223,17 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
         }
     }
 
-    fun getValues(total: Int): Array<Int> {
-        val total = total
-        val days = (total / 1440) + 1
-        var hours = (total % 1440) / 60
-        val mins = total % 1440 % 60
-        var mrd = 0
-        if (hours >= 12) {
-            hours = hours - 12
-            mrd = 1
-        }
-        if (hours == 0) {
-            hours = 12
-        }
-        return arrayOf(days, hours, mins, mrd)
-    }
-
     fun showNotes() {
         textDisplayDialog.show(parentFragmentManager, "notes_detail")
         viewModel.getScheduleNotes()
     }
 
     override fun onMove() {
-        hourText.text = timeSelector.midH.toString()
-        minText.text = DecimalFormat("00").format(timeSelector.midM)
-        meridianText.text = when (timeSelector.midMrd) {
-            0 -> "AM"; 1 -> "PM"; else -> "n/a"
-        }
-        meridianImage.background = getMeridianImage(meridianText.text.toString())
+
     }
 
     override fun onActionUp() {
-        hourText.text = timeSelector.midH.toString()
-        minText.text = DecimalFormat("00").format(timeSelector.midM)
-        meridianText.text = when (timeSelector.midMrd) {
-            0 -> "AM"; 1 -> "PM"; else -> "n/a"
-        }
-        meridianImage.background = getMeridianImage(meridianText.text.toString())
-        viewModel.update(timeSelector.getTotal())
+
     }
 
     override fun onLayoutCompleted(timeScroll: TimeScroll) {
@@ -245,7 +241,6 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
         layoutCompleted = true
         if (dataRetrieved) {
             val time = viewModel.start.value?.time ?: 0
-            timeSelector.setDials(getValues(time))
         }
     }
 
@@ -327,9 +322,22 @@ class SavedRecipeFragment : Fragment(), TimeScroll.ActionCallback,
         stepDetailDialog.dismiss()
     }
 
-    fun getTimeAsMinutes() : Int{
+    fun getTimeAsMinutes(): Int {
         val dateTime = DateTime.now()
         val millisOfDay = dateTime.millisOfDay
-        return millisOfDay/60000
+        return millisOfDay / 60000
     }
+
+    private fun setStartTimeViews(){
+        hourText.text = timeHelper.getHoursAsString()
+        hourText.invalidate()
+        minText.text = timeHelper.getMinutesAsString()
+        minText.invalidate()
+        meridianText.text = timeHelper.getMeridanAsString()
+        meridianText.invalidate()
+        meridianImage.background = getMeridianImage(meridianText.text.toString())
+        meridianImage.invalidate()
+    }
+
+
 }

@@ -8,20 +8,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.NumberPicker
 import androidx.emoji.widget.EmojiEditText
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
 
 import java.lang.ClassCastException
 import java.text.DecimalFormat
 
-class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),
-    TimeScroll.ActionCallback, KeyboardDetection.KeyBoardObserver {
+class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),KeyboardDetection.KeyBoardObserver {
 
     var myTime = 0
     var initTime = 0
+    var isFirst = true
     lateinit var layout: View
-    lateinit var timeScroll: TimeScroll
+    lateinit var dayPicker : MaterialNumberPicker
+    lateinit var hourPicker : MaterialNumberPicker
+    lateinit var minPicker : MaterialNumberPicker
+    lateinit var mrdnPicker : MaterialNumberPicker
+    lateinit var timeHelper: TimeHelper
     private lateinit var interval: Interval
     lateinit var nameInputField: EmojiEditText
     lateinit var listener: DeleteDialogListener
@@ -49,11 +55,24 @@ class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),
         val submitButton = layout.findViewById<Button>(R.id.submit_button)
         val dismissButton = layout.findViewById<Button>(R.id.dismiss_button)
         nameInputField = layout.findViewById<EmojiEditText>(R.id.name_input_field)
-        timeScroll = layout.findViewById(R.id.time_selection_bar)
-        timeScroll.register(this)
+        dayPicker = layout.findViewById(R.id.day_selector)
+        hourPicker = layout.findViewById(R.id.hour_selector)
+        minPicker = layout.findViewById(R.id.min_selector)
+        mrdnPicker = layout.findViewById(R.id.meridian_selector)
+        mrdnPicker.displayedValues = arrayOf("AM","PM")
+        mrdnPicker.setOnValueChangedListener { numberPicker, i, i2 ->
+            if(i == 0){
+                mrdnPicker.separatorColor = resources.getColor(R.color.pm_color,null)
+            }else{
+                mrdnPicker.separatorColor = resources.getColor(R.color.am_text,null)
+            }
+            // incoorperate meridian icon ?
+           // meridianImage.background = getMeridianImage(meridianText.text.toString())
+        }
+        timeHelper = TimeHelper(dayPicker, hourPicker, minPicker, mrdnPicker)
         submitButton.setOnClickListener {
             val name = nameInputField.getText().toString()
-            val total = timeScroll.getTotal()
+            val total = timeHelper.getMinutesFromViews()
             if (total >= 0) {
                 myTime = total
             }
@@ -83,12 +102,10 @@ class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),
 
     override fun onResume() {
         listener.stepDialogCreated()
+        val additionalMinute = if(isFirst) 0 else 1
+        timeHelper.setValues(initTime + additionalMinute)
         super.onResume()
 
-    }
-
-    fun setTime(time: Int) {
-        timeScroll.setDials(getValues(time))
     }
 
     fun defineInterval(interval: Interval) {
@@ -114,41 +131,11 @@ class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),
         keyboardDetection.removeListener()
     }
 
-    fun getValues(total: Int): Array<Int> {
-        val total = total
-        val days = (total / 1440) + 1
-        var hours = (total % 1440) / 60
-        val mins = total % 1440 % 60
-        var mrd = 0
-        if(hours >= 12){
-            mrd = 1
-        }
-        if (hours > 12) {
-            hours = hours - 12
-        }
-        if (hours == 0) {
-            hours = 12
-        }
-        return arrayOf(days, hours, mins, mrd)
-    }
-
     interface DeleteDialogListener {
         fun stepDialogCreated()
         fun stepDismiss(dialog: Dialog);
         fun stepCanceled(dialog: Dialog);
         fun stepConfirm(dialog: Dialog, name: String, time: Int);
-    }
-
-    override fun onActionUp() {
-        System.out.println(" im up ")
-    }
-
-    override fun onMove() {
-        System.out.println("move me")
-    }
-
-    override fun onLayoutCompleted(timeScroll: TimeScroll) {
-        timeScroll.setDials(getValues(initTime))
     }
 
     override fun keyboardDismissed() {
@@ -157,18 +144,4 @@ class StepDialog(keyboardDetection: KeyboardDetection) : DialogFragment(),
             nameInputField.clearFocus()
         }
     }
-
-    fun getTime(minutes: Int): String {
-        var hours = Math.floor((minutes % 1440) / 60.toDouble()).toInt()
-        val mins = Math.floor((minutes % 1440) % 60.toDouble()).toInt()
-        if (hours > 12) {
-            hours = hours - 12
-        }
-        if (hours == 0) {
-            hours = 12
-        }
-        return hours.toString() + ":" + DecimalFormat("00").format(mins)
-    }
-
-
 }

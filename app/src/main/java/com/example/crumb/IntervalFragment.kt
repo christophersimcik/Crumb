@@ -40,8 +40,7 @@ class IntervalFragment :
     }
 
     val viewModel: IntervalViewModel by lazy {
-        ViewModelProviders.of(
-            this,
+        ViewModelProviders.of(this,
             IntervalFactory(
                 requireActivity().application,
                 requireNotNull(arguments?.getLong("parent_id"))
@@ -64,10 +63,12 @@ class IntervalFragment :
                 viewModel.lastTime = 0
                 viewModel.lastPositon = 0
             }else {
+                if(steps.size > 1) dialog.isFirst = false
                 intervalAdapter.setData(steps as ArrayList<Interval>)
                 viewModel.lastTime = steps.last().time
                 viewModel.lastPositon = steps.lastIndex
             }
+
             intervalAdapter.notifyDataSetChanged()
         }
     }
@@ -116,6 +117,7 @@ class IntervalFragment :
                 }
             }
         })
+
         val itemTouchHelper = ItemTouchHelper(deletSwipe)
         itemTouchHelper.attachToRecyclerView(recyclerView)
         viewModel.registerListener(this)
@@ -126,10 +128,6 @@ class IntervalFragment :
         deleteDialog.setTargetFragment(this, 0)
         intervalAdapter.registerGetInputDialog(this)
         return myView
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
     override fun showInputDialog() {

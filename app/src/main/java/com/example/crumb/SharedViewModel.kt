@@ -25,6 +25,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
     val intervalDao: IntervalDao? = database?.getIntervalDao()
     val sharedPreferences = application.getSharedPreferences(SHARED_PREFERENCES, 0)
     val scrollWatcher = MutableLiveData<Fragment>()
+    val appContext = application.applicationContext
     private var canBackPress = true
 
     val alarmHelper: AlarmHelper by lazy {
@@ -50,6 +51,19 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
         }
     }
 
+    fun topRightOfLeftButtonClick() {
+        val colors = intArrayOf(
+            appContext.resources.getColor(R.color.am_text,null),
+            appContext.resources.getColor(R.color.pm_color,null),
+            appContext.resources.getColor(R.color.default_dark,null)
+        )
+        when (activeFragment) {
+            is SavedRecipeFragment -> {
+                val fragment = activeFragment as SavedRecipeFragment
+                fragment.viewModel.shareTextVersionOfRecipe(colors, fragment.requireActivity())
+            }
+        }
+    }
     fun topLeftOfRightButtonClick(navController: NavController) {
         when (activeFragment) {
             is SavedRecipeFragment -> {

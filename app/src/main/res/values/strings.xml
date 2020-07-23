@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Crumb</string>
     <string name="add_new">Add New</string>
+    <string name="alarm_recipe_name">alarm recipe name</string>
+    <string name="alarm_step_name">alarm step name</string>
+    <string name="alarm_service_descriptions">alarm service descriptions</string>
+    <string name="channel_present_and_soung_id">presnt and sound id</string>
+    <string name="channel_present_and_sound">Present and Sound Alarm</string>
+    <string name="channel_present_and_sound_description">Shows notification and plays alarm</string>
     <string name="circle_path">m6.6456,0.7317c3.2419,0 5.8519,2.6099 5.8519,5.8519 0,3.2419 -2.6099,5.8519 -5.8519,5.8519 -3.2419,0 -5.8519,-2.6099 -5.8519,-5.8519 0,-3.2419 2.6099,-5.8519 5.8519,-5.8519z</string>
     <string name="square_path">m2.1096,0.7936h9.0101c0.729,0 1.3159,0.5869 1.3159,1.3159v9.01c0,0.729 -0.5869,1.316 -1.3159,1.316L2.1096,12.4355c-0.729,0 -1.3159,-0.5869 -1.3159,-1.316v-9.01c0,-0.729 0.5869,-1.3159 1.3159,-1.3159z</string>
     <string name="rect_path">m1.5875,3.8365h10.1162c0.4397,0 0.7937,0.354 0.7937,0.7937v3.7042c0,0.4397 -0.354,0.7937 -0.7937,0.7937L1.5875,9.1281c-0.4397,0 -0.7937,-0.354 -0.7937,-0.7937v-3.7042c0,-0.4397 0.354,-0.7937 0.7937,-0.7937z</string>

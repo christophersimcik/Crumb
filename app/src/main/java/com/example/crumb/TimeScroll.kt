@@ -143,11 +143,12 @@ class TimeScroll @JvmOverloads constructor(
                 velocityTracker.addMovement(event)
                 for(section in sections){
                     if(section.active){
-                       if(velocityTracker.yVelocity > 5000) {
-                           animateUp(velocityTracker.yVelocity / 15000, section)
-                       }
+                        if(velocityTracker.yVelocity > 5000) {
+                           // animateUp(velocityTracker.yVelocity / 15000, section)
+                            animateUp(section)
+                        }
                         if(velocityTracker.yVelocity < - 5000){
-                            animateDown(Math.abs(velocityTracker.yVelocity) / 15000,section)
+                            animateDown(velocityTracker.yVelocity / 15000,section)
                         }
                     }
                 }
@@ -186,11 +187,6 @@ class TimeScroll @JvmOverloads constructor(
         }
         return true
     }
-
-    private fun reMap(oldPos: Float): Float {
-        return (((oldPos - 5000f)*(1f))/(1500-5000))
-    }
-
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -965,42 +961,43 @@ class TimeScroll @JvmOverloads constructor(
         if (time[1] > midH) {
             while (midH != time[1]) {
                 sections[1].incr()
+                System.out.println("midh " + active);
             }
         } else {
             while (midH != time[1]) {
                 sections[1].decr()
+                System.out.println("midh " + active);
             }
         }
         // minutes
         if (time[2] > midM) {
             while (midM != time[2]) {
                 sections[2].incr()
+                System.out.println("midh " + active);
             }
         } else {
             while (midM != time[2]) {
                 sections[2].decr()
+                System.out.println("midh " + active);
             }
         }
         while (time[3] != midMrd) {
             sections[3].incr()
+            System.out.println("midh " + active);
         }
         canBuzz = true
     }
-
-    fun animateUp(factor : Float, region : TimeFrame){
-        var dur = 1000 * factor
-        if(dur < 0) dur = 0f
-        val valueAnimator = ValueAnimator.ofFloat((15f * factor), 0f)
-        val interpolator = DecelerateInterpolator(3f)
+    fun animateUp(region: TimeFrame) {
+        var dur = 500
+        val valueAnimator = ValueAnimator.ofFloat(100f, 0f)
         valueAnimator.duration = dur.toLong()
-        valueAnimator.setInterpolator(interpolator)
-        valueAnimator.addUpdateListener{
+        valueAnimator.addUpdateListener {
             region.incr()
             if (this::actionCallback.isInitialized) {
                 actionCallback.onActionUp()
             }
         }
-        valueAnimator.addListener(onEnd = {settle()})
+        valueAnimator.addListener(onEnd = { settle() })
         valueAnimator.start()
     }
 
@@ -1020,4 +1017,5 @@ class TimeScroll @JvmOverloads constructor(
         valueAnimator.addListener(onEnd = {settle()})
         valueAnimator.start()
     }
+
 }

@@ -11,8 +11,8 @@ android {
         applicationId "com.simcikc.crumb"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         kotlinOptions {
             jvmTarget = "1.8"
@@ -68,4 +68,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+
+    // notifications
+    implementation "com.android.support:support-compat:28.0.0"
+
+    // material number picker
+    implementation 'com.github.StephenVinouze:MaterialNumberPicker:1.0.5'
 }
