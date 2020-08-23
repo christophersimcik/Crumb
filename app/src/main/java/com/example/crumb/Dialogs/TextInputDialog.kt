@@ -2,8 +2,10 @@ package com.example.crumb.Dialogs
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,13 +16,12 @@ import androidx.emoji.widget.EmojiEditText
 import androidx.fragment.app.DialogFragment
 import com.example.crumb.R
 import java.lang.ClassCastException
-
+const val TAG = "TEXT_INPUT_DIALOG"
 class TextInputDialog : DialogFragment() {
-
-    lateinit var listener: InputDialogListener
+    private lateinit var listener: InputDialogListener
     lateinit var layout: View
     lateinit var noteInputField: EmojiEditText
-    val inputMethodManager: InputMethodManager by lazy {
+    private val inputMethodManager: InputMethodManager by lazy {
         context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
@@ -29,8 +30,8 @@ class TextInputDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layout = inflater.inflate(R.layout.text_input_dialog_layout, null)
-        noteInputField = layout.findViewById<EmojiEditText>(R.id.input_text_field)
+        layout = inflater.inflate(R.layout.text_input_dialog_layout, container, false)
+        noteInputField = layout.findViewById(R.id.input_text_field)
         val confirmButton = layout.findViewById<Button>(R.id.confirm_button)
         val dismissButton = layout.findViewById<Button>(R.id.dismiss_button)
         confirmButton.setOnClickListener {
@@ -44,8 +45,14 @@ class TextInputDialog : DialogFragment() {
     }
 
     fun teardown() {
-        inputMethodManager.hideSoftInputFromWindow(layout.getWindowToken(), 0);
+        inputMethodManager.hideSoftInputFromWindow(layout.windowToken, 0)
         noteInputField.setText("")
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        inputMethodManager.hideSoftInputFromWindow(layout.windowToken,0)
+        Log.i(TAG, "canceled")
     }
 
     override fun onResume() {
@@ -53,8 +60,8 @@ class TextInputDialog : DialogFragment() {
         val displayMetrics = DisplayMetrics()
         val windowManager = targetFragment?.context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val width = Math.min(displayMetrics.widthPixels,displayMetrics.heightPixels)
-        val height = (Math.max(displayMetrics.widthPixels,displayMetrics.heightPixels) * .50).toInt()
+        val width = displayMetrics.widthPixels.coerceAtMost(displayMetrics.heightPixels)
+        val height = (displayMetrics.widthPixels.coerceAtLeast(displayMetrics.heightPixels) * .50).toInt()
         dialog?.window?.setLayout(width,height)
         listener.onDialogCreated()
         setup()
@@ -81,9 +88,9 @@ class TextInputDialog : DialogFragment() {
 
     interface InputDialogListener {
         fun onDialogCreated()
-        fun onDismiss(dialog: Dialog);
-        fun onCanceled(dialog: Dialog);
-        fun onConfirm(dialog: Dialog, note: String);
+        fun onDismiss(dialog: Dialog)
+        fun onCanceled(dialog: Dialog)
+        fun onConfirm(dialog: Dialog, note: String)
     }
 
 }

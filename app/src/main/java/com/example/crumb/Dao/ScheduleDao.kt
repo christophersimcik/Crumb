@@ -30,9 +30,6 @@ interface ScheduleDao {
     @Query("SELECT duration from schedule_table where id = :id")
     suspend fun getDuration(id : Long) : Int
 
-    @Query("SELECT * from schedule_table where name like '%'||:name||'%'")
-    suspend fun getDuplicateCount(name : String) : List<Schedule>
-
     @Query("SELECT name from schedule_table where id = :id")
     fun getName(id : Long) : LiveData<String >
 
@@ -75,7 +72,7 @@ interface ScheduleDao {
     suspend fun changeDuration(id : Long, amount : Int)
 
     //insertion operations
-    @Insert()
+    @Insert
     suspend fun insert(schedule: Schedule)
 
     // deletion operations

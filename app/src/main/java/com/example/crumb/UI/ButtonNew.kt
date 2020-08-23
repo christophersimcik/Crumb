@@ -2,6 +2,7 @@ package com.example.crumb.UI
 
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -22,35 +23,37 @@ class ButtonNew @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr), ScrollingCallback {
 
     companion object {
-        val RECIPES = 0
-        val STEPS = 1
-        val DETAIL = 2
-        val PLAY = 3
+        const val RECIPES = 0
+        const val STEPS = 1
+        const val DETAIL = 2
+        const val PLAY = 3
     }
 
     var radius = 0f
     var playing = false
 
-    var mySize = SizeF(
+    private val paint = Paint()
+
+    private var mySize = SizeF(
         context.resources.getDimension(R.dimen.my_width),
         context.resources.getDimension(R.dimen.my_height)
     )
-    var isDetail: Boolean = false
+    private var isDetail: Boolean = false
     var imageRotation = 0f
     private var buttonPressed = false
     private var isRotating = false
     var mode = 0
-    val strokeSize = 10
+    private val strokeSize = 10
 
-    val circleSz = SizeF(
+    private val circleSz = SizeF(
         context.resources.getDimension(R.dimen.circle_width),
         context.resources.getDimension(R.dimen.circle_height)
     )
-    val squareSz = SizeF(
+    private val squareSz = SizeF(
         context.resources.getDimension(R.dimen.square_width),
         context.resources.getDimension(R.dimen.square_height)
     )
-    val rectSz = SizeF(
+    private val rectSz = SizeF(
         context.resources.getDimension(R.dimen.rect_width),
         context.resources.getDimension(R.dimen.rect_height)
     )
@@ -65,7 +68,7 @@ class ButtonNew @JvmOverloads constructor(
             val animatorSet = AnimatorSet()
             animatorSet.duration = 250
             animatorSet.addListener(onEnd = {
-                playing = false; //rectify()
+                playing = false
             })
             animatorSet.playTogether(
                 toCircleWidth(),
@@ -83,7 +86,7 @@ class ButtonNew @JvmOverloads constructor(
             val animatorSet = AnimatorSet()
             animatorSet.duration = 250
             animatorSet.addListener(onEnd = {
-                playing = false; //rectify()
+                playing = false
             })
             animatorSet.playTogether(
                 toSquareWidth(),
@@ -101,7 +104,7 @@ class ButtonNew @JvmOverloads constructor(
             val animatorSet = AnimatorSet()
             animatorSet.duration = 250
             animatorSet.addListener(onEnd = {
-                playing = false; //rectify()
+                playing = false
             })
             animatorSet.playTogether(
                 toRectWidth(),
@@ -222,14 +225,9 @@ class ButtonNew @JvmOverloads constructor(
     }
 
     fun animatePlusSymbol() {
-        System.out.println("image rotation = " + imageRotation)
         val animator = ValueAnimator.ofFloat(0f, 90f)
-        animator.addListener(onEnd = {
-            isRotating = false; imageRotation = 0f
-        })
         animator.addUpdateListener { valueAnimator ->
             imageRotation = valueAnimator.animatedValue as Float
-            System.out.println("image rotation = " + imageRotation)
             invalidate()
         }
         animator.start()
@@ -268,21 +266,20 @@ class ButtonNew @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas?) {
-        val paint = Paint().apply {
-
+        paint.apply {
             when (mode) {
                 RECIPES -> {
-                    if (isRotating) {
-                        color = colorActive
+                    color = if (isRotating) {
+                        colorActive
                     } else {
-                        color = colorDefault
+                        colorDefault
                     }
                 }
                 STEPS -> {
-                    if (isRotating) {
-                        color = colorActive
+                    color = if (isRotating) {
+                        colorActive
                     } else {
-                        color = colorDefault
+                        colorDefault
                     }
                 }
             }
@@ -293,14 +290,14 @@ class ButtonNew @JvmOverloads constructor(
         if (isDetail) {
             makeText(paint, canvas)
         } else {
-            canvas?.rotate(imageRotation, mySize.width.toFloat() / 2f, mySize.width.toFloat() / 2f)
+            canvas?.rotate(imageRotation, mySize.width / 2f, mySize.width / 2f)
             canvas?.drawPath(createImage(), paint)
         }
 
         super.onDraw(canvas)
     }
 
-    fun makeText(paint: Paint, canvas: Canvas?) {
+    private fun makeText(paint: Paint, canvas: Canvas?) {
         paint.style = Paint.Style.FILL
         val color = paint.color
         if (buttonPressed) {
@@ -309,11 +306,11 @@ class ButtonNew @JvmOverloads constructor(
             paint.color = colorGreen
         }
         val rect = Rect()
-        val text = "START"
+        val text = context.getString(R.string.start_text)
         paint.getTextBounds(text, 0, text.length, rect)
         paint.textSize = 50f
         paint.textAlign = Paint.Align.CENTER
-        canvas?.drawText(text, this.width / 2f, height / 2f + rect.height() * 2, paint)
+        canvas?.drawText(text, this.width / 2f, height / 2f + rect.height() /2, paint)
         paint.style = Paint.Style.STROKE
         paint.color = color
     }
@@ -329,6 +326,7 @@ class ButtonNew @JvmOverloads constructor(
     }
 
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {

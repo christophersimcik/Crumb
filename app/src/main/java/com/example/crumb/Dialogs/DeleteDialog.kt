@@ -16,26 +16,26 @@ import androidx.fragment.app.DialogFragment
 import com.example.crumb.R
 import java.lang.ClassCastException
 
-class DeleteDialog(val type : String) : DialogFragment() {
+class DeleteDialog(private val type : String) : DialogFragment() {
 
     lateinit var layout: View
     private var position = 0
-    lateinit var dismiss: Button
-    lateinit var confirm: Button
-    lateinit var declare: TextView
-    val displayMetrics = DisplayMetrics()
-    lateinit var listener: SwipeDeleteDialogListener
+    private lateinit var dismiss: Button
+    private lateinit var confirm: Button
+    private lateinit var declare: TextView
+    private val displayMetrics = DisplayMetrics()
+    private lateinit var listener: SwipeDeleteDialogListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layout = inflater.inflate(R.layout.delete_dialog, null)
+        layout = inflater.inflate(R.layout.delete_dialog, container, false)
         confirm = layout.findViewById(R.id.confirm_button)
         dismiss = layout.findViewById(R.id.dismiss_button)
         declare = layout.findViewById<EmojiEditText>(R.id.declare_type_field)
-        declare.setText(type)
+        declare.text = type
         confirm.setOnClickListener {
             listener.swipeConfirm(this.requireDialog(), position)
         }
@@ -69,9 +69,9 @@ class DeleteDialog(val type : String) : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        val width = (Math.min(displayMetrics.widthPixels, displayMetrics.heightPixels) * .90).toInt()
+        val width = (displayMetrics.heightPixels.coerceAtMost(displayMetrics.widthPixels) * .90).toInt()
         val height = width / 2
-        dialog?.window?.setLayout(width,height)
+        dialog?.window?.setLayout(width, height)
         layout.invalidate()
     }
 
@@ -81,9 +81,9 @@ class DeleteDialog(val type : String) : DialogFragment() {
 
     interface SwipeDeleteDialogListener {
         fun swipeDialogCreated()
-        fun swipeDismiss(dialog: Dialog, position: Int);
-        fun swipeCanceled(dialog: Dialog, position: Int);
-        fun swipeConfirm(dialog: Dialog, position: Int);
+        fun swipeDismiss(dialog: Dialog, position: Int)
+        fun swipeCanceled(dialog: Dialog, position: Int)
+        fun swipeConfirm(dialog: Dialog, position: Int)
     }
 
 }

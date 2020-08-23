@@ -32,8 +32,8 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
     private val observers = ArrayList<ViewHolderCallback>()
     private var dataRetrieved: Boolean = false
     private val alarmDialog = AlarmDialog()
-    lateinit var alarmCancelObserver: AlarmCancelObserver
-    lateinit var  activeAlarmsWatcher : ActiveAlarms
+    private lateinit var alarmCancelObserver: AlarmCancelObserver
+    private lateinit var  activeAlarmsWatcher : ActiveAlarms
 
     val relativeEndTime = MutableLiveData<String>()
     val notes = MutableLiveData<String>()
@@ -137,11 +137,10 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
 
     fun cancel() {
         viewModelScope.launch {
-            val list: List<Interval>?
-            if (stepData?.value == null) {
-                list = intervalDao?.getAsList(id)
+            val list: List<Interval>? = if (stepData?.value == null) {
+                intervalDao?.getAsList(id)
             } else {
-                list = stepData.value
+                stepData.value
             }
             if (list != null) {
                 cancelAllAlarms(list)
@@ -161,7 +160,7 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
         }
     }
 
-    fun convertMillisToText(millis: Long): String {
+    private fun convertMillisToText(millis: Long): String {
         val days = millis / 86400000
         val hours = (millis % 86400000) / 3600000
         val mins = (millis % 86400000 % 3600000) / 60000
@@ -171,31 +170,31 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
         var minString = ""
         var secString = ""
         if (days > 0L) {
-            if (days > 1) {
-                dayString = days.toString() + " Days "
+            dayString = if (days > 1) {
+                "$days Days "
             } else {
-                dayString = days.toString() + " Day "
+                "$days Day "
             }
         }
         if (hours > 0) {
-            if (hours > 1) {
-                hourString = hours.toString() + " Hrs "
+            hourString = if (hours > 1) {
+                "$hours Hrs "
             } else {
-                hourString = hours.toString() + " Hr "
+                "$hours Hr "
             }
         }
         if (mins > 0) {
-            if (mins > 1) {
-                minString = mins.toString() + " Mins "
+            minString = if (mins > 1) {
+                "$mins Mins "
             } else {
-                minString = mins.toString() + " Min "
+                "$mins Min "
             }
         }
         if (secs > 0) {
-            if (secs > 1) {
-                secString = secs.toString() + " Secs "
+            secString = if (secs > 1) {
+                "$secs Secs "
             } else {
-                secString = secs.toString() + " Sec "
+                "$secs Sec "
             }
         }
         return dayString + hourString + minString + secString
@@ -213,24 +212,24 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
         hours = minutes % 1440 / 60
         mins = minutes % 1440 % 60
         if (days > 0) {
-            if (days > 1) {
-                dayString = days.toString() + " Days "
+            dayString = if (days > 1) {
+                "$days Days "
             } else {
-                dayString = days.toString() + " Day "
+                "$days Day "
             }
         }
         if (hours > 0) {
-            if (hours > 1) {
-                hourString = hours.toString() + " Hrs "
+            hourString = if (hours > 1) {
+                "$hours Hrs "
             } else {
-                hourString = hours.toString() + " Hr "
+                "$hours Hr "
             }
         }
         if (mins > 0) {
-            if (mins > 1) {
-                minString = mins.toString() + " Mins "
+            minString = if (mins > 1) {
+                "$mins Mins "
             } else {
-                minString = mins.toString() + " Min "
+                "$mins Min "
             }
         }
         return dayString + hourString + minString

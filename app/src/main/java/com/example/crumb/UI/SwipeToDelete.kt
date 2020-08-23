@@ -10,7 +10,6 @@ abstract class SwipeToDelete(context : Context) : ItemTouchHelper.SimpleCallback
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        System.out.println("swiped" + direction)
     }
 
 }

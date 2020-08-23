@@ -14,17 +14,17 @@ import java.lang.ClassCastException
 
 class TextDisplayDialog : DialogFragment() {
 
-    lateinit var listener: DisplayDialogListener
-    lateinit var layout: View
+    private lateinit var listener: DisplayDialogListener
+    private lateinit var editButton : ImageButton
     lateinit var noteDisplay : EmojiTextView
-    lateinit var editButton : ImageButton
+    lateinit var layout: View
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layout = inflater.inflate(R.layout.text_display_dialog_layout, null)
+        layout = inflater.inflate(R.layout.text_display_dialog_layout, container, false)
         noteDisplay = layout.findViewById(R.id.input_text_field)
         editButton = layout.findViewById(R.id.edit_text_button)
         editButton.setOnClickListener{
@@ -38,7 +38,7 @@ class TextDisplayDialog : DialogFragment() {
     }
 
     fun disableEditOption(){
-        editButton.setVisibility(View.INVISIBLE)
+        editButton.visibility = View.INVISIBLE
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,16 +60,16 @@ class TextDisplayDialog : DialogFragment() {
         val displayMetrics = DisplayMetrics()
         val windowManager = targetFragment?.context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val width = (Math.min(displayMetrics.widthPixels,displayMetrics.heightPixels) * .90).toInt()
-        val height = (Math.max(displayMetrics.widthPixels,displayMetrics.heightPixels) * .70).toInt()
+        val width = (displayMetrics.widthPixels.coerceAtMost(displayMetrics.heightPixels) * .90).toInt()
+        val height = (displayMetrics.widthPixels.coerceAtLeast(displayMetrics.heightPixels) * .70).toInt()
         dialog?.window?.setLayout(width,height)
     }
 
     interface DisplayDialogListener {
         fun onDisplayDialogCreated()
-        fun onDisplayDismiss(dialog: Dialog);
-        fun onDisplayCanceled(dialog: Dialog);
-        fun onDisplayConfirm(dialog: Dialog, note: String);
+        fun onDisplayDismiss(dialog: Dialog)
+        fun onDisplayCanceled(dialog: Dialog)
+        fun onDisplayConfirm(dialog: Dialog, note: String)
     }
 
 }

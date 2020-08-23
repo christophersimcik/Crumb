@@ -14,8 +14,8 @@ import com.example.crumb.Helpers.AlarmHelper
 import com.example.crumb.Helpers.NotificationHelper
 
 class AlarmService : Service() {
-    val mediaPlayer: MediaPlayer by lazy { MediaPlayer.create(this, ringtone) }
-    val ringtone: Uri by lazy {
+    private val mediaPlayer: MediaPlayer by lazy { MediaPlayer.create(this, ringtone) }
+    private val ringtone: Uri by lazy {
         RingtoneManager.getActualDefaultRingtoneUri(
             this.applicationContext,
             RingtoneManager.TYPE_ALARM
@@ -57,7 +57,7 @@ class AlarmService : Service() {
     private fun initService(intent: Intent?) {
         val bundle = intent?.getBundleExtra(AlarmHelper.DETAILS) ?: Bundle()
         val id = intent?.getLongExtra(AlarmHelper.PARENT_ID, 0) ?: 0L
-        val notificationHelper = NotificationHelper(this, id, bundle)
+        val notificationHelper = NotificationHelper(applicationContext)
         playAlarm()
         if (isAppInForeground()) {
             startForeground(
@@ -98,17 +98,15 @@ class AlarmService : Service() {
 
     private fun isAppInForeground(): Boolean {
         val activityManager = this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        val processes: List<ActivityManager.RunningAppProcessInfo> =
+        val processes: MutableList<ActivityManager.RunningAppProcessInfo> =
             activityManager.runningAppProcesses
-        if (processes == null) return false
+                ?: return false
         for (process in processes) {
-            if (process.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && process.processName.equals(
-                    packageName
-                )
+            if (process.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && process.processName == packageName
             ) {
                 return true
             }
         }
-        return false;
+        return false
     }
 }

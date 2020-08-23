@@ -8,38 +8,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.NumberPicker
 import androidx.emoji.widget.EmojiEditText
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import com.example.crumb.Models.Interval
 import com.example.crumb.Helpers.KeyboardDetectionHelper
-import com.example.crumb.R
 import com.example.crumb.Helpers.TimeHelper
+import com.example.crumb.R
 import com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
-
-import java.lang.ClassCastException
 import java.text.DecimalFormat
 
-class StepDialog(keyboardDetection: KeyboardDetectionHelper) : DialogFragment(),
+class StepDialog(private val keyboardDetection: KeyboardDetectionHelper) : DialogFragment(),
     KeyboardDetectionHelper.KeyBoardObserver {
 
-    var myTime = 0
+    private var myTime = 0
     var initTime = 0
     var isFirst = true
 
     private var name = ""
     lateinit var layout: View
-    lateinit var dayPicker: MaterialNumberPicker
-    lateinit var hourPicker: MaterialNumberPicker
-    lateinit var minPicker: MaterialNumberPicker
-    lateinit var mrdnPicker: MaterialNumberPicker
-    lateinit var timeHelper: TimeHelper
-    private lateinit var interval: Interval
+    private lateinit var dayPicker: MaterialNumberPicker
+    private lateinit var hourPicker: MaterialNumberPicker
+    private lateinit var minPicker: MaterialNumberPicker
+    private lateinit var mrdnPicker: MaterialNumberPicker
+    private lateinit var timeHelper: TimeHelper
     lateinit var nameInputField: EmojiEditText
-    lateinit var listener: DeleteDialogListener
-
-    val keyboardDetection = keyboardDetection
+    private lateinit var listener: DeleteDialogListener
 
     init {
         keyboardDetection.registerObserver(this)
@@ -55,15 +48,15 @@ class StepDialog(keyboardDetection: KeyboardDetectionHelper) : DialogFragment(),
         savedInstanceState: Bundle?
     ): View? {
 
-        layout = inflater.inflate(R.layout.time_select_dialog, null)
+        layout = inflater.inflate(R.layout.time_select_dialog, container, false)
         val submitButton = layout.findViewById<Button>(R.id.submit_button)
         val dismissButton = layout.findViewById<Button>(R.id.dismiss_button)
-        nameInputField = layout.findViewById<EmojiEditText>(R.id.name_input_field)
+        nameInputField = layout.findViewById(R.id.name_input_field)
         dayPicker = layout.findViewById(R.id.day_selector)
         hourPicker = layout.findViewById(R.id.hour_selector)
         minPicker = layout.findViewById(R.id.min_selector)
         val df = DecimalFormat("00")
-        minPicker.setFormatter(NumberPicker.Formatter { df.format(it) })
+        minPicker.setFormatter { df.format(it) }
         mrdnPicker = layout.findViewById(R.id.meridian_selector)
         mrdnPicker.displayedValues = arrayOf("AM", "PM")
 
@@ -78,7 +71,7 @@ class StepDialog(keyboardDetection: KeyboardDetectionHelper) : DialogFragment(),
         timeHelper =
             TimeHelper(dayPicker, hourPicker, minPicker, mrdnPicker)
         submitButton.setOnClickListener {
-            val name = nameInputField.getText().toString()
+            val name = nameInputField.text.toString()
             val total = timeHelper.getMinutesFromViews()
             if (total >= 0) {
                 myTime = total
@@ -112,11 +105,6 @@ class StepDialog(keyboardDetection: KeyboardDetectionHelper) : DialogFragment(),
         val additionalMinute = if (isFirst) 0 else 1
         timeHelper.setValues(initTime + additionalMinute)
         super.onResume()
-
-    }
-
-    fun defineInterval(interval: Interval) {
-        this.interval = interval
     }
 
     override fun onAttach(context: Context) {
@@ -140,9 +128,9 @@ class StepDialog(keyboardDetection: KeyboardDetectionHelper) : DialogFragment(),
 
     interface DeleteDialogListener {
         fun stepDialogCreated()
-        fun stepDismiss(dialog: Dialog);
-        fun stepCanceled(dialog: Dialog);
-        fun stepConfirm(dialog: Dialog, name: String, time: Int);
+        fun stepDismiss(dialog: Dialog)
+        fun stepCanceled(dialog: Dialog)
+        fun stepConfirm(dialog: Dialog, name: String, time: Int)
     }
 
     override fun keyboardDismissed() {

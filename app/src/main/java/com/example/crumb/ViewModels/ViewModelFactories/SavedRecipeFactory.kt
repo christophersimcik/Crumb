@@ -5,9 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.crumb.ViewModels.SavedRecipeViewModel
 
-class SavedRecipeFactory(application : Application, id : Long) : ViewModelProvider.NewInstanceFactory() {
-    val application = application
-    var id = id
+class SavedRecipeFactory(val application : Application, var id : Long) : ViewModelProvider.NewInstanceFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return SavedRecipeViewModel(application, id) as T

@@ -5,16 +5,14 @@ import android.graphics.Rect
 import android.view.View
 import android.view.ViewTreeObserver
 
-class KeyboardDetectionHelper(activity: Activity) {
-    val activity = activity
-    val view: View
-    var previousHeight: Int
-    val currentHeight = Rect()
-    lateinit var keyBoardObserver: KeyBoardObserver
-    val viewTreeObserver: ViewTreeObserver
+class KeyboardDetectionHelper(val activity: Activity) {
+    val view: View = activity.window.decorView
+    private var previousHeight: Int
+    private val currentHeight = Rect()
+    private lateinit var keyBoardObserver: KeyBoardObserver
+    private val viewTreeObserver: ViewTreeObserver
 
     init {
-        view = activity.window.decorView
         view.getWindowVisibleDisplayFrame(currentHeight)
         previousHeight = currentHeight.height()
         viewTreeObserver = view.viewTreeObserver
@@ -28,10 +26,7 @@ class KeyboardDetectionHelper(activity: Activity) {
         viewTreeObserver.addOnGlobalLayoutListener {
             view.getWindowVisibleDisplayFrame(currentHeight)
             if (currentHeight.height() > previousHeight) {
-                System.out.println("keyboard dismissed")
-                keyBoardObserver.keyboardDismissed()
-            } else {
-                System.out.println("keyboard displayed")
+                println()
             }
             previousHeight = currentHeight.height()
 

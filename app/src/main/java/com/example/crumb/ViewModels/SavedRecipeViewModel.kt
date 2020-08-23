@@ -23,8 +23,8 @@ import java.lang.StringBuilder
 class SavedRecipeViewModel(application: Application, parent_id: Long) : AndroidViewModel(application) {
 
     val database = DatabaseScheduler.getInstance(application)
-    val intervalDao = database?.getIntervalDao()
-    val scheduleDao: ScheduleDao? = database?.getScheduleDao()
+    private val intervalDao = database?.getIntervalDao()
+    private val scheduleDao: ScheduleDao? = database?.getScheduleDao()
     var parentID = parent_id
     val start = MutableLiveData<Interval>()
     val notes = MutableLiveData<String>()
@@ -58,13 +58,13 @@ class SavedRecipeViewModel(application: Application, parent_id: Long) : AndroidV
             val newName = StringBuilder()
             var count = scheduleDao?.getCount(name) ?: 0
             if (count > 1) {
-                if(name.equals("")){
+                if(name == ""){
                     newName.append("No Name")
                 }else {
                     newName.append(name)
                 }
                 count ++
-                newName.append("(#" + count + ")")
+                newName.append("(#$count)")
             }else{
                 newName.append(name)
             }
@@ -92,27 +92,13 @@ class SavedRecipeViewModel(application: Application, parent_id: Long) : AndroidV
         }
     }
 
-    fun checkforDuplicateNames(name : String) : String{
-        val newName =
-        viewModelScope.launch {
-            val newName = StringBuilder()
-            val count = scheduleDao?.getCount(name) ?: 0
-            if (count > 0) {
-                newName.append(name)
-                newName.append("(#" + count + ")")
-            }
-        }
-            return newName.toString()
-    }
-
     fun duplicate(navController : NavController) {
         viewModelScope.launch {
             val duplicateID = System.currentTimeMillis()
             val schedule = scheduleDao?.getSelected(parentID)
-            val reg = Regex(" \\(\\# \\d+\\)")
-            var oldName = schedule?.name?.replace(reg,"") ?: ""
+            val reg = Regex(" \\(# \\d+\\)")
+            val oldName = schedule?.name?.replace(reg,"") ?: ""
             val duplicates = scheduleDao?.getCount(oldName) ?: 0
-            System.out.println("duplicates = " + duplicates + " oldName = " + oldName)
             val myDuplicate = createDuplicate(schedule, duplicates, duplicateID)
             scheduleDao?.insert(myDuplicate)
             if(schedule != null){
@@ -120,7 +106,6 @@ class SavedRecipeViewModel(application: Application, parent_id: Long) : AndroidV
                 if(children != null) {
                     for (child in children) {
                         child.id = System.currentTimeMillis()
-                        System.out.println("child id = " + child.id)
                         child.parentId = myDuplicate.id
                         delay(2)
                     }
@@ -133,23 +118,21 @@ class SavedRecipeViewModel(application: Application, parent_id: Long) : AndroidV
         }
     }
 
-    fun createDuplicate(oldSchedule: Schedule?, count: Int, id : Long): Schedule {
-        val reg = Regex(" \\(\\# \\d+\\)")
-        val dtf = DateTimeFormat.forPattern(" dd, YYYY");
+    private fun createDuplicate(oldSchedule: Schedule?, count: Int, id : Long): Schedule {
+        val reg = Regex(" \\(# \\d+\\)")
+        val dtf = DateTimeFormat.forPattern(" dd, YYYY")
         val dateTime = DateTime.now()
         val name = oldSchedule?.name?.replace(reg,"") ?: "No Name"
-        System.out.println(" name = " + name)
-        val schedule = Schedule(
+        return Schedule(
             id,
             name + " (# " + (count + 1) + ")",
-            ScheduleViewModel.monthOfYearMap.get(dateTime.monthOfYear) + dateTime.toString(dtf),
+            ScheduleViewModel.monthOfYearMap[dateTime.monthOfYear] + dateTime.toString(dtf),
             oldSchedule?.description ?: "No Name",
             oldSchedule?.start ?: 0,
             oldSchedule?.end ?: 0,
             oldSchedule?.duration ?: 0,
             oldSchedule?.steps ?: 0
         )
-        return schedule
     }
 
     fun shareTextVersionOfRecipe(colors : IntArray, context : Context){
@@ -162,7 +145,7 @@ class SavedRecipeViewModel(application: Application, parent_id: Long) : AndroidV
         context.startActivity(shareIntent)
     }
 
-    fun generateTextVersionOfRecipe(colors: IntArray) : String{
+    private fun generateTextVersionOfRecipe(colors: IntArray) : String{
         val recipeToText =
             RecipeToText(intervalData?.value ?: ArrayList(), colors)
         return recipeToText.getText()

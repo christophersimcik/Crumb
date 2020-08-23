@@ -36,28 +36,24 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
     }
 
     val database = DatabaseScheduler.getInstance(application)
-    val scheduleDao = database?.getScheduleDao()
-    val intervalDao: IntervalDao? = database?.getIntervalDao()
+    private val scheduleDao = database?.getScheduleDao()
+    private val intervalDao: IntervalDao? = database?.getIntervalDao()
     val scheduleData = scheduleDao?.getAll()
-    val sharedPreferences = application.getSharedPreferences(SharedViewModel.SHARED_PREFERENCES,0)
-    val alarmHelper = AlarmHelper(sharedPreferences)
+    private val sharedPreferences = application.getSharedPreferences(SharedViewModel.SHARED_PREFERENCES,0)
+    private val alarmHelper = AlarmHelper(sharedPreferences)
     val bundle = Bundle()
-    val totalsAvailable = ArrayList<TotalsCallback>()
+    private val totalsAvailable = ArrayList<TotalsCallback>()
 
     fun getTotals(id: Long, viewHolder : ScheduleAdapter.ViewHolder){
         viewModelScope.launch {
             val allPercentages = intervalDao?.getAllPercentages(id)
             val allcolors = intervalDao?.getAllColors(id)
             for(totals in totalsAvailable) {
-                if(totals.equals(viewHolder)){
+                if(totals == viewHolder){
                     totals.onTotalsAvailable(allPercentages, allcolors)
                 }
             }
         }
-    }
-
-    fun deleteEmpties(){
-        viewModelScope.launch {scheduleDao?.deleteEmpties()}
     }
 
     fun deleteRecipe(position : Int) {
@@ -73,7 +69,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun cancelAllAlarms(list : List<Interval>){
+    private fun cancelAllAlarms(list : List<Interval>){
         for(step in list){
             if(step.alarm_on){
                 alarmHelper.cancelSpecificAlarm(step,getApplication())
@@ -96,16 +92,16 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun createSchedule(count : Int): Schedule {
-            val dtf = DateTimeFormat.forPattern(" dd, YYYY");
+    private fun createSchedule(count : Int): Schedule {
+            val dtf = DateTimeFormat.forPattern(" dd, YYYY")
             val dateTime = DateTime.now()
             val id = System.currentTimeMillis()
             bundle.putLong("parent_id", id)
             val name = if(count > 0){"No Name" + " (# " + (count + 1) + ")"}else{"No Name"}
-            val schedule = Schedule(
+            return Schedule(
                 id,
                 name,
-                monthOfYearMap.get(dateTime.monthOfYear) + dateTime.toString(
+                monthOfYearMap[dateTime.monthOfYear] + dateTime.toString(
                     dtf
                 ),
                 "",
@@ -114,7 +110,6 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
                 0,
                 0
             )
-        return schedule
     }
 
     fun register(totalsAvailable: TotalsCallback) {

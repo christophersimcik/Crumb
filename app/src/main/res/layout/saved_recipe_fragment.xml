@@ -7,7 +7,6 @@
     android:padding="10dp">
 
     <LinearLayout
-        android:id="@+id/start_time_contaner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
@@ -17,17 +16,16 @@
             android:id="@+id/name_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Name"
+            android:hint="@string/name_text"
             android:textColor="@color/default_dark"
-            android:textSize="22dp" />
+            android:textSize="22sp" />
 
         <TextView
-            android:id="@+id/header_start_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:gravity="center"
-            android:text="Start Time" />
+            android:text="@string/start_time_text" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -41,9 +39,10 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:id="@+id/now_button"
+                android:contentDescription="@string/input_current_time_button"
                 android:scaleType="fitCenter"
                 android:layout_marginEnd="10dp"
-                android:layout_toLeftOf="@id/text_hour"
+                android:layout_toStartOf="@id/text_hour"
                 android:layout_alignParentBottom="true"
                 android:background="@drawable/box_selector"
                 android:src="@drawable/now_icon_selector" />
@@ -52,7 +51,7 @@
                 android:id="@+id/text_hour"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_toLeftOf="@id/semi_colon"
+                android:layout_toStartOf="@id/semi_colon"
                 android:background="@drawable/light_border"
                 android:gravity="center"
                 android:padding="2dp"
@@ -63,14 +62,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text=" : "
+                android:text="@string/semicolon"
                 android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/text_minute"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_toRightOf="@id/semi_colon"
+                android:layout_toEndOf="@id/semi_colon"
                 android:background="@drawable/light_border"
                 android:gravity="center"
                 android:padding="2dp"
@@ -110,33 +109,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:textSize="8sp"
+                android:textSize="12sp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Day"/>
+                android:text="@string/day"/>
             <TextView
-                android:textSize="8sp"
+                android:textSize="12sp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_height="wrap_content"
-                android:text="Hour"/>
+                android:text="@string/hour"/>
             <TextView
-                android:textSize="8sp"
+                android:textSize="12sp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_height="wrap_content"
-                android:text="Min"/>
+                android:text="@string/min"/>
             <TextView
-                android:textSize="8sp"
+                android:textSize="12sp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_height="wrap_content"
-                android:text="Am/Pm"/>
+                android:text="@string/meridian"/>
         </LinearLayout>
         <LinearLayout
             android:orientation="horizontal"
@@ -177,7 +176,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:textSize="20sp"
-                android:text=":"/>
+                android:text="@string/semicolon"/>
             <com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
                 android:layout_weight="1"
                 android:layout_width="0dp"

@@ -1,5 +1,6 @@
 package com.example.crumb.UI
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -14,21 +15,21 @@ class CustomChainView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     companion object {
-        val SINGLE = 0
-        val START = 1
-        val MIDDLE = 2
-        val END = 3
+        const val SINGLE = 0
+        const val START = 1
+        const val MIDDLE = 2
+        const val END = 3
     }
 
     var radius = 0f
-    var offset = 10f
-    var centerWidth = 0f
-    var centerHeight = 0f
-    var tailWidth = 7f
-    var tailColor = context.resources.getColor(R.color.hilight, null)
-    val activeColor = context.resources.getColor(R.color.red_accent, null)
+    private var offset = 10f
+    private var centerWidth = 0f
+    private var centerHeight = 0f
+    private var tailWidth = 7f
+    private var tailColor = context.resources.getColor(R.color.hilight, null)
+    private val activeColor = context.resources.getColor(R.color.red_accent, null)
     private var color = Color.LTGRAY
-    var buttonPressed = false
+    private var buttonPressed = false
     private var mode = SINGLE
     private val paint = Paint().apply { strokeWidth = tailWidth }
 
@@ -36,7 +37,7 @@ class CustomChainView @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
         centerWidth = w.toFloat() / 2f
         centerHeight = h.toFloat() / 2f
-        radius = Math.min(w, h) / 4f
+        radius = (h.coerceAtLeast(w)).toFloat() / 4f
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -45,7 +46,7 @@ class CustomChainView @JvmOverloads constructor(
         drawCircle(canvas)
     }
 
-    fun drawLine(canvas: Canvas?) {
+    private fun drawLine(canvas: Canvas?) {
         paint.style = Paint.Style.STROKE
         paint.color = tailColor
         when (mode) {
@@ -92,6 +93,7 @@ class CustomChainView @JvmOverloads constructor(
         invalidate()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -106,10 +108,11 @@ class CustomChainView @JvmOverloads constructor(
                 }
             }
         }
+
         return super.onTouchEvent(event)
     }
 
-    fun drawCircle(canvas: Canvas?) {
+    private fun drawCircle(canvas: Canvas?) {
         paint.style = Paint.Style.FILL
         if (buttonPressed) {
             paint.color = activeColor

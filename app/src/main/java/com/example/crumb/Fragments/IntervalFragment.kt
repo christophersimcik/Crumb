@@ -34,14 +34,14 @@ class IntervalFragment :
     IntervalAdapter.GetInputDialog,
     DeleteDialog.SwipeDeleteDialogListener {
 
-    val textInputDialog : TextInputDialog by lazy{ TextInputDialog() }
-    val recyclerView: RecyclerView by lazy { myView.findViewById<RecyclerView>(R.id.intervals_recycler_view) }
+    private val textInputDialog : TextInputDialog by lazy{ TextInputDialog() }
+    private val recyclerView: RecyclerView by lazy { myView.findViewById<RecyclerView>(R.id.intervals_recycler_view) }
 
-    lateinit var myView: View
+    private lateinit var myView: View
     lateinit var dialog: StepDialog
-    lateinit var keyboardDetection : KeyboardDetectionHelper
+    private lateinit var keyboardDetection : KeyboardDetectionHelper
     lateinit var scrollObserver : ScrollingCallback
-    var canCreate = true;
+    private var canCreate = true
 
     val deleteDialog: DeleteDialog by lazy {
         DeleteDialog(
@@ -49,7 +49,7 @@ class IntervalFragment :
         )
     }
 
-    val deletSwipe: SwipeToDelete by lazy {
+    private val deletSwipe: SwipeToDelete by lazy {
         object : SwipeToDelete(requireContext()) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 deleteDialog.show(parentFragmentManager, "swipe_delete")
@@ -67,7 +67,7 @@ class IntervalFragment :
         ).get(IntervalViewModel::class.java)
     }
 
-    val intervalAdapter: IntervalAdapter by lazy {
+    private val intervalAdapter: IntervalAdapter by lazy {
         IntervalAdapter(
             requireActivity(),
             viewModel,
@@ -75,7 +75,7 @@ class IntervalFragment :
         )
     }
 
-    val intervalObserver: Observer<List<Interval>> by lazy {
+    private val intervalObserver: Observer<List<Interval>> by lazy {
         Observer<List<Interval>> { steps: List<Interval> ->
             if(steps.isEmpty()){
                 if(canCreate) {
@@ -95,7 +95,7 @@ class IntervalFragment :
         }
     }
 
-    val callback: FragmentCallback by lazy {
+    private val callback: FragmentCallback by lazy {
         val mainActivity = activity as MainActivity
         mainActivity.sharedViewModel
     }
@@ -220,12 +220,12 @@ class IntervalFragment :
     override fun swipeDialogCreated() {}
 
     override fun swipeDismiss(dialog: Dialog, position: Int) {
-        intervalAdapter.notifyItemChanged(position);
+        intervalAdapter.notifyItemChanged(position)
         dialog.dismiss()
     }
 
     override fun swipeCanceled(dialog: Dialog, position: Int) {
-        intervalAdapter.notifyItemChanged(position);
+        intervalAdapter.notifyItemChanged(position)
         dialog.dismiss()}
 
     override fun swipeConfirm(dialog: Dialog, position: Int) {

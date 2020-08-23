@@ -20,19 +20,20 @@ import com.example.crumb.UI.TimeLineView
 import com.example.crumb.ViewModels.ScheduleViewModel
 import java.text.DecimalFormat
 import kotlin.collections.ArrayList
+import kotlin.math.floor
 
 class ScheduleAdapter(
-    val mContext: Context,
+    private val mContext: Context,
     val viewModel: ScheduleViewModel,
     fragmentManager: FragmentManager
 ) : RecyclerView.Adapter<ScheduleAdapter.ViewHolder>(),
     KeyboardDetectionHelper.KeyBoardObserver {
-    var activeTitle: EmojiEditText? = null
-    var mData: ArrayList<Schedule> = arrayListOf()
-    val keyboardDetection = KeyboardDetectionHelper(mContext as Activity)
+    private var activeTitle: EmojiEditText? = null
+    private var mData: ArrayList<Schedule> = arrayListOf()
+    private val keyboardDetection = KeyboardDetectionHelper(mContext as Activity)
     val navHostFragment =
         fragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-    lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: RecyclerView
 
     init {
         keyboardDetection.registerObserver(this)
@@ -44,17 +45,17 @@ class ScheduleAdapter(
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.name.setText(mData.get(position).name)
-        holder.description.setText(mData.get(position).description)
-        holder.duration.setText(getTime(mData.get(position).duration))
-        holder.steps.setText(getSteps(mData.get(position).steps))
-        holder.date.setText(mData.get(position).date)
-        holder.parentID = mData.get(position).id
-        viewModel.getTotals(mData.get(position).id, holder)
+        holder.name.text = mData[position].name
+        holder.description.text = mData[position].description
+        holder.duration.text = getTime(mData[position].duration)
+        holder.steps.text = getSteps(mData[position].steps)
+        holder.date.text = mData[position].date
+        holder.parentID = mData[position].id
+        viewModel.getTotals(mData[position].id, holder)
     }
 
 
-    fun getSteps(steps: Int): SpannableStringBuilder {
+    private fun getSteps(steps: Int): SpannableStringBuilder {
         val stringBuilder = SpannableStringBuilder()
         stringBuilder.append("In ", AbsoluteSizeSpan(35), Spannable.SPAN_INCLUSIVE_INCLUSIVE)
         stringBuilder.append(
@@ -70,12 +71,12 @@ class ScheduleAdapter(
         return stringBuilder
     }
 
-    fun getTime(minutes: Int): SpannableStringBuilder {
+    private fun getTime(minutes: Int): SpannableStringBuilder {
         val decimalFormat = DecimalFormat("#")
         val stringBuilder = SpannableStringBuilder()
-        val days = Math.floor((minutes / 1440).toDouble())
-        var hours = Math.floor((minutes % 1440) / 60.toDouble())
-        val mins = Math.floor((minutes % 1440) % 60.toDouble())
+        val days = floor((minutes / 1440).toDouble())
+        val hours = floor((minutes % 1440) / 60.toDouble())
+        val mins = floor((minutes % 1440) % 60.toDouble())
         if (days >= 1.0) {
             stringBuilder.append(
                 decimalFormat.format(days),
@@ -116,11 +117,11 @@ class ScheduleAdapter(
         return stringBuilder
     }
 
-    fun checkPlurality(number: Double): String {
-        if (number == 1.0) {
-            return ""
+    private fun checkPlurality(number: Double): String {
+        return if (number == 1.0) {
+            ""
         } else {
-            return "s"
+            "s"
         }
     }
 
@@ -155,7 +156,7 @@ class ScheduleAdapter(
         val duration: TextView = itemView.findViewById(R.id.duration_text)
         val steps: TextView = itemView.findViewById(R.id.steps_text)
         val date: TextView = itemView.findViewById(R.id.date_text)
-        val timeLine: TimeLineView = itemView.findViewById(R.id.timeline_view)
+        private val timeLine: TimeLineView = itemView.findViewById(R.id.timeline_view)
         var parentID: Long = 0L
 
         init {

@@ -1,11 +1,10 @@
 package com.example.crumb.Helpers
 
 import android.graphics.Color
-import android.widget.NumberPicker
 import com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
 import java.text.DecimalFormat
 
-class TimeHelper(val dayPicker : MaterialNumberPicker, val hrPicker : MaterialNumberPicker, val minPicker : MaterialNumberPicker, val mrdnPicker : MaterialNumberPicker){
+class TimeHelper(private val dayPicker : MaterialNumberPicker, private val hrPicker : MaterialNumberPicker, private val minPicker : MaterialNumberPicker, private val mrdnPicker : MaterialNumberPicker){
 
     private var days = 0
     private var hours = 0
@@ -54,12 +53,8 @@ class TimeHelper(val dayPicker : MaterialNumberPicker, val hrPicker : MaterialNu
         mins = timeAsMinutes % 1440 % 60
         meridian = 0
 
-        if(hours >= 12) {hours = hours - 12; meridian = 1}
+        if(hours >= 12) {hours -= 12; meridian = 1}
         if(hours == 0) 12
-    }
-
-    fun getDaysAsString() : String{
-        return days.toString()
     }
 
     fun getHoursAsString() : String{

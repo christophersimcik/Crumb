@@ -33,19 +33,19 @@ interface IntervalDao {
 
     //updates
 
-    @Update()
+    @Update
     suspend fun update(interval: Interval)
 
-    @Update()
+    @Update
     suspend fun updateAll(interval : List<Interval>)
 
-    @Insert()
+    @Insert
     suspend fun insert(interval: Interval)
 
-    @Insert()
+    @Insert
     suspend fun insertList(list : List<Interval>)
 
-    @Delete()
+    @Delete
     suspend fun delete(interval: Interval)
 
     @Query("DELETE FROM schedule_table")

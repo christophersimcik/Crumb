@@ -1,64 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="5dp">
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical"
+    android:padding="10dp">
 
-    <LinearLayout
+    <androidx.emoji.widget.EmojiTextView
+        android:id="@+id/alarm_name_text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:padding = "10dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="1dp"
+        android:ellipsize="end"
+        android:padding="3dp"
+        android:singleLine="true"
+        android:text="@string/name_text"
+        android:textColor="@color/default_dark"
+        android:textSize="18sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="1dp"
+        android:background="@drawable/divider_light" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="3dp">
 
         <androidx.emoji.widget.EmojiTextView
-            android:id="@+id/alarm_name_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="1dp"
-            android:padding="3dp"
-            android:text="Name"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:textColor="@color/default_dark"
-            android:textSize="18sp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="1dp"
-            android:background="@drawable/divider_light"/>
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:padding="3dp"
-            android:layout_height="100dp">
-        <androidx.emoji.widget.EmojiTextView
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="3dp"
             android:id="@+id/alarm_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
             android:textColor="@color/default_dark"
             android:textSize="14sp" />
-        </ScrollView>
+    </ScrollView>
 
-        <TextView
-            android:id="@+id/dismiss_button"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/alarm_dismiss_selector"
-            android:clickable="true"
-            android:gravity="center"
-            android:layout_gravity="right"
-            android:text="Dismiss"
-            android:textColor="@drawable/alarm_dismiss_text_selector"
-            android:textSize="18sp" />
-
-    </LinearLayout>
-</FrameLayout>
+    <TextView
+        android:id="@+id/dismiss_button"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="end"
+        android:layout_margin="10dp"
+        android:background="@drawable/alarm_dismiss_selector"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="@string/dismiss_text"
+        android:textColor="@drawable/alarm_dismiss_text_selector"
+        android:textSize="18sp" />
+</LinearLayout>

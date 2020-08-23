@@ -1,9 +1,6 @@
 package com.example.crumb.Adapters
 
 import android.content.Context
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.style.AbsoluteSizeSpan
 import android.view.*
 import android.widget.ImageButton
 import androidx.emoji.widget.EmojiTextView
@@ -21,11 +18,11 @@ import java.text.DecimalFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class PlayAdapter(val mContext: Context, val viewModel: PlayViewModel) :
+class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
     RecyclerView.Adapter<PlayAdapter.ViewHolder>() {
 
     companion object{
-        val MERIDIAN = hashMapOf<Int,String>(
+        val MERIDIAN = hashMapOf(
             0 to "am",
             1 to "pm"
         )
@@ -35,100 +32,30 @@ class PlayAdapter(val mContext: Context, val viewModel: PlayViewModel) :
     var start = viewModel.start
     var duration = viewModel.duration
     lateinit var stepDetailCallback: StepDetailCallback
-    lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: RecyclerView
     val alarmHelper = AlarmHelper(
-        mContext.getSharedPreferences(
+        context.getSharedPreferences(
             SharedViewModel.SHARED_PREFERENCES,
             0
         )
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val interval = mData.get(position)
-        holder.name.text = mData.get(position).name
+        val interval = mData[position]
+        holder.name.text = mData[position].name
         holder.makeDuration(mData, position)
-        holder.myStart = mData.get(position).alarm_time
-        holder.putName(mData.get(position).name)
+        holder.myStart = mData[position].alarm_time
+        holder.putName(mData[position].name)
         if (position == 0) {
             holder.progressBar.setIsFirst(true)
         } else {
             holder.progressBar.setIsFirst(false)
         }
         holder.update(System.currentTimeMillis())
-        holder.alarmCheckBox.setChecked(mData.get(position).alarm_on)
-        holder.setStartTime(mData.get(position).alarm_time)
-        holder.progressBar.setColor(mData.get(position).color)
-        holder.step = mData.get(position)
-    }
-
-    fun getSteps(steps: Int): SpannableStringBuilder {
-        val stringBuilder = SpannableStringBuilder()
-        stringBuilder.append("In ", AbsoluteSizeSpan(35), Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-        stringBuilder.append(
-            steps.toString(),
-            AbsoluteSizeSpan(40),
-            Spannable.SPAN_INCLUSIVE_INCLUSIVE
-        )
-        stringBuilder.append(
-            " Step" + checkPlurality(steps.toDouble()),
-            AbsoluteSizeSpan(35),
-            Spannable.SPAN_INCLUSIVE_INCLUSIVE
-        )
-        return stringBuilder
-    }
-
-    fun getTime(minutes: Int): SpannableStringBuilder {
-        val decimalFormat = DecimalFormat("#")
-        val stringBuilder = SpannableStringBuilder()
-        val days = Math.floor((minutes / 1440).toDouble())
-        var hours = Math.floor((minutes % 1440) / 60.toDouble())
-        val mins = Math.floor((minutes % 1440) % 60.toDouble())
-        if (days >= 1.0) {
-            stringBuilder.append(
-                decimalFormat.format(days),
-                AbsoluteSizeSpan(40),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-            stringBuilder.append(
-                " Day" + checkPlurality(days),
-                AbsoluteSizeSpan(35),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-        }
-        if (hours >= 1.0) {
-            stringBuilder.append(
-                " " + decimalFormat.format(hours),
-                AbsoluteSizeSpan(40),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-            stringBuilder.append(
-                " Hr" + checkPlurality(hours),
-                AbsoluteSizeSpan(35),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-
-        }
-        if (mins >= 0.0) {
-            stringBuilder.append(
-                " " + decimalFormat.format(mins),
-                AbsoluteSizeSpan(40),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-            stringBuilder.append(
-                " Min" + checkPlurality(mins),
-                AbsoluteSizeSpan(35),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-        }
-        return stringBuilder
-    }
-
-    fun checkPlurality(number: Double): String {
-        if (number == 1.0) {
-            return ""
-        } else {
-            return "s"
-        }
+        holder.alarmCheckBox.setChecked(mData[position].alarm_on)
+        holder.setStartTime(mData[position].alarm_time)
+        holder.progressBar.setColor(mData[position].color)
+        holder.step = mData[position]
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -137,7 +64,7 @@ class PlayAdapter(val mContext: Context, val viewModel: PlayViewModel) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.play_item, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.play_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -147,7 +74,7 @@ class PlayAdapter(val mContext: Context, val viewModel: PlayViewModel) :
                 mData,
                 newData
             )
-        );
+        )
         mData.clear()
         mData.addAll(newData)
         diffResult.dispatchUpdatesTo(this)
@@ -174,8 +101,8 @@ class PlayAdapter(val mContext: Context, val viewModel: PlayViewModel) :
         }
 
         val name: EmojiTextView = itemView.findViewById(R.id.play_name_field)
-        val startTime : EmojiTextView = itemView.findViewById(R.id.play_start_time_field)
-        val noteButton = itemView.findViewById<ImageButton>(R.id.play_notes_button)
+        private val startTime : EmojiTextView = itemView.findViewById(R.id.play_start_time_field)
+        private val noteButton = itemView.findViewById<ImageButton>(R.id.play_notes_button)
         val progressBar: MyItemProgressBar = itemView.findViewById(R.id.my_progerss_bar)
         val alarmCheckBox: CustomCheckBox = itemView.findViewById(R.id.play_checkbox)
         var duration: Long = 0L
@@ -183,7 +110,7 @@ class PlayAdapter(val mContext: Context, val viewModel: PlayViewModel) :
         init {
             viewModel.registerTimeObserver(this)
             noteButton.setOnClickListener {
-                stepDetailCallback.onStepDialogCalled(mData.get(adapterPosition))
+                stepDetailCallback.onStepDialogCalled(mData[adapterPosition])
             }
             alarmCheckBox.setOnClickListener {
                 val newBool = alarmCheckBox.toggleChecked()
@@ -202,16 +129,16 @@ class PlayAdapter(val mContext: Context, val viewModel: PlayViewModel) :
             if(hour == 0) hour = 12
             val min = calendar.get(Calendar.MINUTE)
             val meridian = calendar.get(Calendar.AM_PM)
-            val timeAsString = hour.toString() + ":" + DecimalFormat("00").format(min)  + " " + MERIDIAN.get(meridian)
-            startTime.setText(timeAsString)
+            val timeAsString = hour.toString() + ":" + DecimalFormat("00").format(min)  + " " + MERIDIAN[meridian]
+            startTime.text = timeAsString
         }
 
-        fun cancelAlarm() {
-           viewModel.updateInterval(alarmHelper.cancelSpecificAlarm(mData.get(adapterPosition), mContext))
+        private fun cancelAlarm() {
+           viewModel.updateInterval(alarmHelper.cancelSpecificAlarm(mData[adapterPosition], context))
         }
 
-        fun setAlarm() {
-            viewModel.updateInterval(alarmHelper.setSpecificAlarm(mData.get(adapterPosition), mContext))
+        private fun setAlarm() {
+            viewModel.updateInterval(alarmHelper.setSpecificAlarm(mData[adapterPosition], context))
         }
 
         fun update(now: Long) {
@@ -224,17 +151,17 @@ class PlayAdapter(val mContext: Context, val viewModel: PlayViewModel) :
         }
 
         fun putName(name: String) {
-            if (name.equals("")) {
-                this.name.setText("No Name")
+            if (name == "") {
+                this.name.text = context.getText(R.string.no_name_text)
             } else {
-                this.name.setText(name)
+                this.name.text = name
             }
         }
 
         fun makeDuration(list: List<Interval>, position: Int) : Long {
             var dur = 0
             for (index in 0..position) {
-                dur += list.get(index).span
+                dur += list[index].span
             }
             myStart = (start + (dur * 60000))
             return myStart
@@ -247,40 +174,39 @@ class PlayAdapter(val mContext: Context, val viewModel: PlayViewModel) :
             val hours = (millis % 86400000) / 3600000
             val mins = (millis % 86400000 % 3600000) / 60000
             val secs = (millis % 86400000 % 3600000 % 60000) / 1000
-            System.out.println("secs = " + secs)
             var dayString = ""
             var hourString = ""
             var minString = ""
             var secString = ""
             if (days > 0L) {
-                if (days > 1) {
-                    dayString = days.toString() + " Days "
+                dayString = if (days > 1) {
+                    "$days Days "
                 } else {
-                    dayString = days.toString() + " Day "
+                    "$days Day "
                 }
             }
             if (hours > 0) {
-                if (hours > 1) {
-                    hourString = hours.toString() + " Hrs "
+                hourString = if (hours > 1) {
+                    "$hours Hrs "
                 } else {
-                    hourString = hours.toString() + " Hr "
+                    "$hours Hr "
                 }
             }
             if (mins > 0) {
-                if (mins > 1) {
-                    minString = mins.toString() + " Mins "
+                minString = if (mins > 1) {
+                    "$mins Mins "
                 } else {
-                    minString = mins.toString() + " Min "
+                    "$mins Min "
                 }
             }
             if (secs > 0) {
-                if (secs > 1) {
-                    secString = secs.toString() + " Secs "
+                secString = if (secs > 1) {
+                    "$secs Secs "
                 } else {
-                    secString = secs.toString() + " Sec "
+                    "$secs Sec "
                 }
             }
-            return "Alarm In " + dayString + hourString + minString + secString
+            return "Alarm In $dayString$hourString$minString$secString"
         } else {
             return "Completed!"
         }

@@ -11,13 +11,13 @@ class TimeLineView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    lateinit var myPositions: FloatArray
-    lateinit var myColors: IntArray
-    var markerColors = intArrayOf(Color.LTGRAY)
-    var markerPositions = floatArrayOf(0f)
-    var newPath = Path()
-    var offset = 0f
-    val paint = Paint().apply { isDither = true; isAntiAlias = true}
+    private lateinit var myPositions: FloatArray
+    private lateinit var myColors: IntArray
+    private var markerColors = intArrayOf(Color.LTGRAY)
+    private var markerPositions = floatArrayOf(0f)
+    private var newPath = Path()
+    private var offset = 0f
+    private val paint = Paint().apply { isDither = true; isAntiAlias = true}
 
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
@@ -25,10 +25,10 @@ class TimeLineView @JvmOverloads constructor(
         drawMarkers(canvas)
     }
 
-    fun drawMarkers(canvas : Canvas?){
-        for(i in 0.. markerPositions.size - 1){
-            paint.color = markerColors.get(i)
-            val myX = reMap(width.toFloat() * markerPositions.get(i))
+    private fun drawMarkers(canvas : Canvas?){
+        for(i in markerPositions.indices){
+            paint.color = markerColors[i]
+            val myX = reMap(width.toFloat() * markerPositions[i])
             val myY = height.toFloat()/2f
             val radius = height.toFloat()/2f
             canvas?.drawCircle(myX,myY,radius,paint)
@@ -36,8 +36,7 @@ class TimeLineView @JvmOverloads constructor(
     }
 
     private fun reMap(oldPos: Float): Float {
-        val new = ((oldPos * ((width - offset) - offset)) / (width)) + offset
-        return new
+        return ((oldPos * ((width - offset) - offset)) / (width)) + offset
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -55,7 +54,7 @@ class TimeLineView @JvmOverloads constructor(
         }
     }
 
-    fun createMarkerPositions(positions: FloatArray) : FloatArray{
+    private fun createMarkerPositions(positions: FloatArray) : FloatArray{
         val markerPositions = ArrayList<Float>()
         var start = 0f
         for(position in positions){

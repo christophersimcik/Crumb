@@ -22,7 +22,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:gravity="center"
-            android:hint="Name"
+            android:hint="@string/name_text"
             android:singleLine="true" />
 
         <TextView
@@ -32,7 +32,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:gravity="center"
-            android:hint="Name"
+            android:hint="@string/name_text"
             android:singleLine="true" />
 
         <TextView
@@ -42,7 +42,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:gravity="center"
-            android:hint="Name"
+            android:hint="@string/name_text"
             android:singleLine="true" />
     </LinearLayout>
 </LinearLayout>

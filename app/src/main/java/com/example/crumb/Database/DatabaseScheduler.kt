@@ -17,13 +17,13 @@ abstract class DatabaseScheduler : RoomDatabase() {
     abstract fun getIntervalDao(): IntervalDao
 
     companion object {
-        const val DATABASE_NAME = "Schedules database"
+        private const val DATABASE_NAME = "Schedules database"
         private var instance: DatabaseScheduler? = null
         fun getInstance(context: Context): DatabaseScheduler? {
             if (instance == null) {
                 synchronized(DatabaseScheduler::class) {
                     instance = Room.databaseBuilder(
-                        context.getApplicationContext(),
+                        context.applicationContext,
                         DatabaseScheduler::class.java,
                         DATABASE_NAME
                     )

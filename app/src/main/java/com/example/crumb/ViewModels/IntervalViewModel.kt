@@ -12,23 +12,23 @@ import kotlinx.coroutines.launch
 class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(application) {
 
     val database = DatabaseScheduler.getInstance(application)
-    val intervalDao = database?.getIntervalDao()
-    val scheduleDao = database?.getScheduleDao()
-    val parentID = id
+    private val intervalDao = database?.getIntervalDao()
+    private val scheduleDao = database?.getScheduleDao()
+    private val parentID = id
     var lastTime = 0
     var selectedPosition = 0
     var lastPositon = 0
     var newlyCreated = false
     val intervalData = intervalDao?.getAllIntervalsInSchedule(parentID)
-    val alarmHelper = AlarmHelper(
+    private val alarmHelper = AlarmHelper(
         application.getSharedPreferences(
             SharedViewModel.SHARED_PREFERENCES,
             0
         )
     )
-    lateinit var listener: CreationListener
+    private lateinit var listener: CreationListener
     lateinit var selected: Interval
-    val colorHelper = ColorHelper()
+    private val colorHelper = ColorHelper()
     var time: Int = 0
 
     fun updateSelected(name: String, time: Int, adapter: IntervalAdapter) {
@@ -41,7 +41,7 @@ class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(a
         }
     }
 
-    suspend fun updateSingle(interval: Interval) {
+    private suspend fun updateSingle(interval: Interval) {
             intervalDao?.update(interval)
     }
 
@@ -58,27 +58,24 @@ class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(a
                 val end = (list.last().time)
                 var duration = end - start
                 if (duration == 0) { duration = 1 }
-                var counter = 0
                 var previousTime = (list.first().time)
-                    for (item in list) {
+                    for ((counter, item) in list.withIndex()) {
                         item.span = item.time - previousTime
                         item.sequence = counter + 1
                         item.percentage = (item.time.toFloat() - start) / duration.toFloat()
                         previousTime = item.time
-                        counter++
                     }
                     intervalDao?.updateAll(list)
         }
     }
 
-    suspend fun updateSchedule() {
-
-        val list = intervalDao?.getAsList(parentID)
+    private suspend fun updateSchedule() {
+        val list = intervalDao?.getAsList(parentID) ?: emptyList()
         val schedule = scheduleDao?.getSelected(parentID)
-        if(list != null) {
-            val steps = list?.size ?: 0
-            val start = list?.first()?.time ?: 0
-            val end = list?.last()?.time ?: 0
+        if(list.isNotEmpty()) {
+            val steps = list.size
+            val start = list.first().time
+            val end = list.last().time
             val duration = end - start
 
             schedule?.steps = steps
@@ -99,10 +96,10 @@ class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(a
     }
 
     fun delete(position: Int) {
-        if (intervalData?.value?.isNullOrEmpty() ?: true) {
+        if (intervalData?.value?.isNullOrEmpty() != false) {
             return
         } else {
-            val interval = intervalData?.value?.get(position)
+            val interval = intervalData.value?.get(position)
             if (interval != null) {
                 viewModelScope.launch {
                     if (interval.alarm_on) {

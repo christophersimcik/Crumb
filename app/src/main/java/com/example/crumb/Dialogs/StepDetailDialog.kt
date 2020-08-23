@@ -16,23 +16,24 @@ import com.example.crumb.Models.Interval
 import com.example.crumb.R
 import java.lang.ClassCastException
 import java.text.DecimalFormat
+import kotlin.math.floor
 
 class StepDetailDialog : DialogFragment() {
 
-    lateinit var listener: StepDialogListener
+    private lateinit var listener: StepDialogListener
     lateinit var layout: View
     lateinit var stepName: EmojiEditText
-    lateinit var stepDescription: EmojiEditText
-    lateinit var stepTimeFromStart: TextView
-    lateinit var stepTimeFromLast: TextView
-    lateinit var percentageOfTotal: TextView
+    private lateinit var stepDescription: EmojiEditText
+    private lateinit var stepTimeFromStart: TextView
+    private lateinit var stepTimeFromLast: TextView
+    private lateinit var percentageOfTotal: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layout = inflater.inflate(R.layout.interval_data_dialog, null)
+        layout = inflater.inflate(R.layout.interval_data_dialog, container, false)
         stepName = layout.findViewById(R.id.step_name_field) as EmojiEditText
         stepDescription = layout.findViewById(R.id.step_notes_field) as EmojiEditText
         stepTimeFromStart = layout.findViewById(R.id.time_from_start)
@@ -69,9 +70,9 @@ class StepDetailDialog : DialogFragment() {
             targetFragment?.context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val width =
-            (Math.min(displayMetrics.widthPixels, displayMetrics.heightPixels) * .90).toInt()
+            (displayMetrics.widthPixels.coerceAtMost(displayMetrics.heightPixels) * .90).toInt()
         val height =
-            (Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels) * .70).toInt()
+            (displayMetrics.widthPixels.coerceAtMost(displayMetrics.heightPixels))
         dialog?.window?.setLayout(width, height)
         listener.onStepDialogCreated()
     }
@@ -82,12 +83,12 @@ class StepDetailDialog : DialogFragment() {
         stepDescription.editableText.clear()
         stepDescription.editableText.append(step.notes)
         if (step.sequence == 1) {
-            stepTimeFromLast.setText(" First Step")
+            stepTimeFromLast.text = context?.getText(R.string.start_text)
         } else {
-            stepTimeFromLast.setText(textFromLast(step.span))
+            stepTimeFromLast.text = textFromLast(step.span)
         }
-        stepTimeFromStart.setText(getAlarmTime(step.time))
-        percentageOfTotal.setText(textPercentage(step.percentage))
+        stepTimeFromStart.text = getAlarmTime(step.time)
+        percentageOfTotal.text = textPercentage(step.percentage)
     }
 
     private fun textFromLast(time: Int): String {
@@ -96,10 +97,6 @@ class StepDetailDialog : DialogFragment() {
 
     private fun getAlarmTime(time: Int): String {
         return " Alarm At " + getAsTime(time) + " " + getMeridian(time)
-    }
-
-    private fun textFromStart(time: Int): String {
-        return getTime(time).toString() + " From Recipe Start"
     }
 
     private fun textPercentage(time: Float): String {
@@ -111,17 +108,17 @@ class StepDetailDialog : DialogFragment() {
 
     interface StepDialogListener {
         fun onStepDialogCreated()
-        fun onStepDismiss(dialog: Dialog);
-        fun onStepCanceled(dialog: Dialog);
-        fun onStepConfirm(dialog: Dialog, name: String, notes: String);
+        fun onStepDismiss(dialog: Dialog)
+        fun onStepCanceled(dialog: Dialog)
+        fun onStepConfirm(dialog: Dialog, name: String, notes: String)
     }
 
     private fun getTime(minutes: Int): SpannableStringBuilder {
         val decimalFormat = DecimalFormat("#")
         val stringBuilder = SpannableStringBuilder()
-        val days = Math.floor((minutes / 1440).toDouble())
-        var hours = Math.floor((minutes % 1440) / 60.toDouble())
-        val mins = Math.floor((minutes % 1440) % 60.toDouble())
+        val days = floor((minutes / 1440).toDouble())
+        val hours = floor((minutes % 1440) / 60.toDouble())
+        val mins = floor((minutes % 1440) % 60.toDouble())
         if (days >= 1.0) {
             stringBuilder.append(
                 decimalFormat.format(days),
@@ -164,18 +161,18 @@ class StepDetailDialog : DialogFragment() {
 
 
     private fun checkPlurality(number: Double): String {
-        if (number == 1.0) {
-            return ""
+        return if (number == 1.0) {
+            ""
         } else {
-            return "s"
+            "s"
         }
     }
 
-    fun getAsTime(minutes: Int): String {
-        var hours = Math.floor((minutes % 1440) / 60.toDouble()).toInt()
-        val mins = Math.floor((minutes % 1440) % 60.toDouble()).toInt()
+    private fun getAsTime(minutes: Int): String {
+        var hours = floor((minutes % 1440) / 60.toDouble()).toInt()
+        val mins = floor((minutes % 1440) % 60.toDouble()).toInt()
         if (hours > 12) {
-            hours = hours - 12
+            hours -= 12
         }
         if (hours == 0) {
             hours = 12
@@ -183,12 +180,12 @@ class StepDetailDialog : DialogFragment() {
         return hours.toString() + ":" + DecimalFormat("00").format(mins)
     }
 
-    fun getMeridian(minutes: Int): String {
-        val hours = Math.floor((minutes % 1440) / 60.toDouble()).toInt()
-        if (hours > 12) {
-            return "PM"
+    private fun getMeridian(minutes: Int): String {
+        val hours = floor((minutes % 1440) / 60.toDouble()).toInt()
+        return if (hours > 12) {
+            "PM"
         } else {
-            return "AM"
+            "AM"
         }
     }
 

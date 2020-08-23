@@ -16,42 +16,18 @@ class MyProgressBar @JvmOverloads constructor(
     private var outterPath: Path? = null
     private val defaultLight = context.resources.getColor(R.color.default_light, null)
     private val defaultDark = context.resources.getColor(R.color.default_dark, null)
-    private val transparent = Color.TRANSPARENT
     private val semiTransparent = context.resources.getColor(R.color.semi_transparent, null)
     private val paint = Paint().apply { isAntiAlias = true; strokeWidth = 5f; isDither = true }
     private var backGroundColors: IntArray? = null
     private var backGroundPositions: FloatArray? = null
-    private var foreGroundColors = intArrayOf(transparent, transparent, semiTransparent)
     private var foreGroundPosition = 0f
     private var message = ""
     private var offset = 0f
     var active = false
 
-    private val test = hashMapOf(
-        0 to PorterDuff.Mode.DST,
-        1 to PorterDuff.Mode.DST_ATOP,
-        2 to PorterDuff.Mode.DST_IN,
-        3 to PorterDuff.Mode.DST_OUT,
-        4 to PorterDuff.Mode.DST_OVER,
-        5 to PorterDuff.Mode.SRC,
-        6 to PorterDuff.Mode.SRC_ATOP,
-        7 to PorterDuff.Mode.SRC_IN,
-        8 to PorterDuff.Mode.SRC_OUT,
-        9 to PorterDuff.Mode.SRC_OVER,
-        10 to PorterDuff.Mode.ADD,
-        11 to PorterDuff.Mode.OVERLAY,
-        12 to PorterDuff.Mode.SRC,
-        13 to PorterDuff.Mode.MULTIPLY,
-        14 to PorterDuff.Mode.CLEAR,
-        15 to PorterDuff.Mode.DARKEN,
-        16 to PorterDuff.Mode.SCREEN,
-        17 to PorterDuff.Mode.LIGHTEN,
-        18 to PorterDuff.Mode.XOR
-    )
-
     private var initialized: Boolean = false
-    var myWidth = 0f
-    var myHeight = 0f
+    private var myWidth = 0f
+    private var myHeight = 0f
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
@@ -69,7 +45,7 @@ class MyProgressBar @JvmOverloads constructor(
         }
     }
 
-    fun drawCircle(canvas: Canvas?) {
+    private fun drawCircle(canvas: Canvas?) {
         val max = ((backGroundPositions?.size) ?: 1) - 1
         for (i in 0..max) {
             paint.color = backGroundColors?.get(i) ?: Color.LTGRAY
@@ -176,19 +152,19 @@ class MyProgressBar @JvmOverloads constructor(
 
 
     fun setMessage(message: String) {
-        if (message.equals("")) {
+        if (message == "") {
             this.message = message
         } else {
-            this.message = "Starts in " + message
+            this.message = "Starts in $message"
         }
         invalidate()
     }
 
-    fun drawMessage(canvas: Canvas?) {
+    private fun drawMessage(canvas: Canvas?) {
         paint.style = Paint.Style.FILL
         paint.textSize = 40f
         paint.textAlign = Paint.Align.CENTER
-        paint.setShader(null)
+        paint.shader = null
         paint.color = defaultDark
         val rect = Rect()
         paint.getTextBounds(message, 0, message.length, rect)

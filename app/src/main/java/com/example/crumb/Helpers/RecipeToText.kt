@@ -7,12 +7,13 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import com.example.crumb.Models.Interval
 import java.text.DecimalFormat
+import kotlin.math.floor
 
-class RecipeToText(val list : List<Interval>, val colors : IntArray) {
+class RecipeToText(val list : List<Interval>, private val colors : IntArray) {
 
     private val stringBuilder = SpannableStringBuilder()
     private var counter = 1
-    private var cursor = 0;
+    private var cursor = 0
 
     fun getText() : String{
         stringBuilder.clear()
@@ -29,23 +30,23 @@ class RecipeToText(val list : List<Interval>, val colors : IntArray) {
     }
 
     private fun getName(interval : Interval) : String{
-        return if(interval.name.equals("")) "No Name" else interval.name
+        return if(interval.name == "") "No Name" else interval.name
     }
 
     private fun getDay(interval : Interval): String {
         val minutes = interval.time
-        return "Day " + (Math.floor((minutes / 1440).toDouble()).toInt() + 1).toString()
+        return "Day " + (floor((minutes / 1440).toDouble()).toInt() + 1).toString()
     }
 
     private fun getTime(interval : Interval): SpannableString {
         val minutes = interval.time
         val decimalFormat = DecimalFormat("00")
-        var hours = Math.floor((minutes % 1440.0) / 60.0).toInt()
+        var hours = floor((minutes % 1440.0) / 60.0).toInt()
         var meridian = "AM"
-        val mins = Math.floor((minutes % 1440) % 60.0).toInt()
+        val mins = floor((minutes % 1440) % 60.0).toInt()
         if (hours >= 12) {
             meridian = "PM"
-            hours = hours - 12
+            hours -= 12
         }
         if (hours == 0) {
             hours = 12
@@ -53,10 +54,10 @@ class RecipeToText(val list : List<Interval>, val colors : IntArray) {
 
         val color: Int
 
-        when (meridian) {
-            "AM" -> color = colors[0]
-            "PM" -> color = colors[1]
-            else -> color = colors[2]
+        color = when (meridian) {
+            "AM" -> colors[0]
+            "PM" -> colors[1]
+            else -> colors[2]
         }
 
         val spannableString =

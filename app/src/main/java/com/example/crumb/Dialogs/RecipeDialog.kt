@@ -21,28 +21,28 @@ import java.lang.ClassCastException
 class RecipeDialog : DialogFragment() {
 
     lateinit var layout: View
-    lateinit var dismiss: Button
-    lateinit var confirm: Button
+    private lateinit var dismiss: Button
+    private lateinit var confirm: Button
     lateinit var name: TextView
     lateinit var fragment : ScheduleFragment
-    lateinit var navController: NavController
-    lateinit var listener: RecipeCreateDialogListener
-    val displayMetrics = DisplayMetrics()
+    private lateinit var navController: NavController
+    private lateinit var listener: RecipeCreateDialogListener
+    private val displayMetrics = DisplayMetrics()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layout = inflater.inflate(R.layout.recipe_name_dialog, null)
-        confirm = layout.findViewById<Button>(R.id.confirm_button)
-        dismiss = layout.findViewById<Button>(R.id.dismiss_button)
+        layout = inflater.inflate(R.layout.recipe_name_dialog, container, false)
+        confirm = layout.findViewById(R.id.confirm_button)
+        dismiss = layout.findViewById(R.id.dismiss_button)
         name = layout.findViewById<EmojiEditText>(R.id.recipe_name_field)
         confirm.setOnClickListener {
             listener.recipeConfirm(this.requireDialog(),name.text.toString())
-            name.setText("")
+            name.text = ""
         }
         dismiss.setOnClickListener {
-            name.setText("")
+            name.text = ""
             listener.recipeDismiss(requireDialog())
         }
 
@@ -76,16 +76,16 @@ class RecipeDialog : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        val width = (Math.min(displayMetrics.widthPixels, displayMetrics.heightPixels) * .90).toInt()
+        val width = (displayMetrics.heightPixels.coerceAtMost(displayMetrics.widthPixels) * .90).toInt()
         val height = (width * .50).toInt()
         dialog?.window?.setLayout(width,height)
         layout.invalidate()
     }
 
     interface RecipeCreateDialogListener {
-        fun recipeDismiss(dialog: Dialog);
-        fun recipeCanceled(dialog: Dialog);
-        fun recipeConfirm(dialog: Dialog, name:String);
+        fun recipeDismiss(dialog: Dialog)
+        fun recipeCanceled(dialog: Dialog)
+        fun recipeConfirm(dialog: Dialog, name:String)
     }
 
 }

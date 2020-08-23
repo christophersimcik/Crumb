@@ -5,11 +5,11 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.emoji.widget.EmojiEditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.crumb.*
 import com.example.crumb.Activities.MainActivity
@@ -37,43 +37,37 @@ class SavedRecipeFragment : Fragment(),
     StepDetailDialog.StepDialogListener,
     SavedRecipeAdapter.StepDetailCallback {
 
-    lateinit var hourSelector : MaterialNumberPicker
-    lateinit var daySelector : MaterialNumberPicker
-    lateinit var minSelector : MaterialNumberPicker
-    lateinit var mrdSelector : MaterialNumberPicker
-    lateinit var editName: EmojiEditText
-    lateinit var nowButton: ImageButton
-    lateinit var meridianText: TextView
-    lateinit var meridianImage: View
-    lateinit var hourText: TextView
-    lateinit var minText: TextView
-    lateinit var myView: View
+    private lateinit var hourSelector : MaterialNumberPicker
+    private lateinit var daySelector : MaterialNumberPicker
+    private lateinit var minSelector : MaterialNumberPicker
+    private lateinit var mrdSelector : MaterialNumberPicker
+    private lateinit var editName: EmojiEditText
+    private lateinit var nowButton: ImageButton
+    private lateinit var meridianText: TextView
+    private lateinit var meridianImage: View
+    private lateinit var hourText: TextView
+    private lateinit var minText: TextView
+    private lateinit var myView: View
 
-    val textDisplayDialog: TextDisplayDialog by lazy { TextDisplayDialog() }
-    val textInputDialog: TextInputDialog by lazy { TextInputDialog() }
-    val stepDetailDialog: StepDetailDialog by lazy { StepDetailDialog() }
-    val keyboardDetection: KeyboardDetectionHelper by lazy {
+    private val textDisplayDialog: TextDisplayDialog by lazy { TextDisplayDialog() }
+    private val textInputDialog: TextInputDialog by lazy { TextInputDialog() }
+    private val stepDetailDialog: StepDetailDialog by lazy { StepDetailDialog() }
+    private val keyboardDetection: KeyboardDetectionHelper by lazy {
         KeyboardDetectionHelper(
             requireActivity()
         )
     }
     lateinit var scrollObserver: ScrollingCallback
     private lateinit var timeHelper : TimeHelper
-    var layoutCompleted = false
-    var dataRetrieved = false
+    private var layoutCompleted = false
+    private var dataRetrieved = false
 
-    val imageAM: Drawable by lazy {
-        requireActivity().resources.getDrawable(
-            R.drawable.am_image,
-            null
-        )
+    private val imageAM: Drawable? by lazy {
+            ContextCompat.getDrawable(requireContext(), R.drawable.am_image)
     }
 
-    val imagePM: Drawable by lazy {
-        requireActivity().resources.getDrawable(
-            R.drawable.pm_image,
-            null
-        )
+    private val imagePM: Drawable? by lazy {
+           ContextCompat.getDrawable(requireContext(), R.drawable.pm_image)
     }
 
     val viewModel: SavedRecipeViewModel by lazy {
@@ -81,26 +75,26 @@ class SavedRecipeFragment : Fragment(),
             this,
             SavedRecipeFactory(
                 requireActivity().application,
-                requireNotNull(arguments?.getLong("parent_id"))
+                arguments?.getLong("parent_id") ?: 0L
             )
         ).get(SavedRecipeViewModel::class.java)
     }
 
-    val savedRecipeAdapter: SavedRecipeAdapter by lazy {
+    private val savedRecipeAdapter: SavedRecipeAdapter by lazy {
         SavedRecipeAdapter(
             requireActivity()
         )
     }
 
-    val noteObserver: Observer<String> by lazy {
+    private val noteObserver: Observer<String> by lazy {
         Observer<String> { note ->
-            if (textDisplayDialog.dialog?.isShowing ?: false) {
-                textDisplayDialog.noteDisplay.setText(note)
+            if (textDisplayDialog.dialog?.isShowing == true) {
+                textDisplayDialog.noteDisplay.text = note
             }
         }
     }
 
-    val startObserver: Observer<Interval> by lazy {
+    private val startObserver: Observer<Interval> by lazy {
         Observer<Interval> { step: Interval ->
             timeHelper.setValues(step.time)
             setStartTimeViews()
@@ -109,13 +103,13 @@ class SavedRecipeFragment : Fragment(),
         }
     }
 
-    val nameObserver: Observer<String> by lazy {
+    private val nameObserver: Observer<String> by lazy {
         Observer<String> { name: String ->
             editName.setText(name)
         }
     }
 
-    val intervalObserver: Observer<List<Interval>> by lazy {
+    private val intervalObserver: Observer<List<Interval>> by lazy {
         Observer<List<Interval>> { steps: List<Interval> ->
             savedRecipeAdapter.setData(steps as ArrayList<Interval>)
             savedRecipeAdapter.notifyDataSetChanged()
@@ -123,15 +117,9 @@ class SavedRecipeFragment : Fragment(),
         }
     }
 
-    val callback: FragmentCallback by lazy {
+    private val callback: FragmentCallback by lazy {
         val mainActivity = activity as MainActivity
         mainActivity.sharedViewModel
-    }
-
-    val navHostFragment: NavHostFragment by lazy {
-        requireActivity().supportFragmentManager.findFragmentById(
-            R.id.nav_host_fragment
-        ) as NavHostFragment
     }
 
     override fun onStart() {
@@ -160,7 +148,7 @@ class SavedRecipeFragment : Fragment(),
         layoutCompleted = false
         dataRetrieved = false
         myView = layoutInflater.inflate(R.layout.saved_recipe_fragment, container, false)
-        editName = myView.findViewById<EmojiEditText>(R.id.name_edit_text)
+        editName = myView.findViewById(R.id.name_edit_text)
         hourText = myView.findViewById(R.id.text_hour)
         minText = myView.findViewById(R.id.text_minute)
         meridianText = myView.findViewById(R.id.text_meridian)
@@ -180,7 +168,7 @@ class SavedRecipeFragment : Fragment(),
             minText.text = df.format(numberPicker.value)
             viewModel.update(timeHelper.getMinutesFromViews())
         }
-        minSelector.setFormatter(NumberPicker.Formatter { df.format(it)})
+        minSelector.setFormatter{df.format(it)}
         mrdSelector = myView.findViewById(R.id.meridian_selector)
         mrdSelector.displayedValues = arrayOf("AM","PM")
         mrdSelector.setOnValueChangedListener { numberPicker, i, i2 ->
@@ -190,8 +178,8 @@ class SavedRecipeFragment : Fragment(),
                 mrdSelector.separatorColor = resources.getColor(R.color.am_text,null)
             }
             meridianText.text = when(numberPicker.value){
-                0 -> "AM";
-                1 -> "PM";
+                0 -> "AM"
+                1 -> "PM"
                 else -> "n/a"
             }
             meridianImage.background = getMeridianImage(meridianText.text.toString())
@@ -240,11 +228,11 @@ class SavedRecipeFragment : Fragment(),
         return myView
     }
 
-    fun getMeridianImage(meridian: String): Drawable? {
-        when (meridian) {
-            "AM" -> return imageAM
-            "PM" -> return imagePM
-            else -> return null
+    private fun getMeridianImage(meridian: String): Drawable? {
+        return when (meridian) {
+            "AM" -> imageAM
+            "PM" -> imagePM
+            else -> null
         }
     }
 
@@ -331,7 +319,7 @@ class SavedRecipeFragment : Fragment(),
         stepDetailDialog.dismiss()
     }
 
-    fun getTimeAsMinutes(): Int {
+    private fun getTimeAsMinutes(): Int {
         val dateTime = DateTime.now()
         val millisOfDay = dateTime.millisOfDay
         return millisOfDay / 60000

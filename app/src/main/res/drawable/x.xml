@@ -8,7 +8,7 @@
             android:pivotX="50%"
             android:pivotY="50%"
             android:toDegrees="45">
-            <shape android:shape="rectangle"></shape>
+            <shape android:shape="rectangle" />
             <color android:color="@color/red" />
         </rotate>
     </item>
@@ -20,8 +20,8 @@
             android:pivotX="50%"
             android:pivotY="50%"
             android:toDegrees="-45">
-            <shape android:shape="rectangle"></shape>
-            <color android:color="@color/red" />
+            <shape android:shape="rectangle"/>
+            <color android:color="@color/red"/>
         </rotate>
     </item>
 </layer-list>

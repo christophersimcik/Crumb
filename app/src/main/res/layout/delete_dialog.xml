@@ -1,49 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <LinearLayout
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5dp"
+    tools:layout_editor_absoluteX="10dp"
+    tools:layout_editor_absoluteY="10dp">
+
+    <TextView
+        android:id="@+id/declare_type_field"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:padding = "5dp"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/declare_type_field"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginStart="15dp"
-            android:gravity="start"
-            android:textSize="18dp"
-            android:text=""/>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/dismiss_button"
-                android:layout_width="275px"
-                android:layout_height="150px"
-                android:layout_gravity="center"
-                android:layout_marginStart="15dp"
-                android:layout_marginBottom="25dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/dimsiss_button_selector"
-                android:text="CANCEL" />
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text=""
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp" />
 
-            <Button
-                android:id="@+id/confirm_button"
-                android:layout_width="275px"
-                android:layout_height="150px"
-                android:layout_gravity="center"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="25dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/confirm_button_selector"
-                android:text="CONFIRM" />
-        </RelativeLayout>
+    <Button
+        android:id="@+id/dismiss_button"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:background="@drawable/dimsiss_button_selector"
+        android:text="@string/cancel_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline2" />
 
-    </LinearLayout>
-</FrameLayout>
+    <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:background="@drawable/confirm_button_selector"
+        android:text="@string/confirm_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/guideline2" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+</androidx.constraintlayout.widget.ConstraintLayout>

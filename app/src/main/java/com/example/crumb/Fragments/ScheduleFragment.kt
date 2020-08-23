@@ -25,19 +25,19 @@ import com.example.crumb.ViewModels.ScheduleViewModel
 class ScheduleFragment : Fragment(), DeleteDialog.SwipeDeleteDialogListener,
     RecipeDialog.RecipeCreateDialogListener {
 
-    val viewModel: ScheduleViewModel by viewModels()
-    val scheduleAdapter: ScheduleAdapter by lazy {
+    private val viewModel: ScheduleViewModel by viewModels()
+    private val scheduleAdapter: ScheduleAdapter by lazy {
         ScheduleAdapter(
             requireActivity(),
             viewModel,
             requireActivity().supportFragmentManager
         )
     }
-    val callback: FragmentCallback by lazy {
+    private val callback: FragmentCallback by lazy {
         val mainActivity = activity as MainActivity
         mainActivity.sharedViewModel
     }
-    val navHostFragment: NavHostFragment by lazy {
+    private val navHostFragment: NavHostFragment by lazy {
         requireActivity().supportFragmentManager.findFragmentById(
             R.id.nav_host_fragment
         ) as NavHostFragment
@@ -47,7 +47,7 @@ class ScheduleFragment : Fragment(), DeleteDialog.SwipeDeleteDialogListener,
             "Delete This Recipe?"
         )
     }
-    val deletSwipe: SwipeToDelete by lazy {
+    private val deletSwipe: SwipeToDelete by lazy {
         object : SwipeToDelete(requireContext()) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 deleteDialog.show(parentFragmentManager, "swipe_delete")
@@ -87,7 +87,7 @@ class ScheduleFragment : Fragment(), DeleteDialog.SwipeDeleteDialogListener,
         })
 
         val scheduleObserver = Observer<List<Schedule>> {
-            if (it.size > 0) {
+            if (it.isNotEmpty()) {
                 textView.visibility = View.INVISIBLE
             } else {
                 textView.visibility = View.VISIBLE
@@ -107,12 +107,12 @@ class ScheduleFragment : Fragment(), DeleteDialog.SwipeDeleteDialogListener,
     }
 
     override fun swipeDismiss(dialog: Dialog, position: Int) {
-        scheduleAdapter.notifyItemChanged(position);
+        scheduleAdapter.notifyItemChanged(position)
         dialog.dismiss()
     }
 
     override fun swipeCanceled(dialog: Dialog, position: Int) {
-        scheduleAdapter.notifyItemChanged(position);
+        scheduleAdapter.notifyItemChanged(position)
         dialog.dismiss()
     }
 

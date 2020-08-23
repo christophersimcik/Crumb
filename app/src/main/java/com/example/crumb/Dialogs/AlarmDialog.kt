@@ -2,7 +2,6 @@ package com.example.crumb.Dialogs
 
 import android.app.Dialog
 import android.content.Context
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
@@ -12,19 +11,17 @@ import androidx.fragment.app.FragmentManager
 import com.example.crumb.R
 
 import java.lang.ClassCastException
+import kotlin.math.min
 
-class AlarmDialog() : DialogFragment() {
+class AlarmDialog: DialogFragment() {
 
-    lateinit var listener: DeleteDialogListener
+    private lateinit var listener: DeleteDialogListener
     lateinit var layout: View
-    lateinit var mediaPlayer: MediaPlayer
 
-    val alarmName: TextView by lazy { layout.findViewById<TextView>(R.id.alarm_name_text) }
-    val alarmDescription: TextView by lazy { layout.findViewById<TextView>(R.id.alarm_description) }
-    val dismissButton: View by lazy { layout.findViewById<View>(R.id.dismiss_button) }
-    var initTime = 0
-    var isPlaying = false
-    val displayMetrics = DisplayMetrics()
+    private val alarmName: TextView by lazy { layout.findViewById<TextView>(R.id.alarm_name_text) }
+    private val alarmDescription: TextView by lazy { layout.findViewById<TextView>(R.id.alarm_description) }
+    private val dismissButton: View by lazy { layout.findViewById<View>(R.id.dismiss_button) }
+    private val displayMetrics = DisplayMetrics()
     var name = "No Name"
     var description = "No Description"
 
@@ -35,7 +32,7 @@ class AlarmDialog() : DialogFragment() {
     ): View? {
         val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager.defaultDisplay.getMetrics(displayMetrics)
-        layout = inflater.inflate(R.layout.alarm_dialog, null)
+        layout = inflater.inflate(R.layout.alarm_dialog, container, false)
         dismissButton.setOnClickListener {
             listener.onDismiss(requireDialog())
         }
@@ -44,26 +41,26 @@ class AlarmDialog() : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        val width = (Math.min(displayMetrics.widthPixels, displayMetrics.heightPixels) * .90).toInt()
+        val width = (min(displayMetrics.widthPixels, displayMetrics.heightPixels) * .90).toInt()
         val height = 900
         dialog?.window?.setLayout(width,height)
         layout.invalidate()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        alarmName.setText(name)
-        alarmDescription.setText(description)
+        alarmName.text = name
+        alarmDescription.text = description
         listener.onDialogCreated()
         super.onViewCreated(view, savedInstanceState)
     }
 
     fun show(manager: FragmentManager, tag: String?, name: String, description: String) {
-        if (name.equals("")) {
+        if (name == "") {
             this.name = "No Name Provided"
         } else {
             this.name = name
         }
-        if (description.equals("")) {
+        if (description == "") {
             this.description = " No Description Provided"
         } else {
             this.description = description
@@ -82,8 +79,8 @@ class AlarmDialog() : DialogFragment() {
 
     interface DeleteDialogListener {
         fun onDialogCreated()
-        fun onDismiss(dialog: Dialog);
-        fun onCanceled(dialog: Dialog);
-        fun onConfirm(dialog: Dialog, name: String, time: Int);
+        fun onDismiss(dialog: Dialog)
+        fun onCanceled(dialog: Dialog)
+        fun onConfirm(dialog: Dialog, name: String, time: Int)
     }
 }

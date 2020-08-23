@@ -5,19 +5,20 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
-import android.widget.ImageButton
+
+import androidx.appcompat.widget.AppCompatImageButton
 import android.widget.Toast
 import com.example.crumb.R
 
 class CustomCheckBox @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : ImageButton(context, attrs, defStyleAttr) {
+) : AppCompatImageButton(context, attrs, defStyleAttr) {
     private var checked = false
-    val activeColor = context.resources.getColor(R.color.red_accent, null)
-    val inactiveColor = context.resources.getColor(R.color.default_dark, null)
-    val activePath = Path()
-    val inactivePath = Path()
-    val paint = Paint().apply{isDither = true; isAntiAlias = true; strokeWidth = 5f}
+    private val activeColor = context.resources.getColor(R.color.red_accent, null)
+    private val inactiveColor = context.resources.getColor(R.color.default_dark, null)
+    private val activePath = Path()
+    private val inactivePath = Path()
+    private val paint = Paint().apply{isDither = true; isAntiAlias = true; strokeWidth = 5f}
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -28,13 +29,13 @@ class CustomCheckBox @JvmOverloads constructor(
         invalidate()
     }
 
-    fun drawActive(canvas : Canvas?){
+    private fun drawActive(canvas : Canvas?){
         paint.style = Paint.Style.FILL
         paint.color = activeColor
         canvas?.drawPath(activePath, paint)
     }
 
-    fun drawInactive(canvas : Canvas?){
+    private fun drawInactive(canvas : Canvas?){
         paint.style = Paint.Style.STROKE
         paint.color = inactiveColor
         canvas?.drawPath(inactivePath, paint)
@@ -49,10 +50,6 @@ class CustomCheckBox @JvmOverloads constructor(
         }
     }
 
-
-    fun getChecked(): Boolean {
-        return checked
-    }
     fun setChecked(bool : Boolean) {
         checked = bool
         invalidate()

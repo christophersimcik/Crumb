@@ -22,7 +22,7 @@
                 android:layout_marginBottom="7dp"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
             <View
                 android:layout_width="match_parent"
@@ -31,7 +31,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/play_name"
+                android:layout_toEndOf="@id/play_name"
                 android:background="@drawable/divider" />
         </RelativeLayout>
 
@@ -50,17 +50,17 @@
             android:layout_weight="1"
             android:gravity="center"
             android:textColor="@color/default_dark"
-            android:textSize="12dp" />
+            android:textSize="12sp" />
         <TextView
             android:id="@+id/text_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:gravity="left"
-            android:text="X steps in X minutes "
+            android:gravity="start"
+            android:text="@string/default_steps_text"
             android:textColor="@color/default_dark"
-            android:textSize="14dp" />
+            android:textSize="14sp" />
         <View
             android:layout_width="match_parent"
             android:layout_height="5dp"

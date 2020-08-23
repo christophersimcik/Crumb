@@ -7,7 +7,6 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.emoji.widget.EmojiEditText
 import androidx.emoji.widget.EmojiTextView
@@ -18,26 +17,21 @@ import com.example.crumb.Adapters.DiffUtilCallbacks.StepDiffUtilCallback
 import com.example.crumb.Helpers.KeyboardDetectionHelper
 import com.example.crumb.Models.Interval
 import com.example.crumb.UI.CustomChainView
-import com.example.crumb.UI.CustomLayoutManager
 import java.text.DecimalFormat
 import kotlin.collections.ArrayList
+import kotlin.math.floor
 
-class SavedRecipeAdapter(mContext: Context) : RecyclerView.Adapter<SavedRecipeAdapter.ViewHolder>(),
+class SavedRecipeAdapter(val context: Context) : RecyclerView.Adapter<SavedRecipeAdapter.ViewHolder>(),
     KeyboardDetectionHelper.KeyBoardObserver {
-
-    val inputMethodManager =
-        mContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    var activeViewHolder: ViewHolder? = null
-    val mContext = mContext
-    val amColor = mContext.resources.getColor(R.color.am_text, null)
-    val pmColor = mContext.resources.getColor(R.color.pm_color, null)
-    val neutralColor = mContext.resources.getColor(R.color.inactive_light, null)
-    var activeTitle: EmojiEditText? = null
+    private val amColor = context.resources.getColor(R.color.am_text, null)
+    private val pmColor = context.resources.getColor(R.color.pm_color, null)
+    private val neutralColor = context.resources.getColor(R.color.inactive_light, null)
+    private var activeTitle: EmojiEditText? = null
     var steps: ArrayList<Interval> = arrayListOf()
-    val keyboardDetection = KeyboardDetectionHelper(mContext as Activity)
+    private val keyboardDetection = KeyboardDetectionHelper(context as Activity)
 
     lateinit var stepDetailCallback: StepDetailCallback
-    lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: RecyclerView
 
     init {
         keyboardDetection.registerObserver(this)
@@ -49,11 +43,11 @@ class SavedRecipeAdapter(mContext: Context) : RecyclerView.Adapter<SavedRecipeAd
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val interval = steps.get(position)
-        holder.name.text = steps.get(position).name
-        holder.startTimeText.text = getTime(steps.get(position).time)
-        holder.startDayText.text = getDay(steps.get(position).time)
-        holder.chooseBackground(itemCount, position, steps.get(position).color)
+        val interval = steps[position]
+        holder.name.text = steps[position].name
+        holder.startTimeText.text = getTime(steps[position].time)
+        holder.startDayText.text = getDay(steps[position].time)
+        holder.chooseBackground(itemCount, position, steps[position].color)
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -62,18 +56,18 @@ class SavedRecipeAdapter(mContext: Context) : RecyclerView.Adapter<SavedRecipeAd
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.saved_recipe_item, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.saved_recipe_item, parent, false)
         return ViewHolder(view)
     }
 
-    fun getTime(minutes: Int): SpannableString {
+    private fun getTime(minutes: Int): SpannableString {
         val decimalFormat = DecimalFormat("00")
-        var hours = Math.floor((minutes % 1440.0) / 60.0).toInt()
+        var hours = floor((minutes % 1440.0) / 60.0).toInt()
         var meridian = "AM"
-        val mins = Math.floor((minutes % 1440) % 60.0).toInt()
+        val mins = floor((minutes % 1440) % 60.0).toInt()
         if (hours >= 12) {
             meridian = "PM"
-            hours = hours - 12
+            hours -= 12
         }
         if (hours == 0) {
             hours = 12
@@ -82,10 +76,10 @@ class SavedRecipeAdapter(mContext: Context) : RecyclerView.Adapter<SavedRecipeAd
 
         val color: Int
 
-        when (meridian) {
-            "AM" -> color = amColor
-            "PM" -> color = pmColor
-            else -> color = neutralColor
+        color = when (meridian) {
+            "AM" -> amColor
+            "PM" -> pmColor
+            else -> neutralColor
         }
 
         val spannableString =
@@ -105,8 +99,8 @@ class SavedRecipeAdapter(mContext: Context) : RecyclerView.Adapter<SavedRecipeAd
         return spannableString
     }
 
-    fun getDay(minutes: Int): String {
-        return "Day " + (Math.floor((minutes / 1440).toDouble()).toInt() + 1).toString()
+    private fun getDay(minutes: Int): String {
+        return "Day " + (floor((minutes / 1440).toDouble()).toInt() + 1).toString()
     }
 
     fun setData(newData: ArrayList<Interval>) {
@@ -115,7 +109,7 @@ class SavedRecipeAdapter(mContext: Context) : RecyclerView.Adapter<SavedRecipeAd
                 steps,
                 newData
             )
-        );
+        )
         steps.clear()
         steps.addAll(newData)
         diffResult.dispatchUpdatesTo(this)
@@ -127,16 +121,15 @@ class SavedRecipeAdapter(mContext: Context) : RecyclerView.Adapter<SavedRecipeAd
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val layoutManager: CustomLayoutManager = recyclerView.layoutManager as CustomLayoutManager
         val name: EmojiTextView = itemView.findViewById(R.id.name_text)
         val startTimeText: TextView = itemView.findViewById(R.id.start_time_text)
         val startDayText: TextView = itemView.findViewById(R.id.start_day_text)
-        val node: CustomChainView = itemView.findViewById(R.id.node_image)
+        private val node: CustomChainView = itemView.findViewById(R.id.node_image)
 
         init {
             node.setOnClickListener {
                 node.invalidate()
-                stepDetailCallback.onStepDialogCalled(steps.get(adapterPosition))
+                stepDetailCallback.onStepDialogCalled(steps[adapterPosition])
             }
         }
 

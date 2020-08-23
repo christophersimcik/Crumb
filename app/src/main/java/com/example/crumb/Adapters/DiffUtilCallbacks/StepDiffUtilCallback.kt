@@ -3,12 +3,10 @@ package com.example.crumb.Adapters.DiffUtilCallbacks
 import androidx.recyclerview.widget.DiffUtil
 import com.example.crumb.Models.Interval
 
-class StepDiffUtilCallback(oldList : List<Interval>, newList : List<Interval> ) : DiffUtil.Callback() {
-    val oldList = oldList
-    val newList = newList
+class StepDiffUtilCallback(private val oldList : List<Interval>, private val newList : List<Interval> ) : DiffUtil.Callback() {
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList.get(oldItemPosition).id == newList.get(newItemPosition).id
+        return oldList[oldItemPosition].id == newList[newItemPosition].id
     }
 
     override fun getOldListSize(): Int {
@@ -20,6 +18,6 @@ class StepDiffUtilCallback(oldList : List<Interval>, newList : List<Interval> ) 
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList.get(oldItemPosition).equals(newList.get(newItemPosition))
+        return oldList[oldItemPosition] == newList[newItemPosition]
     }
 }

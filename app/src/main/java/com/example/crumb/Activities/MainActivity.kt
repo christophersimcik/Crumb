@@ -2,9 +2,11 @@ package com.example.crumb.Activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.provider.FontRequest
 import androidx.emoji.text.EmojiCompat
 import androidx.emoji.text.FontRequestEmojiCompatConfig
@@ -13,93 +15,94 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
-import com.example.crumb.Helpers.AlarmHelper
 import com.example.crumb.UI.ButtonNew
 import com.example.crumb.Fragments.IntervalFragment
 import com.example.crumb.Fragments.PlayFragment
 import com.example.crumb.Fragments.SavedRecipeFragment
 import com.example.crumb.Fragments.ScheduleFragment
-import com.example.crumb.UI.MainRelativeLayout
 import com.example.crumb.R
 import com.example.crumb.ViewModels.PlayViewModel
 import com.example.crumb.ViewModels.SharedViewModel
 import net.danlew.android.joda.JodaTimeAndroid
 
+const val TAG = "MAIN_ACTIVITY"
+
 class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
 
-    val fragmentManager: FragmentManager by lazy { supportFragmentManager }
-    val addButton by lazy { findViewById<ButtonNew>(R.id.add_button) }
-    val topLeftButton by lazy { findViewById<ImageButton>(R.id.duplicate_button) }
-    val topRightOfLeftButton by lazy { findViewById<ImageButton>(R.id.share_button)}
-    val topRightButton: ImageButton by lazy { findViewById<ImageButton>(R.id.notes_button) }
-    val topLeftOfRoghtButton: ImageButton by lazy { findViewById<ImageButton>(R.id.edit_button) }
-    val headerTextView: TextView by lazy { findViewById<TextView>(R.id.heading) }
-    val mainLayout by lazy { findViewById<MainRelativeLayout>(R.id.main_container) }
-    val navHostFragment: NavHostFragment by lazy { fragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment }
+    private val fragmentManager: FragmentManager by lazy { supportFragmentManager }
+    private lateinit var currentFragment : Fragment
+    private val addButton: ButtonNew by lazy { findViewById<ButtonNew>(R.id.add_button) }
+    private val duplicateButton: ImageButton by lazy { findViewById<ImageButton>(R.id.duplicate_button) }
+    private val shareButton: ImageButton by lazy { findViewById<ImageButton>(R.id.share_button)}
+    private val displayNotesButton: ImageButton by lazy { findViewById<ImageButton>(R.id.notes_button) }
+    private val editButton: ImageButton by lazy { findViewById<ImageButton>(R.id.edit_button) }
+    private val headerTextView: TextView by lazy { findViewById<TextView>(R.id.heading) }
+    private val navHostFragment: NavHostFragment by lazy {
+        fragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+    }
     val sharedViewModel by lazy { ViewModelProviders.of(this).get(SharedViewModel::class.java) }
-
-    val scrollObserver: Observer<Fragment> by lazy {
+    private val scrollObserver: Observer<Fragment> by lazy {
         Observer<Fragment> { fragment ->
             when (fragment) {
-                is ScheduleFragment -> fragment.registerScrollObserver(addButton)
-                is IntervalFragment -> fragment.registerScrollObserver(addButton)
-                is SavedRecipeFragment -> fragment.registerScrollObserver(addButton)
-                is PlayFragment -> fragment.viewModel.registerActiveAlarmsWatcher(this)
+                is ScheduleFragment -> {
+                    fragment.registerScrollObserver(addButton)
+                    currentFragment = fragment
+                }
+                is IntervalFragment -> {
+                    fragment.registerScrollObserver(addButton)
+                    currentFragment = fragment
+                }
+                is SavedRecipeFragment -> {
+                    fragment.registerScrollObserver(addButton)
+                    currentFragment = fragment
+                }
+                is PlayFragment -> {
+                    fragment.viewModel.registerActiveAlarmsWatcher(this)
+                    currentFragment = fragment
+                }
             }
         }
     }
 
-    val modeObservable: Observer<Int> by lazy {
+    private val modeObservable: Observer<Int> by lazy {
         Observer { mode: Int ->
             addButton.mode = mode
 
             when (mode) {
                 ButtonNew.RECIPES -> {
-                    topRightOfLeftButton.visibility = View.INVISIBLE
-                    topRightButton.visibility = View.INVISIBLE
-                    topLeftButton.visibility = View.INVISIBLE
-                    topLeftOfRoghtButton.visibility = View.INVISIBLE
+                    shareButton.visibility = View.INVISIBLE
+                    displayNotesButton.visibility = View.INVISIBLE
+                    duplicateButton.visibility = View.INVISIBLE
+                    editButton.visibility = View.INVISIBLE
                     addButton.visibility = View.VISIBLE
                     addButton.mode = ButtonNew.RECIPES
                     addButton.toCircle()
                 }
-
                 ButtonNew.STEPS -> {
-                    topRightOfLeftButton.visibility = View.INVISIBLE
-                    topRightButton.visibility = View.INVISIBLE
-                    topLeftButton.visibility = View.INVISIBLE
-                    topLeftOfRoghtButton.visibility = View.INVISIBLE
+                    shareButton.visibility = View.INVISIBLE
+                    displayNotesButton.visibility = View.INVISIBLE
+                    duplicateButton.visibility = View.INVISIBLE
+                    editButton.visibility = View.INVISIBLE
                     addButton.visibility = View.VISIBLE
                     addButton.mode = ButtonNew.STEPS
                     addButton.toSquare()
                 }
-
                 ButtonNew.DETAIL -> {
-                    topRightOfLeftButton.visibility = View.VISIBLE
-                    topRightButton.visibility = View.VISIBLE
-                    topLeftButton.setImageDrawable(
-                        resources.getDrawable(
-                            R.drawable.copy_img_color_selector,
-                            null
-                        )
-                    )
-                    topLeftButton.visibility = View.VISIBLE
-                    topLeftOfRoghtButton.visibility = View.VISIBLE
+                    shareButton.visibility = View.VISIBLE
+                    displayNotesButton.visibility = View.VISIBLE
+                    duplicateButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.copy_img_color_selector))
+                    duplicateButton.visibility = View.VISIBLE
+                    editButton.visibility = View.VISIBLE
                     addButton.visibility = View.VISIBLE
                     addButton.mode = ButtonNew.DETAIL
                     addButton.toRect()
                 }
                 ButtonNew.PLAY -> {
-                    topRightOfLeftButton.visibility = View.INVISIBLE
-                    topRightButton.visibility = View.VISIBLE
-                    topLeftButton.setImageDrawable(
-                        resources.getDrawable(
-                            R.drawable.cancel_img_selector,
-                            null
-                        )
-                    )
-                    topLeftButton.visibility = View.VISIBLE
-                    topLeftOfRoghtButton.visibility = View.INVISIBLE
+                    shareButton.visibility = View.INVISIBLE
+                    displayNotesButton.visibility = View.VISIBLE
+                    duplicateButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.cancel_img_selector))
+                    duplicateButton.visibility = View.VISIBLE
+                    editButton.visibility = View.INVISIBLE
                     addButton.visibility = View.INVISIBLE
                     addButton.mode = ButtonNew.PLAY
                 }
@@ -107,7 +110,7 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
         }
     }
 
-    val headerObserver: Observer<String> by lazy {
+    private val headerObserver: Observer<String> by lazy {
         Observer { newHeader: String ->
             headerTextView.text = newHeader
         }
@@ -116,27 +119,28 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        topLeftButton.setOnClickListener {
-            sharedViewModel.topLeftButtonClick(navHostFragment.navController)
+        duplicateButton.setOnClickListener {
+            sharedViewModel.duplicateClick(currentFragment, navHostFragment.navController)
+            Log.i(TAG,"duplicate pressed")
         }
-        topRightButton.setOnClickListener {
-            sharedViewModel.topRightButtonClick()
+        displayNotesButton.setOnClickListener {
+            sharedViewModel.displayNotesClick(currentFragment)
         }
-        topLeftOfRoghtButton.setOnClickListener {
-            sharedViewModel.topLeftOfRightButtonClick(navHostFragment.navController)
+        editButton.setOnClickListener {
+            sharedViewModel.editClick(currentFragment, navHostFragment.navController)
         }
-        topRightOfLeftButton.setOnClickListener{
-          sharedViewModel.topRightOfLeftButtonClick()
+        shareButton.setOnClickListener{
+          sharedViewModel.shareClick(currentFragment)
         }
         addButton.setOnClickListener {
             addButton.imageRotation = 0f
-            if (addButton.mode.equals(ButtonNew.RECIPES)) {
+            if (addButton.mode == ButtonNew.RECIPES) {
                 addButton.animatePlusSymbol()
             }
-            if (addButton.mode.equals(ButtonNew.STEPS)) {
+            if (addButton.mode == ButtonNew.STEPS) {
                 addButton.animatePlusSymbol()
             }
-            sharedViewModel.buttonClick(navHostFragment.navController, this.applicationContext)
+            sharedViewModel.buttonClick(currentFragment, navHostFragment.navController)
         }
         val fontRequest = FontRequest(
             "com.google.android.gms.fonts",
@@ -153,15 +157,7 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
         sharedViewModel.scrollWatcher.observe(this, scrollObserver)
         getSharedPreferences(
             SharedViewModel.SHARED_PREFERENCES,0
-        ).registerOnSharedPreferenceChangeListener({i, key ->
-            when (key) {
-                AlarmHelper.ACTIVE_ALARMS -> {System.out.println(">> Active Alarms")
-                }
-                AlarmHelper.ALARM_IS_ACTIVE -> {System.out.println(">> Alarm is Active")
-                }
-                AlarmHelper.PARENT_ID -> {System.out.println(">> A Booga Booga Boo ")}
-            }
-        })
+        )
     }
 
     override fun onBackPressed() {
@@ -175,12 +171,12 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
 
     override fun hasActiveAlarms() {
         sharedViewModel.setCheckCanBackPress(false)
-        topLeftButton.visibility = View.VISIBLE
+        duplicateButton.visibility = View.VISIBLE
     }
 
     override fun noActiveAlarms() {
         sharedViewModel.setCheckCanBackPress(true)
-        topLeftButton.visibility = View.INVISIBLE
+        duplicateButton.visibility = View.INVISIBLE
     }
 
 }

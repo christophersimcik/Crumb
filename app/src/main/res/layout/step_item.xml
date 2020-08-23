@@ -7,8 +7,11 @@
     android:orientation="horizontal">
     <ImageView
         android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/add_a_note_to_a_step_button"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignEnd="@id/step_percentage_text"
         android:id="@+id/description_add_button"
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -24,7 +27,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_marginStart="20dp"
-        android:textSize="12.5dp"
+        android:textSize="12.5sp"
         android:gravity="center" />
 
     <LinearLayout
@@ -65,8 +68,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="right"
-                android:textSize="20dp" />
+                android:gravity="end"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/step_time_text"
@@ -74,21 +77,21 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="left"
+                android:gravity="start"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/step_meridian_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="left"
-                    android:textSize="20dp" />
+                    android:gravity="start"
+                    android:textSize="20sp" />
 
                 <View
                     android:id="@+id/meridian_image"
@@ -114,7 +117,7 @@
 
             <TextView
                 android:id="@+id/step_sequence_text"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end" />

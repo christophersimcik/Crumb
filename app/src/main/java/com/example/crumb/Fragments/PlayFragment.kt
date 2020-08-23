@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.crumb.*
 import com.example.crumb.Activities.MainActivity
@@ -39,7 +40,7 @@ class PlayFragment : Fragment(),
 
     private lateinit var myView: View
 
-    val callback: FragmentCallback by lazy {
+    private val callback: FragmentCallback by lazy {
         val mainActivity = activity as MainActivity
         mainActivity.sharedViewModel
     }
@@ -62,7 +63,7 @@ class PlayFragment : Fragment(),
             viewModel
         )
     }
-    private val name_field: EmojiTextView by lazy { myView.findViewById<EmojiTextView>(R.id.play_name) }
+    private val nameField: EmojiTextView by lazy { myView.findViewById<EmojiTextView>(R.id.play_name) }
     private val progressTotal: MyProgressBar by lazy { myView.findViewById<MyProgressBar>(
         R.id.total_progrss_bar
     ) }
@@ -74,17 +75,17 @@ class PlayFragment : Fragment(),
         )
     }
 
-    val noteObserver: Observer<String> by lazy {
+    private val noteObserver: Observer<String> by lazy {
         Observer<String> { note ->
             when (note) {
                 "" -> {
-                    if (textDisplayDialog.dialog?.isShowing ?: false) {
-                        textDisplayDialog.noteDisplay.setText("No Notes")
+                    if (textDisplayDialog.dialog?.isShowing == true) {
+                        textDisplayDialog.noteDisplay.text = context?.getText(R.string.no_name_text)
                     }
                 }
                 else -> {
-                    if (textDisplayDialog.dialog?.isShowing ?: false) {
-                        textDisplayDialog.noteDisplay.setText(note)
+                    if (textDisplayDialog.dialog?.isShowing == true) {
+                        textDisplayDialog.noteDisplay.text = note
                     }
                 }
             }
@@ -98,26 +99,21 @@ class PlayFragment : Fragment(),
     }
 
     private val recipeObserver = Observer { schedule: Schedule? ->
-        val steps = schedule?.steps
-        name_field.setText(schedule?.name)
-        viewModel.duration = schedule?.duration
-        System.out.println("** schedule = " + schedule?.id)
-        if (steps == 1) {
-            durationText.text =
-                viewModel.convertMinutesToText(schedule.duration) + "In " + schedule.steps.toString() + " Step"
+        val steps = schedule?.steps ?: 0
+        val duration = schedule?.duration ?: 0
+        nameField.text = schedule?.name
+        viewModel.duration = duration
+        if (steps == 1 ) {
+            val minutesAsText = viewModel.convertMinutesToText(duration) + "In " + steps.toString() + " Step"
+            durationText.text = minutesAsText
         } else {
-            durationText.text =
-                viewModel.convertMinutesToText(schedule!!.duration) + "In " + schedule?.steps.toString() + " Steps"
-        }
+            val minutesAsText = viewModel.convertMinutesToText(duration) + "In " + steps.toString() + " Steps"
+            durationText.text = minutesAsText }
     }
 
     private val endObserver = Observer<String> { msg: String ->
         endMessageText.text = msg
 
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -145,7 +141,7 @@ class PlayFragment : Fragment(),
         return myView
     }
 
-    fun updateTotal(view: MyProgressBar) {
+    private fun updateTotal(view: MyProgressBar) {
         lifecycleScope.launch {
             while (isActive) {
                 viewModel.computeCurrentPositon(view)
@@ -217,5 +213,6 @@ class PlayFragment : Fragment(),
     override fun swipeConfirm(dialog: Dialog, position: Int) {
         viewModel.cancel()
         deleteDialog.dismiss()
+        findNavController().navigate(R.id.action_playFragment_to_scheduleFragment)
     }
 }

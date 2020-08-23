@@ -11,8 +11,8 @@
         android:id="@+id/date_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:textSize="10sp" />
+        android:layout_gravity="start"
+        android:textSize="12sp" />
 
     <androidx.emoji.widget.EmojiTextView
         android:id="@+id/name_text"
@@ -21,9 +21,8 @@
         android:layout_marginTop="3dp"
         android:layout_marginBottom="1dp"
         android:ellipsize="end"
-        android:hint="Name"
+        android:hint="@string/name_text"
         android:singleLine="true"
-        android:text="name:"
         android:textSize="18sp" />
 
     <View
@@ -40,9 +39,8 @@
         android:layout_marginTop="3dp"
         android:layout_marginBottom="1dp"
         android:ellipsize="end"
-        android:hint="Description"
-        android:singleLine="true"
-        android:text="description:" />
+        android:hint="@string/description_text"
+        android:singleLine="true" />
 
     <View
         android:layout_width="match_parent"

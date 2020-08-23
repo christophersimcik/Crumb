@@ -1,34 +1,28 @@
 package com.example.crumb.Helpers
 
-import android.os.Bundle
-import android.text.Spannable
-import android.content.Intent
-import android.content.Context
-import android.app.Notification
-import android.app.PendingIntent
 import android.annotation.TargetApi
-import android.text.SpannableString
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import androidx.core.app.NotificationCompat
-import android.text.style.ForegroundColorSpan
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
-import com.example.crumb.Activities.MainActivity
+import android.content.Intent
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import androidx.core.app.NotificationCompat
 import com.example.crumb.R
 import com.example.crumb.Services.AlarmService
 
-class NotificationHelper(val context : Context, private val id : Long, private var description : Bundle) {
+class NotificationHelper(
+    val context: Context
+) {
 
-    private val channelID : String
-    private val channelName : String
-    private val channelDescr : String
-    private val notificationManager : NotificationManager
-
+    private val channelID : String = context.resources.getString(R.string.channel_present_and_soung_id)
+    private val channelName : String = context.resources.getString(R.string.channel_present_and_sound)
+    private val channelDescr : String = context.resources.getString(R.string.channel_present_and_sound_description)
     init{
-        notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        channelID = context.resources.getString(R.string.channel_present_and_soung_id)
-        channelName = context.resources.getString(R.string.channel_present_and_sound)
-        channelDescr = context.resources.getString(R.string.channel_present_and_sound_description)
         createNotificationChannel()
     }
 
@@ -82,36 +76,15 @@ class NotificationHelper(val context : Context, private val id : Long, private v
         return makeBasicForegroundNotification(title, text)
     }
 
-    private fun makeFullScreenNotification() : Notification {
-        val builder = NotificationCompat.Builder(context, channelID)
-            .setFullScreenIntent(createFullScreenPendingIntent(),true)
-            .setSmallIcon(R.drawable.edit_icon)
-            .setContentTitle("test title")
-            .setContentText("test text")
-            .setCategory(NotificationCompat.CATEGORY_ALARM)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(""))
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-        return builder.build()
-    }
-
     private fun createServiceCancelingPendingIntent() : PendingIntent{
         val serviceCancelingIntent = Intent(context, AlarmService::class.java)
-        serviceCancelingIntent.setAction(AlarmService.ACTION_STOP_SERVICE);
-        return PendingIntent.getService(context, 0, serviceCancelingIntent,0);
+        serviceCancelingIntent.action = AlarmService.ACTION_STOP_SERVICE
+        return PendingIntent.getService(context, 0, serviceCancelingIntent,0)
     }
 
     private fun createActivityLaunchingPendingIntent() : PendingIntent{
         val serviceCancelingIntent = Intent(context, AlarmService::class.java)
-        serviceCancelingIntent.setAction(AlarmService.ACTION_STOP_SERVICE_LAUNCH_APP);
-        return PendingIntent.getService(context, 0, serviceCancelingIntent,0);
-    }
-
-    private fun createFullScreenPendingIntent() : PendingIntent{
-        val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        intent.putExtra(AlarmHelper.PARENT_ID,id)
-        intent.putExtra(AlarmHelper.DETAILS, description)
-        return PendingIntent.getActivity(context,0, intent, 0)
+        serviceCancelingIntent.action = AlarmService.ACTION_STOP_SERVICE_LAUNCH_APP
+        return PendingIntent.getService(context, 0, serviceCancelingIntent,0)
     }
 }
