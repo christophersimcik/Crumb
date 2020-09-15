@@ -328,7 +328,7 @@ class SavedRecipeFragment : Fragment(),
     private fun getTimeAsMinutes(): Int {
         val dateTime = DateTime.now()
         val millisOfDay = dateTime.millisOfDay
-        return millisOfDay / 60000
+        return (millisOfDay / 60000).addMinute()
     }
 
     private fun setStartTimeViews(){
