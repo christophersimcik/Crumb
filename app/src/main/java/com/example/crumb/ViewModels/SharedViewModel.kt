@@ -79,7 +79,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
         when (activeFragment) {
             is SavedRecipeFragment -> {
                 val bundle = Bundle()
-                bundle.putLong("parent_id", activeFragment.viewModel.parentID)
+                bundle.putLong("parent_id", activeFragment.viewModel.parent_id)
                 bundle.putBoolean(AlarmHelper.ALARM_IS_ACTIVE, false)
                 navController.navigate(
                     R.id.action_savedRecipeFragment_to_intervalFragment,
@@ -121,11 +121,11 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
                     if (list != null) {
                         intervalDao?.updateAll(
                             activeFragment.context?.let {
-                                alarmHelper.setAlarms(list, it, activeFragment.viewModel.parentID)
+                                alarmHelper.setAlarms(list, it, activeFragment.viewModel.parent_id)
                             } ?: emptyList()
                         )
                         val bundle = Bundle()
-                        bundle.putLong("parent_id", activeFragment.viewModel.parentID)
+                        bundle.putLong("parent_id", activeFragment.viewModel.parent_id)
                         bundle.putBoolean(AlarmHelper.ALARM_IS_ACTIVE, false)
                         navController.navigate(
                             R.id.action_savedRecipeFragment_to_playFragment,

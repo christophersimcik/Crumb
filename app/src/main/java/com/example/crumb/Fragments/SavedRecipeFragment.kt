@@ -3,6 +3,7 @@ package com.example.crumb.Fragments
 import android.app.Dialog
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
@@ -36,6 +37,10 @@ class SavedRecipeFragment : Fragment(),
     TextDisplayDialog.DisplayDialogListener,
     StepDetailDialog.StepDialogListener,
     SavedRecipeAdapter.StepDetailCallback {
+
+    companion object{
+        val TAG = "SAVED_RECIPE_FRAGMENT"
+    }
 
     private lateinit var hourSelector : MaterialNumberPicker
     private lateinit var daySelector : MaterialNumberPicker
@@ -98,6 +103,7 @@ class SavedRecipeFragment : Fragment(),
         Observer<Interval> { step: Interval ->
             timeHelper.setValues(step.time)
             setStartTimeViews()
+            Log.i(TAG, "interval is ${step.time}")
             dataRetrieved = true
 
         }
@@ -219,12 +225,12 @@ class SavedRecipeFragment : Fragment(),
         viewModel.start.observe(viewLifecycleOwner, startObserver)
         viewModel.notes.observe(viewLifecycleOwner, noteObserver)
         viewModel.recipeName?.observe(viewLifecycleOwner, nameObserver)
-        viewModel.getStart()
         callback.fragmentAttached(this)
         keyboardDetection.registerObserver(this)
         textDisplayDialog.setTargetFragment(this, 0)
         textInputDialog.setTargetFragment(this, 0)
         stepDetailDialog.setTargetFragment(this, 0)
+        viewModel.getStart()
         return myView
     }
 

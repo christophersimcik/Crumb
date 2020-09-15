@@ -1,6 +1,7 @@
 package com.example.crumb.ViewModels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.crumb.Adapters.IntervalAdapter
 import com.example.crumb.Database.DatabaseScheduler
@@ -10,7 +11,9 @@ import com.example.crumb.Models.Interval
 import kotlinx.coroutines.launch
 
 class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(application) {
-
+    companion object{
+        val TAG = "INTERVAL_VIEW_MODEL"
+    }
     val database = DatabaseScheduler.getInstance(application)
     private val intervalDao = database?.getIntervalDao()
     private val scheduleDao = database?.getScheduleDao()
@@ -41,6 +44,14 @@ class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(a
         }
     }
 
+    fun updateAll(){
+        viewModelScope.launch {
+            updateSingle(selected)
+            update()
+            updateSchedule()
+        }
+    }
+
     private suspend fun updateSingle(interval: Interval) {
             intervalDao?.update(interval)
     }
@@ -64,6 +75,7 @@ class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(a
                         item.sequence = counter + 1
                         item.percentage = (item.time.toFloat() - start) / duration.toFloat()
                         previousTime = item.time
+                        Log.i(TAG,"sequence is ${item.sequence}")
                     }
                     intervalDao?.updateAll(list)
         }

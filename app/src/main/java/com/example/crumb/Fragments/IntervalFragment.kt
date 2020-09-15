@@ -120,6 +120,7 @@ class IntervalFragment :
 
     override fun onStop() {
         super.onStop()
+        viewModel.updateAll()
         keyboardDetection.removeListener()
     }
 
@@ -150,6 +151,7 @@ class IntervalFragment :
         intervalAdapter.registerGetInputDialog(this)
         return myView
     }
+
 
     override fun showInputDialog() {
         textInputDialog.show(parentFragmentManager, "input_dialog")
