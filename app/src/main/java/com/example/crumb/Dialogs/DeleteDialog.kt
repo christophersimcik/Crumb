@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.emoji.widget.EmojiEditText
 import androidx.fragment.app.DialogFragment
 import com.example.crumb.R
@@ -70,8 +71,9 @@ class DeleteDialog(private val type : String) : DialogFragment() {
     override fun onResume() {
         super.onResume()
         val width = (displayMetrics.heightPixels.coerceAtMost(displayMetrics.widthPixels) * .90).toInt()
-        val height = width / 2
-        dialog?.window?.setLayout(width, height)
+        val height = width * 0.65f
+        dialog?.window?.setLayout(width, height.toInt())
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         layout.invalidate()
     }
 

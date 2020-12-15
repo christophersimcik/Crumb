@@ -17,12 +17,14 @@ import org.joda.time.DateTime
 import java.util.*
 import kotlin.collections.ArrayList
 
+// shared pref requires context ?! possible memory leak !!!!
 class AlarmHelper(private val sharedPreferences: SharedPreferences) {
 
     companion object {
         const val NAME = "name"
         const val MY_ID = "my_id"
         const val DETAILS = "details"
+        const val PENDING_INTENT_ID = "pending_intent_id"
         const val PARENT_ID = "parent_id"
         const val START_TIME = "start_time"
         const val DESCRIPTION = "description"
@@ -33,49 +35,58 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
     private var alarmManager: AlarmManager? = null
     private val bundles = ArrayList<Bundle>()
 
-    fun cancelSpecificAlarm(step: Interval, context: Context): Interval {
-        alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    fun cancelAnAlarm(interval: Interval, context: Context): Interval {
         val intervalDao = DatabaseScheduler.getInstance(context)?.getIntervalDao() as IntervalDao
-        val scope = CoroutineScope(Dispatchers.IO)
-        scope.launch { intervalDao.toggleAlarm(step.id) }
+        alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        //turn off alarm
+        CoroutineScope(Dispatchers.IO).launch { intervalDao.toggleAlarm(interval.id) }
         val intent = Intent(context, AlarmReceiver::class.java)
         val alarmIntent = PendingIntent.getBroadcast(
             context,
-            step.pending_intent_id,
-            intent,0
+            interval.pending_intent_id,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
         )
-        if (alarmManager != null) {
-            alarmManager!!.cancel(alarmIntent)
-        }
-        step.alarm_on = false
-        val count = sharedPreferences.getInt(ACTIVE_ALARMS, 0)
-        if (count > 1) {
-            sharedPreferences.edit().putInt(ACTIVE_ALARMS, count - 1).apply()
-        } else {
-            sharedPreferences.edit().putInt(ACTIVE_ALARMS, 0).apply()
-        }
-        return step
+        alarmManager?.cancel(alarmIntent)
+        decrementActiveAlarms()
+        return interval.also { it.alarm_on = false }
     }
 
+
+    private fun decrementActiveAlarms() {
+        var numberOfActiveAlarms = (sharedPreferences.getInt(ACTIVE_ALARMS, 0) - 1).coerceAtLeast(0)
+        sharedPreferences.edit().putInt(ACTIVE_ALARMS, numberOfActiveAlarms).apply()
+    }
+
+    private fun incrementActiveAlarms() {
+        val numberOfActiveAlarms = sharedPreferences.getInt(ACTIVE_ALARMS, 0) + 1
+        sharedPreferences.edit().putInt(ACTIVE_ALARMS, numberOfActiveAlarms).apply()
+    }
+
+
     fun setSpecificAlarm(interval: Interval, context: Context): Interval {
-        if(!interval.alarm_on) {
+        if (!interval.alarm_on) {
             alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val startTime = DateTime.now().withTimeAtStartOfDay().plusMinutes(interval.time)
-            val calendar = Calendar.getInstance().apply { timeInMillis = startTime.millis }
-            val pendingIntentID = (System.currentTimeMillis() + 1).toInt()
+            val start = DateTime.now().withTimeAtStartOfDay().plusMinutes(interval.time)
+            val calendar = Calendar.getInstance().apply { timeInMillis = start.millis }
+            val id = getNewPendingIntentId()
             val intent = Intent(context, AlarmReceiver::class.java)
             val myParentId: Long = interval.parentId
             intent.putExtra(MY_ID, interval.id)
             intent.putExtra(PARENT_ID, myParentId)
             intent.putExtra(DETAILS, createBundle(interval))
-            val alarmIntent = PendingIntent.getBroadcast(context, pendingIntentID, intent, 0)
+            val alarmIntent = PendingIntent.getBroadcast(
+                context,
+                id,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
             alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alarmIntent)
             interval.alarm_on = true
-            interval.pending_intent_id = pendingIntentID
+            interval.pending_intent_id = id
             interval.alarm_time = calendar.timeInMillis
             sharedPreferences.edit().putLong(PARENT_ID, interval.parentId).apply()
-            val count = sharedPreferences.getInt(ACTIVE_ALARMS, 0)
-            sharedPreferences.edit().putInt(ACTIVE_ALARMS, count + 1).apply()
+            incrementActiveAlarms()
         }
         return interval
     }
@@ -84,7 +95,7 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
         alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val calendars = setCalendars(list)
         for (i in 0 until calendars.size) {
-            if(!list[i].alarm_on) {
+            if (!list[i].alarm_on) {
                 val counter = System.currentTimeMillis().toInt() + 1
                 val intent = Intent(context, AlarmReceiver::class.java)
                 intent.putExtra(PARENT_ID, parentID)
@@ -96,9 +107,13 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
                 list[i].pending_intent_id = counter
                 val alarmIntent = PendingIntent.getBroadcast(context, counter, intent, 0)
                 val build = android.os.Build.VERSION.SDK_INT
-                if(build >= 23){
-                    alarmManager?.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, list[i].alarm_time, alarmIntent)
-                }else{
+                if (build >= 23) {
+                    alarmManager?.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        list[i].alarm_time,
+                        alarmIntent
+                    )
+                } else {
                     alarmManager?.setExact(AlarmManager.RTC_WAKEUP, list[i].alarm_time, alarmIntent)
                 }
                 sharedPreferences.edit().putLong(PARENT_ID, parentID).apply()
@@ -151,10 +166,8 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
 
     private fun createBundle(interval: Interval): Bundle {
         val bundle = Bundle()
-        println("name = " + interval.name)
-        println("notes = " + interval.notes)
-        val name = if(interval.name == "") "No Name" else interval.name
-        val note = if(interval.notes == "") "No Notes" else interval.notes
+        val name = if (interval.name == "") "No Name" else interval.name
+        val note = if (interval.notes == "") "No Notes" else interval.notes
         bundle.putString(NAME, name)
         bundle.putString(DESCRIPTION, note)
         return bundle
@@ -163,4 +176,17 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
     private fun checkIfPassed(now: Int, target: Int): Boolean {
         return now > target
     }
+
+
+    private fun getNewPendingIntentId(): Int {
+        val id = sharedPreferences.getInt(PENDING_INTENT_ID, 1)
+        val nextID = if (id + 1 < Int.MAX_VALUE) id + 1 else 1
+        incrementPendingIntentId(nextID)
+        return nextID
+    }
+
+    private fun incrementPendingIntentId(id: Int) {
+        sharedPreferences.edit().putInt(PENDING_INTENT_ID, id).apply()
+    }
+
 }

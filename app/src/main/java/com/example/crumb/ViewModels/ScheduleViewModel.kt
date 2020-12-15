@@ -72,7 +72,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
     private fun cancelAllAlarms(list : List<Interval>){
         for(step in list){
             if(step.alarm_on){
-                alarmHelper.cancelSpecificAlarm(step,getApplication())
+                alarmHelper.cancelAnAlarm(step,getApplication())
             }
         }
     }

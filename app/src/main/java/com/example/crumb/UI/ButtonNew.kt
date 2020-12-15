@@ -306,7 +306,7 @@ class ButtonNew @JvmOverloads constructor(
             paint.color = colorGreen
         }
         val rect = Rect()
-        val text = context.getString(R.string.start_text)
+        val text = context.getString(R.string.start_button)
         paint.getTextBounds(text, 0, text.length, rect)
         paint.textSize = 50f
         paint.textAlign = Paint.Align.CENTER

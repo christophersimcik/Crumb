@@ -44,7 +44,7 @@ class ScheduleFragment : Fragment(), DeleteDialog.SwipeDeleteDialogListener,
     }
     val deleteDialog: DeleteDialog by lazy {
         DeleteDialog(
-            "Delete This Recipe?"
+            context?.getString(R.string.delete_this_recipe) ?: ""
         )
     }
     private val deletSwipe: SwipeToDelete by lazy {
