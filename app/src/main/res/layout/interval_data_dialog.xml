@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/dialog_border"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:maxHeight="500dp"
     android:layout_margin="5dp"
     android:padding="10dp">
 
@@ -18,6 +18,7 @@
         android:singleLine="true"
         android:textColor="@android:color/black"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/step_scroll_view"
         tools:layout_editor_absoluteX="56dp" />
@@ -37,17 +38,16 @@
             android:layout_height="wrap_content"
             android:hint="@string/notes_text"
             android:textColor="@color/default_dark"
-            android:textSize="14sp" />
+            android:textSize="18sp" />
     </ScrollView>
 
     <View
         android:id="@+id/view_b"
         android:layout_width="match_parent"
         android:layout_height="3dp"
+        android:background="@color/hilight"
         android:layout_below="@id/step_scroll_view"
         android:layout_marginTop="20dp"
-        android:background="@drawable/divider"
-        app:layout_constraintBottom_toTopOf="@id/time_from_start"
         app:layout_constraintTop_toBottomOf="@+id/step_scroll_view" />
 
     <TextView
@@ -59,7 +59,6 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/view_c"
         app:layout_constraintTop_toBottomOf="@+id/view_b" />
 
     <View
@@ -68,7 +67,6 @@
         android:layout_height="1dp"
         android:layout_below="@id/time_from_start"
         android:background="@color/hilight"
-        app:layout_constraintBottom_toTopOf="@id/time_from_last"
         app:layout_constraintTop_toBottomOf="@+id/time_from_start" />
 
     <TextView
@@ -80,7 +78,6 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/view_d"
         app:layout_constraintTop_toBottomOf="@+id/view_c" />
 
     <View
@@ -89,7 +86,6 @@
         android:layout_height="1dp"
         android:layout_below="@id/time_from_last"
         android:background="@color/hilight"
-        app:layout_constraintBottom_toTopOf="@id/percentage_of_total"
         app:layout_constraintTop_toBottomOf="@+id/time_from_last" />
 
     <TextView
@@ -113,8 +109,10 @@
         android:layout_gravity="center"
         android:background="@drawable/dimsiss_button_selector"
         android:text="@string/dismiss_text"
+        app:layout_constraintTop_toBottomOf="@+id/percentage_of_total"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/confirm_button"/>
     <Button
         android:id="@+id/confirm_button"
         android:layout_width="100dp"
@@ -124,7 +122,10 @@
         android:layout_gravity="center"
         android:background="@drawable/confirm_button_selector"
         android:text="@string/submit_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/dismiss_button"
+        app:layout_constraintBottom_toBottomOf="@+id/dismiss_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/dismiss_button"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -4,9 +4,11 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
 import androidx.emoji.widget.EmojiEditText
 import androidx.fragment.app.DialogFragment
@@ -101,10 +103,17 @@ class StepDialog(private val keyboardDetection: KeyboardDetectionHelper) : Dialo
     }
 
     override fun onResume() {
+        super.onResume()
         listener.stepDialogCreated()
         val additionalMinute = if (isFirst) 0 else 1
         timeHelper.setValues(initTime + additionalMinute)
-        super.onResume()
+        val displayMetrics = DisplayMetrics()
+        val windowManager = targetFragment?.context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val width = (displayMetrics.widthPixels * 0.85f).toInt()
+        val height = (displayMetrics.heightPixels * 0.50f).toInt()
+        dialog?.window?.setLayout(width,height)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
     }
 
     override fun onAttach(context: Context) {

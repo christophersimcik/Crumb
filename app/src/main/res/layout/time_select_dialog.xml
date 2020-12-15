@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/dialog_border"
     android:padding="10dp">
 
     <androidx.emoji.widget.EmojiEditText
@@ -12,156 +13,21 @@
         android:layout_height="wrap_content"
         android:hint="@string/name_text"
         android:singleLine="true"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/time_block"/>
 
-    <TextView
-        android:id="@+id/day"
+    <include
+        android:id="@+id/time_block"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/day"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@+id/hour"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name_input_field" />
-
-    <TextView
-        android:id="@+id/hour"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/hour"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@+id/min"
-        app:layout_constraintStart_toEndOf="@+id/day"
-        app:layout_constraintTop_toBottomOf="@+id/name_input_field" />
-
-    <TextView
-        android:id="@+id/min"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/min"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@+id/meridian"
-        app:layout_constraintStart_toEndOf="@+id/hour"
-        app:layout_constraintTop_toBottomOf="@+id/name_input_field" />
-
-    <TextView
-        android:id="@+id/meridian"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/meridian"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/min"
-        app:layout_constraintTop_toBottomOf="@+id/name_input_field" />
-
-    <com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
-        android:id="@+id/day_selector"
-        android:layout_width="0dp"
-        android:layout_height="125dp"
-        android:layout_weight="1"
-        app:layout_constraintEnd_toStartOf="@+id/hour_selector"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/day"
-        app:mnpMaxValue="365"
-        app:mnpMinValue="1"
-        app:mnpSeparatorColor="@color/inactive_light"
-        app:mnpTextColor="@color/default_dark"
-        app:mnpTextSize="16sp"
-        app:mnpWrapped="true" />
-
-    <View
-        android:layout_width="1dp"
-        android:layout_height="125dp"
-        android:background="@color/inactive_light"
-        app:layout_constraintStart_toEndOf="@+id/min"
-        app:layout_constraintTop_toBottomOf="@+id/min" />
-
-    <com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
-        android:id="@+id/hour_selector"
-        android:layout_width="0dp"
-        android:layout_height="125dp"
-        android:layout_weight="1"
-        app:layout_constraintEnd_toStartOf="@+id/min_selector"
-        app:layout_constraintStart_toEndOf="@+id/day_selector"
-        app:layout_constraintTop_toBottomOf="@+id/hour"
-        app:mnpMaxValue="12"
-        app:mnpMinValue="1"
-        app:mnpSeparatorColor="@color/inactive_light"
-        app:mnpTextColor="@color/default_dark"
-        app:mnpTextSize="16sp"
-        app:mnpWrapped="true" />
-
-    <View
-        android:id="@+id/view4"
-        android:layout_width="1dp"
-        android:layout_height="125dp"
-        android:background="@color/inactive_light"
-        app:layout_constraintStart_toEndOf="@+id/day"
-        app:layout_constraintTop_toBottomOf="@+id/day" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="125dp"
-        android:gravity="center_vertical"
-        android:text="@string/semicolon"
-        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hour"
-        tools:layout_editor_absoluteY="278dp" />
-
-    <com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
-        android:id="@+id/min_selector"
-        android:layout_width="0dp"
-        android:layout_height="125dp"
-        android:layout_weight="1"
-        app:layout_constraintEnd_toStartOf="@+id/meridian_selector"
-        app:layout_constraintStart_toEndOf="@+id/hour_selector"
-        app:layout_constraintTop_toBottomOf="@+id/min"
-        app:mnpMaxValue="59"
-        app:mnpMinValue="0"
-        app:mnpSeparatorColor="@color/inactive_light"
-        app:mnpTextColor="@color/default_dark"
-        app:mnpTextSize="16sp"
-        app:mnpWrapped="true" />
-
-    <com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
-        android:id="@+id/meridian_selector"
-        android:layout_width="0dp"
-        android:layout_height="125dp"
-        android:layout_weight="1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/min_selector"
-        app:layout_constraintTop_toBottomOf="@+id/meridian"
-        app:mnpMaxValue="1"
-        app:mnpMinValue="0"
-        app:mnpSeparatorColor="@color/inactive_light"
-        app:mnpTextColor="@color/default_dark"
-        app:mnpTextSize="16sp"
-        app:mnpWrapped="false" />
-
-    <View
-        android:id="@+id/view2"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/divider_light"
-        app:layout_constraintBottom_toTopOf="@+id/dismiss_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hour_selector" />
-
+        android:layout_marginTop="25dp"
+        app:layout_constraintTop_toBottomOf="@id/name_input_field"
+        layout="@layout/time_block" />
 
     <Button
         android:id="@+id/dismiss_button"
@@ -173,8 +39,9 @@
         android:text="@string/dismiss_text"
         android:textColor="@color/default_dark"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/center_vertical_guide"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/time_block"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/center_vertical_guide"/>
 
     <Button
         android:id="@+id/submit_button"
@@ -186,8 +53,9 @@
         android:text="@string/submit_text"
         android:textColor="@color/default_dark"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/center_vertical_guide" />
+        app:layout_constraintStart_toEndOf="@id/center_vertical_guide"
+        app:layout_constraintTop_toBottomOf="@id/time_block"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/center_vertical_guide"

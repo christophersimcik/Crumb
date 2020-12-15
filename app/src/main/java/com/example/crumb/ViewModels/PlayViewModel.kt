@@ -153,7 +153,7 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
     private fun cancelAllAlarms(list : List<Interval>){
         for(step in list){
             if(step.alarm_on){
-                alarmHelper.cancelSpecificAlarm(step,getApplication())
+                alarmHelper.cancelAnAlarm(step,getApplication())
                 step.alarm_on = false
                 step.alarm_time = 0L
             }

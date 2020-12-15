@@ -3,7 +3,8 @@
     <string name="channel_present_and_soung_id">presnt and sound id</string>
     <string name="channel_present_and_sound">Present and Sound Alarm</string>
     <string name="channel_present_and_sound_description">Shows notification and plays alarm</string>
-    <string name="start_text">Start</string>
+    <string name="start_text">First Step</string>
+    <string name="alarm_at">Alarm at %1$s</string>
     <string name="no_name_text">No Name</string>
     <string name="name_text">Name</string>
     <string name="description_text">Desciption</string>
@@ -29,5 +30,9 @@
     <string name="display_recipe_notes_button">Button to display recipe notes</string>
     <string name="input_current_time_button">Button to input current time as start time</string>
     <string name="add_a_note_to_a_step_button">Button to add a note to a step</string>
-    <string name="recipe_text">Recipes</string>
+    <string name="delete_this_recipe"><b>Delete This Recipe?</b></string>
+    <string name="delete_this_step"><b>Delete This Step?</b></string>
+    <string name="recipe_text"><b>Recipes</b></string>
+    <!-- Start Button -->
+    <string name="start_button">Start</string>
 </resources>

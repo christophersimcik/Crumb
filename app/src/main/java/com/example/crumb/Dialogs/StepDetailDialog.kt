@@ -69,11 +69,10 @@ class StepDetailDialog : DialogFragment() {
         val windowManager =
             targetFragment?.context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val width =
-            (displayMetrics.widthPixels.coerceAtMost(displayMetrics.heightPixels) * .90).toInt()
-        val height =
-            (displayMetrics.widthPixels.coerceAtMost(displayMetrics.heightPixels))
+        val width = (displayMetrics.widthPixels * 0.85f).toInt()
+        val height = (displayMetrics.heightPixels * 0.70f).toInt()
         dialog?.window?.setLayout(width, height)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         listener.onStepDialogCreated()
     }
 
@@ -87,8 +86,14 @@ class StepDetailDialog : DialogFragment() {
         } else {
             stepTimeFromLast.text = textFromLast(step.span)
         }
-        stepTimeFromStart.text = getAlarmTime(step.time)
-        percentageOfTotal.text = textPercentage(step.percentage)
+        stepTimeFromStart.text = context?.getString(R.string.alarm_at, getAlarmTime(step.time))
+        textPercentage(step.percentage).let{
+            if (it == ""){
+                percentageOfTotal.visibility = View.GONE
+            }else{
+                percentageOfTotal.text = it
+            }
+        }
     }
 
     private fun textFromLast(time: Int): String {
@@ -96,7 +101,7 @@ class StepDetailDialog : DialogFragment() {
     }
 
     private fun getAlarmTime(time: Int): String {
-        return " Alarm At " + getAsTime(time) + " " + getMeridian(time)
+        return  getAsTime(time) + " " + getMeridian(time)
     }
 
     private fun textPercentage(time: Float): String {

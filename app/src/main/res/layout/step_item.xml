@@ -48,6 +48,7 @@
             android:ellipsize="end"
             android:gravity="center"
             android:textSize="20sp"
+            android:textStyle="bold"
             android:layout_marginEnd="3dp"/>
 
         <View

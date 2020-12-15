@@ -134,7 +134,7 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
         }
 
         private fun cancelAlarm() {
-           viewModel.updateInterval(alarmHelper.cancelSpecificAlarm(mData[adapterPosition], context))
+           viewModel.updateInterval(alarmHelper.cancelAnAlarm(mData[adapterPosition], context))
         }
 
         private fun setAlarm() {

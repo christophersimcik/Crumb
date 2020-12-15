@@ -60,9 +60,10 @@ class TextInputDialog : DialogFragment() {
         val displayMetrics = DisplayMetrics()
         val windowManager = targetFragment?.context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val width = displayMetrics.widthPixels.coerceAtMost(displayMetrics.heightPixels)
-        val height = (displayMetrics.widthPixels.coerceAtLeast(displayMetrics.heightPixels) * .50).toInt()
+        val width = (displayMetrics.widthPixels * 0.85f).toInt()
+        val height = (displayMetrics.heightPixels * 0.50f).toInt()
         dialog?.window?.setLayout(width,height)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         listener.onDialogCreated()
         setup()
     }

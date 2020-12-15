@@ -83,6 +83,8 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_margin="10dp"
+            android:textStyle="bold"
+            android:textSize="18sp"
             android:text="@string/recipe_text"/>
 
         <androidx.fragment.app.FragmentContainerView
@@ -92,7 +94,7 @@
             android:layout_height="match_parent"
             android:layout_below="@id/heading"
             android:layout_marginBottom="20dp"
-            android:padding="10dp"
+            android:padding="5dp"
             app:defaultNavHost="true"
             app:navGraph="@navigation/navigation_graph" />
 
