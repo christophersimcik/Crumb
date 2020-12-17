@@ -45,7 +45,7 @@ class IntervalFragment :
 
     val deleteDialog: DeleteDialog by lazy {
         DeleteDialog(
-            context?.getString(R.string.delete_this_step) ?: ""
+            "Delete This Step?"
         )
     }
 
@@ -120,6 +120,7 @@ class IntervalFragment :
 
     override fun onStop() {
         super.onStop()
+       // viewModel.updateAll()
         viewModel.update()
         keyboardDetection.removeListener()
     }
@@ -186,7 +187,7 @@ class IntervalFragment :
 
     override fun onConfirm(dialog: Dialog, note: String) {
         viewModel.selected.notes = note
-        viewModel.update()
+      //  viewModel.updateName(viewModel.selected)
         this.dialog.setName("")
         textInputDialog.teardown()
         dialog.dismiss()

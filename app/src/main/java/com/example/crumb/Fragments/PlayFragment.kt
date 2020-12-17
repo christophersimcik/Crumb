@@ -95,7 +95,7 @@ class PlayFragment : Fragment(),
     private val stepObserver = Observer<List<Interval>> { list: List<Interval> ->
         viewModel.updateTotal(list, progressTotal)
         viewModel.hasActiveAlarms()
-        playAdapter.setData(list)
+        playAdapter.setData(list.sortedBy { it.alarm_time })
     }
 
     private val recipeObserver = Observer { schedule: Schedule? ->
@@ -103,6 +103,8 @@ class PlayFragment : Fragment(),
         val duration = schedule?.duration ?: 0
         nameField.text = schedule?.name
         viewModel.duration = duration
+        viewModel.start = schedule?.start ?: 0L
+        playAdapter.start = schedule?.start ?: 0L
         if (steps == 1 ) {
             val minutesAsText = viewModel.convertMinutesToText(duration) + "In " + steps.toString() + " Step"
             durationText.text = minutesAsText
@@ -113,7 +115,6 @@ class PlayFragment : Fragment(),
 
     private val endObserver = Observer<String> { msg: String ->
         endMessageText.text = msg
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

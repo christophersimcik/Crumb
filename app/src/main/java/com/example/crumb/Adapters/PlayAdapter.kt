@@ -1,6 +1,7 @@
 package com.example.crumb.Adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import androidx.emoji.widget.EmojiTextView
@@ -21,7 +22,14 @@ import kotlin.collections.ArrayList
 class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
     RecyclerView.Adapter<PlayAdapter.ViewHolder>() {
 
-    companion object{
+    companion object {
+
+        const val MILLIS_IN_SECOND = 1000
+        const val MILLIS_IN_MINUTE = 60000
+        const val MILLIS_IN_HOUR = 3600000
+        const val MILLIS_IN_DAY = 86400000
+        const val TAG = " Play Adapter"
+
         val MERIDIAN = hashMapOf(
             0 to "am",
             1 to "pm"
@@ -69,6 +77,10 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
     }
 
     fun setData(newData: List<Interval>) {
+        newData.forEach {
+            Log.d(TAG, "alarm time = ${it.alarm_time}")
+            Log.d(TAG, "alarm time = ${it.alarm_time}")
+        }
         val diffResult = DiffUtil.calculateDiff(
             StepDiffUtilCallback(
                 mData,
@@ -89,7 +101,7 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
         RecyclerView.ViewHolder(itemView),
         PlayViewModel.ViewHolderCallback {
 
-        var step : Interval? = null
+        var step: Interval? = null
         var myStart = 0L
 
         override fun onInitiated(colors: IntArray) {
@@ -101,7 +113,7 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
         }
 
         val name: EmojiTextView = itemView.findViewById(R.id.play_name_field)
-        private val startTime : EmojiTextView = itemView.findViewById(R.id.play_start_time_field)
+        private val startTime: EmojiTextView = itemView.findViewById(R.id.play_start_time_field)
         private val noteButton = itemView.findViewById<ImageButton>(R.id.play_notes_button)
         val progressBar: MyItemProgressBar = itemView.findViewById(R.id.my_progerss_bar)
         val alarmCheckBox: CustomCheckBox = itemView.findViewById(R.id.play_checkbox)
@@ -122,31 +134,39 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
             }
         }
 
-        fun setStartTime(timeInMillis : Long){
+        fun setStartTime(timeInMillis: Long) {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = timeInMillis
             var hour = calendar.get(Calendar.HOUR)
-            if(hour == 0) hour = 12
+            if (hour == 0) hour = 12
             val min = calendar.get(Calendar.MINUTE)
             val meridian = calendar.get(Calendar.AM_PM)
-            val timeAsString = hour.toString() + ":" + DecimalFormat("00").format(min)  + " " + MERIDIAN[meridian]
+            val timeAsString =
+                hour.toString() + ":" + DecimalFormat("00").format(min) + " " + MERIDIAN[meridian]
             startTime.text = timeAsString
         }
 
         private fun cancelAlarm() {
-           viewModel.updateInterval(alarmHelper.cancelAnAlarm(mData[adapterPosition], context))
+            viewModel.updateInterval(alarmHelper.cancelAnAlarm(mData[adapterPosition], context))
         }
 
         private fun setAlarm() {
-            viewModel.updateInterval(alarmHelper.setSpecificAlarm(mData[adapterPosition], context))
+            viewModel.updateInterval(alarmHelper.setSpecificAlarm(viewModel.start, mData[adapterPosition], context))
         }
 
         fun update(now: Long) {
             this.progressBar.update(now, start, myStart, viewModel.start, viewModel.duration)
-            if(step != null && step!!.alarm_on) {
-                this.progressBar.setMessage(convertMillisToText(myStart - now))
-            }else {
-                this.progressBar.setMessage("Alarm Off!")
+            step?.let { interval ->
+                val text = convertMillisToText(myStart - now)
+                if (interval.alarm_on) {
+                    this.progressBar.setMessage(text)
+                } else {
+                    if (text == context.getString(R.string.completed)) {
+                        this.progressBar.setMessage(text)
+                    } else {
+                        this.progressBar.setMessage("Alarm Off!")
+                    }
+                }
             }
         }
 
@@ -158,10 +178,10 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
             }
         }
 
-        fun makeDuration(list: List<Interval>, position: Int) : Long {
-            var dur = 0
+        fun makeDuration(list: List<Interval>, position: Int): Long {
+            var dur = 0L
             for (index in 0..position) {
-                dur += list[index].span
+                dur += list[index].span.toLong()
             }
             myStart = (start + (dur * 60000))
             return myStart
@@ -170,10 +190,10 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
 
     fun convertMillisToText(millis: Long): String {
         if (millis > 0) {
-            val days = millis / 86400000
-            val hours = (millis % 86400000) / 3600000
-            val mins = (millis % 86400000 % 3600000) / 60000
-            val secs = (millis % 86400000 % 3600000 % 60000) / 1000
+            val days = millis / MILLIS_IN_DAY
+            val hours = (millis % MILLIS_IN_DAY) / MILLIS_IN_HOUR
+            val mins = (millis % MILLIS_IN_DAY % MILLIS_IN_HOUR) / MILLIS_IN_MINUTE
+            val secs = (millis % MILLIS_IN_DAY % MILLIS_IN_HOUR % MILLIS_IN_MINUTE) / MILLIS_IN_SECOND
             var dayString = ""
             var hourString = ""
             var minString = ""
@@ -206,9 +226,9 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
                     "$secs Sec "
                 }
             }
-            return "Alarm In $dayString$hourString$minString$secString"
+            return context.getString(R.string.alarm_in, "$dayString$hourString$minString$secString")
         } else {
-            return "Completed!"
+            return context.getString(R.string.completed)
         }
     }
 

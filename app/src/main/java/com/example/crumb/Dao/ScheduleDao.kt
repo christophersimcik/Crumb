@@ -53,7 +53,7 @@ interface ScheduleDao {
 
     // start time
     @Query("UPDATE schedule_table SET start_time = :start where id = :id")
-    suspend fun updateStartTime(id : Long, start : Int)
+    suspend fun updateStartTime(id : Long, start : Long)
     // end time
     @Query("UPDATE schedule_table SET end_time = :end where id = :id")
     suspend fun updateEndTime(id : Long, end : Int)

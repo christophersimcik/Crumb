@@ -47,7 +47,6 @@ class ScheduleAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.name.text = mData[position].name
         holder.description.text = mData[position].description
-        holder.duration.text = getTime(mData[position].duration)
         holder.steps.text = getSteps(mData[position].steps)
         holder.date.text = mData[position].date
         holder.parentID = mData[position].id
@@ -71,7 +70,8 @@ class ScheduleAdapter(
         return stringBuilder
     }
 
-    private fun getTime(minutes: Int): SpannableStringBuilder {
+    private fun getTime(minutes: String): SpannableStringBuilder {
+        val minutes = minutes.toLong()
         val decimalFormat = DecimalFormat("#")
         val stringBuilder = SpannableStringBuilder()
         val days = floor((minutes / 1440).toDouble())

@@ -34,6 +34,7 @@ class SavedRecipeViewModel(application: Application, var  parent_id: Long) :
     val start = MutableLiveData<Interval>()
     val notes = MutableLiveData<String>()
     val recipeName = scheduleDao?.getName(parent_id)
+    var nameField = ""
     val intervalData = intervalDao?.getAllIntervalsInSchedule(parent_id)
     lateinit var selectedInterval: Interval
 
@@ -96,6 +97,7 @@ class SavedRecipeViewModel(application: Application, var  parent_id: Long) :
             if (list != null) {
                 var last = newTime
                 for (item in list) {
+                    Log.d(TAG, " update ${last + item.span}")
                     item.time = last + item.span
                     last = item.time
                 }

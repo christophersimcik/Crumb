@@ -33,8 +33,10 @@ class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(a
 
     fun updateSelected(name: String, time: Int) {
         viewModelScope.launch {
-            selected.name = name
-            selected.time = time
+            if(this@IntervalViewModel::selected.isInitialized) {
+                selected.name = name
+                selected.time = time
+            }
             intervalDao?.update(selected)
             update()
         }
@@ -75,13 +77,14 @@ class IntervalViewModel(application: Application, id: Long) : AndroidViewModel(a
         list.sortedBy { it.time }
     }
 
+
     private suspend fun updateSchedule() {
         val list = intervalDao?.getAsList(parentID) ?: emptyList()
         val schedule = scheduleDao?.getSelected(parentID)
         if (list.isNotEmpty()) {
             schedule?.steps = list.size
-            schedule?.start = list.first().time
-            schedule?.end = list.last().time
+            schedule?.start = list.first().time.toLong()
+            schedule?.end = list.last().time.toLong()
             schedule?.duration = list.last().time - list.first().time
         }
         if (schedule != null) scheduleDao?.updateSingle(schedule)

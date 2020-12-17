@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:padding="5dp">
+    android:background="@drawable/dialog_border"
+    android:padding="10dp">
 
     <androidx.emoji.widget.EmojiEditText
         android:id="@+id/recipe_name_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="end"
-        android:gravity="start"
+        android:gravity="center"
         android:hint="@string/enter_recipe_name_text"
         android:singleLine="true"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline4"
-        tools:layout_editor_absoluteX="5dp" />
+        android:textIsSelectable="true"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toTopOf="@+id/mid_guide" />
 
     <Button
         android:id="@+id/dismiss_button"
@@ -28,9 +29,8 @@
         android:background="@drawable/dimsiss_button_selector"
         android:text="@string/cancel_text"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline4" />
+        app:layout_constraintStart_toStartOf="@id/start_guide"
+        app:layout_constraintTop_toBottomOf="@+id/mid_guide" />
 
     <Button
         android:id="@+id/confirm_button"
@@ -41,22 +41,28 @@
         android:background="@drawable/confirm_button_selector"
         android:text="@string/confirm_text"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toTopOf="@+id/guideline4" />
+        app:layout_constraintEnd_toEndOf="@id/end_guide"
+        app:layout_constraintTop_toBottomOf="@+id/mid_guide" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
+        android:id="@+id/start_guide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+        app:layout_constraintGuide_percent="0.05" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
+        android:id="@+id/end_guide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.95" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mid_guide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
+        app:layout_constraintGuide_percent="0.45" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

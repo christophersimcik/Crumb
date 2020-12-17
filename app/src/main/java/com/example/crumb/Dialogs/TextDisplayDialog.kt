@@ -63,6 +63,7 @@ class TextDisplayDialog : DialogFragment() {
         val width = (displayMetrics.widthPixels.coerceAtMost(displayMetrics.heightPixels) * .90).toInt()
         val height = (displayMetrics.widthPixels.coerceAtLeast(displayMetrics.heightPixels) * .70).toInt()
         dialog?.window?.setLayout(width,height)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
     }
 
     interface DisplayDialogListener {

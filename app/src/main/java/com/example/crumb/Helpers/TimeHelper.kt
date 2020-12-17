@@ -1,6 +1,7 @@
 package com.example.crumb.Helpers
 
 import android.graphics.Color
+import android.util.Log
 import com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
 import java.text.DecimalFormat
 
@@ -16,8 +17,9 @@ class TimeHelper(private val dayPicker : MaterialNumberPicker, private val hrPic
     fun getMinutesFromViews() : Int {
         val daysAsMinutes= convertDaysToMinutes(dayPicker.value)
         val hoursAsMinutes = convertHoursToMinutes(mrdnPicker.value, hrPicker.value)
-
-        return daysAsMinutes + hoursAsMinutes + minPicker.value - 1440
+        val all = daysAsMinutes + hoursAsMinutes + minPicker.value - 1440
+        Log.d("TIME_HLPR", "$all")
+        return all
 
     }
 

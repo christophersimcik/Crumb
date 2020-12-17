@@ -1,9 +1,12 @@
 package com.example.crumb.Activities
 
+import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -30,10 +33,16 @@ const val TAG = "MAIN_ACTIVITY"
 class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
 
     private val fragmentManager: FragmentManager by lazy { supportFragmentManager }
-    private lateinit var currentFragment : Fragment
+    private lateinit var currentFragment: Fragment
+    private var previousRootYValue= 0.0f
+    private lateinit var view: View
+    private val globalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener{
+        toggleAddButton(view.height.toFloat() < previousRootYValue)
+        previousRootYValue = view.height.toFloat()
+    }
     private val addButton: ButtonNew by lazy { findViewById<ButtonNew>(R.id.add_button) }
     private val duplicateButton: ImageButton by lazy { findViewById<ImageButton>(R.id.duplicate_button) }
-    private val shareButton: ImageButton by lazy { findViewById<ImageButton>(R.id.share_button)}
+    private val shareButton: ImageButton by lazy { findViewById<ImageButton>(R.id.share_button) }
     private val displayNotesButton: ImageButton by lazy { findViewById<ImageButton>(R.id.notes_button) }
     private val editButton: ImageButton by lazy { findViewById<ImageButton>(R.id.edit_button) }
     private val headerTextView: TextView by lazy { findViewById<TextView>(R.id.heading) }
@@ -70,6 +79,7 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
 
             when (mode) {
                 ButtonNew.RECIPES -> {
+                    view.viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
                     shareButton.visibility = View.INVISIBLE
                     displayNotesButton.visibility = View.INVISIBLE
                     duplicateButton.visibility = View.INVISIBLE
@@ -79,6 +89,7 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
                     addButton.toCircle()
                 }
                 ButtonNew.STEPS -> {
+                    view.viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
                     shareButton.visibility = View.INVISIBLE
                     displayNotesButton.visibility = View.INVISIBLE
                     duplicateButton.visibility = View.INVISIBLE
@@ -86,11 +97,18 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
                     addButton.visibility = View.VISIBLE
                     addButton.mode = ButtonNew.STEPS
                     addButton.toSquare()
+
                 }
                 ButtonNew.DETAIL -> {
+                    addOnGlobalLayoutChangedListener()
                     shareButton.visibility = View.VISIBLE
                     displayNotesButton.visibility = View.VISIBLE
-                    duplicateButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.copy_img_color_selector))
+                    duplicateButton.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            this,
+                            R.drawable.copy_img_color_selector
+                        )
+                    )
                     duplicateButton.visibility = View.VISIBLE
                     editButton.visibility = View.VISIBLE
                     addButton.visibility = View.VISIBLE
@@ -98,9 +116,15 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
                     addButton.toRect()
                 }
                 ButtonNew.PLAY -> {
+                    view.viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
                     shareButton.visibility = View.INVISIBLE
                     displayNotesButton.visibility = View.VISIBLE
-                    duplicateButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.cancel_img_selector))
+                    duplicateButton.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            this,
+                            R.drawable.cancel_img_selector
+                        )
+                    )
                     duplicateButton.visibility = View.VISIBLE
                     editButton.visibility = View.INVISIBLE
                     addButton.visibility = View.INVISIBLE
@@ -119,9 +143,10 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        view = findViewById(android.R.id.content)
         duplicateButton.setOnClickListener {
             sharedViewModel.duplicateClick(currentFragment, navHostFragment.navController)
-            Log.i(TAG,"duplicate pressed")
+            Log.i(TAG, "duplicate pressed")
         }
         displayNotesButton.setOnClickListener {
             sharedViewModel.displayNotesClick(currentFragment)
@@ -129,8 +154,8 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
         editButton.setOnClickListener {
             sharedViewModel.editClick(currentFragment, navHostFragment.navController)
         }
-        shareButton.setOnClickListener{
-          sharedViewModel.shareClick(currentFragment)
+        shareButton.setOnClickListener {
+            sharedViewModel.shareClick(currentFragment)
         }
         addButton.setOnClickListener {
             addButton.imageRotation = 0f
@@ -153,11 +178,22 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
         JodaTimeAndroid.init(this)
         sharedViewModel.header.observe(this, headerObserver)
         sharedViewModel.mode.observe(this, modeObservable)
-        sharedViewModel.checkIfLaunchedByAlarm(navHostFragment.navController, intent)
+        //sharedViewModel.checkIfLaunchedByAlarm(navHostFragment.navController, intent)
+        launchAlarmIfActive(intent, getSharedPreferences(SharedViewModel.SHARED_PREFERENCES, 0))
         sharedViewModel.scrollWatcher.observe(this, scrollObserver)
         getSharedPreferences(
-            SharedViewModel.SHARED_PREFERENCES,0
+            SharedViewModel.SHARED_PREFERENCES, 0
         )
+    }
+
+    private fun launchAlarmIfActive(intent: Intent, sharedPrefs: SharedPreferences) {
+        if (sharedViewModel.wasLaunchedByAlarm(intent) || sharedViewModel.hasAnActiveAlarm(
+                sharedPrefs
+            )
+        ) {
+            val bundle = sharedViewModel.createAlarmBundle(intent, sharedPrefs)
+            sharedViewModel.navigateToAlarm(navHostFragment.navController, bundle)
+        }
     }
 
     override fun onBackPressed() {
@@ -177,6 +213,20 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
     override fun noActiveAlarms() {
         sharedViewModel.setCheckCanBackPress(true)
         duplicateButton.visibility = View.INVISIBLE
+    }
+
+    private fun addOnGlobalLayoutChangedListener() {
+        view.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
+    }
+
+    private fun toggleAddButton(keyboardIsVisible: Boolean) {
+        Log.d(TAG, "BOOLEAN = $keyboardIsVisible")
+        when(keyboardIsVisible ){
+            true -> addButton.visibility = View.INVISIBLE
+            false ->{
+                addButton.visibility = View.VISIBLE
+            }
+        }
     }
 
 }
