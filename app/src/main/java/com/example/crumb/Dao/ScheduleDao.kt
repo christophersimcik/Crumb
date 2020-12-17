@@ -19,7 +19,7 @@ interface ScheduleDao {
     fun getSelectedAsLiveData(id : Long) : LiveData<Schedule>
 
     @Query("SELECT start_time from schedule_table where id = :id")
-    suspend fun getStartTime(id : Long) : Int
+    suspend fun getStartTime(id : Long) : Long
 
     @Query("SELECT description from schedule_table where id = :id")
     suspend fun getNotes(id : Long) : String

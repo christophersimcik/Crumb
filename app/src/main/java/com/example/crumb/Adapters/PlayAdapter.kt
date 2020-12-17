@@ -77,10 +77,6 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
     }
 
     fun setData(newData: List<Interval>) {
-        newData.forEach {
-            Log.d(TAG, "alarm time = ${it.alarm_time}")
-            Log.d(TAG, "alarm time = ${it.alarm_time}")
-        }
         val diffResult = DiffUtil.calculateDiff(
             StepDiffUtilCallback(
                 mData,
@@ -125,11 +121,9 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
                 stepDetailCallback.onStepDialogCalled(mData[adapterPosition])
             }
             alarmCheckBox.setOnClickListener {
-                val newBool = alarmCheckBox.toggleChecked()
-                if (newBool) {
-                    setAlarm()
-                } else {
-                    cancelAlarm()
+                when (alarmCheckBox.toggleChecked()) {
+                    true -> setAlarm()
+                    false -> cancelAlarm()
                 }
             }
         }
@@ -147,15 +141,25 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
         }
 
         private fun cancelAlarm() {
-            viewModel.updateInterval(alarmHelper.cancelAnAlarm(mData[adapterPosition], context))
+            step?.let {
+                viewModel.updateInterval(alarmHelper.cancelAnAlarm(it, context))
+            }
         }
 
         private fun setAlarm() {
-            viewModel.updateInterval(alarmHelper.setSpecificAlarm(viewModel.start, mData[adapterPosition], context))
+            step?.let {
+                viewModel.updateInterval(
+                    alarmHelper.setSpecificAlarm(
+                        it.alarm_time,
+                        it,
+                        context
+                    )
+                )
+            }
         }
 
         fun update(now: Long) {
-            this.progressBar.update(now, start, myStart, viewModel.start, viewModel.duration)
+            this.progressBar.update(now, start, myStart)
             step?.let { interval ->
                 val text = convertMillisToText(myStart - now)
                 if (interval.alarm_on) {
@@ -193,7 +197,8 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
             val days = millis / MILLIS_IN_DAY
             val hours = (millis % MILLIS_IN_DAY) / MILLIS_IN_HOUR
             val mins = (millis % MILLIS_IN_DAY % MILLIS_IN_HOUR) / MILLIS_IN_MINUTE
-            val secs = (millis % MILLIS_IN_DAY % MILLIS_IN_HOUR % MILLIS_IN_MINUTE) / MILLIS_IN_SECOND
+            val secs =
+                (millis % MILLIS_IN_DAY % MILLIS_IN_HOUR % MILLIS_IN_MINUTE) / MILLIS_IN_SECOND
             var dayString = ""
             var hourString = ""
             var minString = ""

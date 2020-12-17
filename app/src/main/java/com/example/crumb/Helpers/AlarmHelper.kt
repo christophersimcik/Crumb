@@ -95,7 +95,7 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
     }
 
     fun setAlarms(
-        time: Int,
+        time: Long,
         list: List<Interval>,
         context: Context,
         parentID: Long
@@ -143,11 +143,11 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
         return list
     }
 
-    private fun setCalendars(time: Int, list: List<Interval>): ArrayList<Calendar> {
+    private fun setCalendars(time: Long, list: List<Interval>): ArrayList<Calendar> {
         val calendars = ArrayList<Calendar>()
         if (list.isNotEmpty()) {
             val currentMinute = DateTime.now().minuteOfDay
-            val isPast = checkIfPassed(currentMinute, time % 1440 )
+            val isPast = checkIfPassed(currentMinute, DateTime(time).minuteOfDay)
             var startTime = if (isPast) {
                 DateTime.now().withTimeAtStartOfDay().plusDays(1)
             } else {
