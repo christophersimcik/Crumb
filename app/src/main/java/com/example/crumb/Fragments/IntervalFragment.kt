@@ -35,7 +35,7 @@ class IntervalFragment :
     DeleteDialog.SwipeDeleteDialogListener {
 
     private val textInputDialog : TextInputDialog by lazy{ TextInputDialog() }
-    private val recyclerView: RecyclerView by lazy { myView.findViewById<RecyclerView>(R.id.intervals_recycler_view) }
+    private val recyclerView: RecyclerView by lazy { myView.findViewById(R.id.intervals_recycler_view) }
 
     private lateinit var myView: View
     lateinit var dialog: StepDialog

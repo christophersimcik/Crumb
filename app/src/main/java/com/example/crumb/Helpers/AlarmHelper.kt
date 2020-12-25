@@ -5,7 +5,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.icu.util.TimeUnit
 import android.os.Bundle
 import android.util.Log
 import com.example.crumb.BroadcastRecievers.AlarmReceiver
@@ -57,7 +56,7 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
 
 
     private fun decrementActiveAlarms() {
-        var numberOfActiveAlarms = (sharedPreferences.getInt(ACTIVE_ALARMS, 0) - 1).coerceAtLeast(0)
+        val numberOfActiveAlarms = (sharedPreferences.getInt(ACTIVE_ALARMS, 0) - 1).coerceAtLeast(0)
         sharedPreferences.edit().putInt(ACTIVE_ALARMS, numberOfActiveAlarms).apply()
     }
 
@@ -70,8 +69,7 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
     fun setSpecificAlarm(start: Long, interval: Interval, context: Context): Interval {
         if (!interval.alarm_on) {
             alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val start = start //+ interval.time * 60000
-            val calendar = Calendar.getInstance().apply { timeInMillis = start}
+            val calendar = Calendar.getInstance().apply { timeInMillis = start }
             val id = getNewPendingIntentId()
             val intent = Intent(context, AlarmReceiver::class.java)
             val myParentId: Long = interval.parentId
@@ -107,7 +105,7 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
             Log.d(TAG, "cal ${it.time}")
         }
         CoroutineScope(Dispatchers.IO).launch {
-            scheduleDao?.updateStartTime(parentID,calendars.first().timeInMillis)
+            scheduleDao?.updateStartTime(parentID, calendars.first().timeInMillis)
         }
         list.forEachIndexed { index, interval ->
             // if (interval.alarm_on) {
@@ -148,7 +146,7 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
         if (list.isNotEmpty()) {
             val currentMinute = DateTime.now().minuteOfDay
             val isPast = checkIfPassed(currentMinute, DateTime(time).minuteOfDay)
-            var startTime = if (isPast) {
+            val startTime = if (isPast) {
                 DateTime.now().withTimeAtStartOfDay().plusDays(1)
             } else {
                 DateTime.now().withTimeAtStartOfDay()
@@ -161,8 +159,7 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
                 set(Calendar.SECOND, 0)
             }
             sharedPreferences.edit().putLong(START_TIME, calendar.timeInMillis).apply()
-            list.forEach { it ->
-             //   val alarm = DateTime(time).plusMinutes(it.time)
+            list.forEach {
                 val alarm = startTime.plusMinutes(it.time)
                 Log.d(TAG, "alarm mills = ${alarm.millis}")
                 calendars.add(Calendar.getInstance().also { calendar ->

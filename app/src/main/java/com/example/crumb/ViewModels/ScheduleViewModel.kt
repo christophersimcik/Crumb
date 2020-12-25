@@ -35,7 +35,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
         )
     }
 
-    val database = DatabaseScheduler.getInstance(application)
+    private val database = DatabaseScheduler.getInstance(application)
     private val scheduleDao = database?.getScheduleDao()
     private val intervalDao: IntervalDao? = database?.getIntervalDao()
     val scheduleData = scheduleDao?.getAll()

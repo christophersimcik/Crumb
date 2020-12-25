@@ -18,9 +18,9 @@ class AlarmDialog: DialogFragment() {
     private lateinit var listener: DeleteDialogListener
     lateinit var layout: View
 
-    private val alarmName: TextView by lazy { layout.findViewById<TextView>(R.id.alarm_name_text) }
-    private val alarmDescription: TextView by lazy { layout.findViewById<TextView>(R.id.alarm_description) }
-    private val dismissButton: View by lazy { layout.findViewById<View>(R.id.dismiss_button) }
+    private val alarmName: TextView by lazy { layout.findViewById(R.id.alarm_name_text) }
+    private val alarmDescription: TextView by lazy { layout.findViewById(R.id.alarm_description) }
+    private val dismissButton: View by lazy { layout.findViewById(R.id.dismiss_button) }
     private val displayMetrics = DisplayMetrics()
     var name = "No Name"
     var description = "No Description"

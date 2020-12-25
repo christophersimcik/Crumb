@@ -1,7 +1,6 @@
 package com.example.crumb.Adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import androidx.emoji.widget.EmojiTextView
@@ -28,7 +27,6 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
         const val MILLIS_IN_MINUTE = 60000
         const val MILLIS_IN_HOUR = 3600000
         const val MILLIS_IN_DAY = 86400000
-        const val TAG = " Play Adapter"
 
         val MERIDIAN = hashMapOf(
             0 to "am",
@@ -38,7 +36,6 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
 
     var mData: ArrayList<Interval> = arrayListOf()
     var start = viewModel.start
-    var duration = viewModel.duration
     lateinit var stepDetailCallback: StepDetailCallback
     private lateinit var recyclerView: RecyclerView
     val alarmHelper = AlarmHelper(
@@ -49,7 +46,6 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val interval = mData[position]
         holder.name.text = mData[position].name
         holder.makeDuration(mData, position)
         holder.myStart = mData[position].alarm_time
@@ -113,7 +109,6 @@ class PlayAdapter(val context: Context, val viewModel: PlayViewModel) :
         private val noteButton = itemView.findViewById<ImageButton>(R.id.play_notes_button)
         val progressBar: MyItemProgressBar = itemView.findViewById(R.id.my_progerss_bar)
         val alarmCheckBox: CustomCheckBox = itemView.findViewById(R.id.play_checkbox)
-        var duration: Long = 0L
 
         init {
             viewModel.registerTimeObserver(this)

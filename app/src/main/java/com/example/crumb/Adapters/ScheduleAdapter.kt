@@ -6,21 +6,20 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.AbsoluteSizeSpan
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.emoji.widget.EmojiEditText
 import androidx.emoji.widget.EmojiTextView
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
-import com.example.crumb.*
 import com.example.crumb.Helpers.KeyboardDetectionHelper
 import com.example.crumb.Models.Schedule
+import com.example.crumb.R
 import com.example.crumb.UI.TimeLineView
 import com.example.crumb.ViewModels.ScheduleViewModel
-import java.text.DecimalFormat
-import kotlin.collections.ArrayList
-import kotlin.math.floor
 
 class ScheduleAdapter(
     private val mContext: Context,
@@ -70,53 +69,6 @@ class ScheduleAdapter(
         return stringBuilder
     }
 
-    private fun getTime(minutes: String): SpannableStringBuilder {
-        val minutes = minutes.toLong()
-        val decimalFormat = DecimalFormat("#")
-        val stringBuilder = SpannableStringBuilder()
-        val days = floor((minutes / 1440).toDouble())
-        val hours = floor((minutes % 1440) / 60.toDouble())
-        val mins = floor((minutes % 1440) % 60.toDouble())
-        if (days >= 1.0) {
-            stringBuilder.append(
-                decimalFormat.format(days),
-                AbsoluteSizeSpan(40),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-            stringBuilder.append(
-                " Day" + checkPlurality(days),
-                AbsoluteSizeSpan(35),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-        }
-        if (hours >= 1.0) {
-            stringBuilder.append(
-                " " + decimalFormat.format(hours),
-                AbsoluteSizeSpan(40),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-            stringBuilder.append(
-                " Hr" + checkPlurality(hours),
-                AbsoluteSizeSpan(35),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-
-        }
-        if (mins >= 0.0) {
-            stringBuilder.append(
-                " " + decimalFormat.format(mins),
-                AbsoluteSizeSpan(40),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-            stringBuilder.append(
-                " Min" + checkPlurality(mins),
-                AbsoluteSizeSpan(35),
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-        }
-        return stringBuilder
-    }
-
     private fun checkPlurality(number: Double): String {
         return if (number == 1.0) {
             ""
@@ -153,7 +105,6 @@ class ScheduleAdapter(
 
         val name: EmojiTextView = itemView.findViewById(R.id.name_text)
         val description: EmojiTextView = itemView.findViewById(R.id.description_text)
-        val duration: TextView = itemView.findViewById(R.id.duration_text)
         val steps: TextView = itemView.findViewById(R.id.steps_text)
         val date: TextView = itemView.findViewById(R.id.date_text)
         private val timeLine: TimeLineView = itemView.findViewById(R.id.timeline_view)

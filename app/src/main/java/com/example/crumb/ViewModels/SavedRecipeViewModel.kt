@@ -25,10 +25,10 @@ class SavedRecipeViewModel(application: Application, var  parent_id: Long) :
     AndroidViewModel(application) {
 
     companion object{
-        val TAG = " SAVED_RECIPE_VIEWMODEL"
+        const val TAG = " SAVED_RECIPE_VIEWMODEL"
     }
 
-    val database = DatabaseScheduler.getInstance(application)
+    private val database = DatabaseScheduler.getInstance(application)
     private val intervalDao = database?.getIntervalDao()
     private val scheduleDao: ScheduleDao? = database?.getScheduleDao()
     val start = MutableLiveData<Interval>()

@@ -36,7 +36,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
 
     val header = MutableLiveData<String>()
     val mode = MutableLiveData<Int>()
-    val database = DatabaseScheduler.getInstance(application)
+    private val database = DatabaseScheduler.getInstance(application)
     private val intervalDao: IntervalDao? = database?.getIntervalDao()
     private val scheduleDao: ScheduleDao? = database?.getScheduleDao()
     val scrollWatcher = MutableLiveData<Fragment>()
@@ -121,7 +121,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
             is SavedRecipeFragment -> {
                 val list = activeFragment.viewModel.intervalData?.value
                 viewModelScope.launch {
-                    val now = DateTime.now().millis
                     val recipeStart =
                         scheduleDao?.getStartTime(activeFragment.viewModel.parent_id) ?: 0
                     if (!list.isNullOrEmpty()) {
@@ -155,10 +154,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
     }
 
 
-    suspend fun updateRecipeStartTime(id: Long, start: Long) {
-        scheduleDao?.updateStartTime(id, start)
-    }
-
     override fun fragmentAttached(fragment: Fragment) {
         when (fragment) {
             is ScheduleFragment -> {
@@ -177,10 +172,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application),
                 scrollWatcher.postValue(fragment)
             }
             is PlayFragment -> {
-                val currentFragment = fragment
                 header.postValue("ACTIVE RECIPE")
                 mode.postValue(ButtonNew.PLAY)
-                scrollWatcher.postValue(currentFragment)
+                scrollWatcher.postValue(fragment)
             }
         }
     }

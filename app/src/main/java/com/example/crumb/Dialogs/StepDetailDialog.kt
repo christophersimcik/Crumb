@@ -84,9 +84,9 @@ class StepDetailDialog : DialogFragment() {
         if (step.sequence == 1) {
             stepTimeFromLast.text = context?.getText(R.string.start_text)
         } else {
-            stepTimeFromLast.text = textFromLast(step.span.toInt())
+            stepTimeFromLast.text = textFromLast(step.span)
         }
-        stepTimeFromStart.text = context?.getString(R.string.alarm_at, getAlarmTime(step.time.toInt()))
+        stepTimeFromStart.text = context?.getString(R.string.alarm_at, getAlarmTime(step.time))
         textPercentage(step.percentage).let{
             if (it == ""){
                 percentageOfTotal.visibility = View.GONE

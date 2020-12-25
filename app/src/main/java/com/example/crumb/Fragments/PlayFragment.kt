@@ -55,7 +55,7 @@ class PlayFragment : Fragment(),
     }
 
     private val textDisplayDialog: TextDisplayDialog by lazy { TextDisplayDialog() }
-    private val recyclerView: RecyclerView by lazy { myView.findViewById<RecyclerView>(R.id.recycler_view_progress) }
+    private val recyclerView: RecyclerView by lazy { myView.findViewById(R.id.recycler_view_progress) }
     private val myLayoutManager = CustomLayoutManager(context)
     private val playAdapter: PlayAdapter by lazy {
         PlayAdapter(
@@ -63,12 +63,12 @@ class PlayFragment : Fragment(),
             viewModel
         )
     }
-    private val nameField: EmojiTextView by lazy { myView.findViewById<EmojiTextView>(R.id.play_name) }
-    private val progressTotal: MyProgressBar by lazy { myView.findViewById<MyProgressBar>(
+    private val nameField: EmojiTextView by lazy { myView.findViewById(R.id.play_name) }
+    private val progressTotal: MyProgressBar by lazy { myView.findViewById(
         R.id.total_progrss_bar
     ) }
-    private val durationText: TextView by lazy { myView.findViewById<TextView>(R.id.text_duration) }
-    private val endMessageText: TextView by lazy { myView.findViewById<TextView>(R.id.text_end_message) }
+    private val durationText: TextView by lazy { myView.findViewById(R.id.text_duration) }
+    private val endMessageText: TextView by lazy { myView.findViewById(R.id.text_end_message) }
     private val deleteDialog: DeleteDialog by lazy {
         DeleteDialog(
             "Cancel All Alarms?"
@@ -92,7 +92,7 @@ class PlayFragment : Fragment(),
         }
     }
 
-    private val stepObserver = Observer<List<Interval>> { list: List<Interval> ->
+    private val stepObserver = Observer { list: List<Interval> ->
         viewModel.updateTotal(list, progressTotal)
         viewModel.hasActiveAlarms()
         playAdapter.setData(list.sortedBy { it.alarm_time })
@@ -113,7 +113,7 @@ class PlayFragment : Fragment(),
             durationText.text = minutesAsText }
     }
 
-    private val endObserver = Observer<String> { msg: String ->
+    private val endObserver = Observer { msg: String ->
         endMessageText.text = msg
     }
 
