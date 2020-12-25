@@ -31,7 +31,6 @@
     <string name="input_current_time_button">Button to input current time as start time</string>
     <string name="add_a_note_to_a_step_button">Button to add a note to a step</string>
     <string name="delete_this_recipe"><b>Delete This Recipe?</b></string>
-    <string name="delete_this_step"><b>Delete This Step?</b></string>
     <string name="recipe_text"><b>Recipes</b></string>
     <!-- Start Button -->
     <string name="start_button">Start</string>

@@ -7,17 +7,20 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.ImageButton
+import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.emoji.widget.EmojiEditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
-import com.example.crumb.*
 import com.example.crumb.Activities.MainActivity
 import com.example.crumb.Adapters.SavedRecipeAdapter
 import com.example.crumb.Dialogs.StepDetailDialog
@@ -27,6 +30,7 @@ import com.example.crumb.Fragments.FragmentInterfaces.FragmentCallback
 import com.example.crumb.Helpers.KeyboardDetectionHelper
 import com.example.crumb.Helpers.TimeHelper
 import com.example.crumb.Models.Interval
+import com.example.crumb.R
 import com.example.crumb.UI.CustomLayoutManager
 import com.example.crumb.UI.ScrollingCallback
 import com.example.crumb.ViewModels.SavedRecipeViewModel
@@ -34,7 +38,6 @@ import com.example.crumb.ViewModels.ViewModelFactories.SavedRecipeFactory
 import com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
 import org.joda.time.DateTime
 import java.text.DecimalFormat
-import kotlin.collections.ArrayList
 
 class SavedRecipeFragment : Fragment(),
     KeyboardDetectionHelper.KeyBoardObserver,
@@ -44,7 +47,8 @@ class SavedRecipeFragment : Fragment(),
     SavedRecipeAdapter.StepDetailCallback {
 
     companion object {
-        val TAG = "SAVED_RECIPE_FRAGMENT"
+        const val TAG = "SAVED_RECIPE_FRAGMENT"
+        const val HALF_MINUTE_IN_SECS = 30
     }
 
     private lateinit var hourSelector: MaterialNumberPicker
@@ -336,8 +340,11 @@ class SavedRecipeFragment : Fragment(),
 
     private fun getTimeAsMinutes(): Int {
         val dateTime = DateTime.now()
-        val millisOfDay = dateTime.millisOfDay
-        return (millisOfDay / 60000).addMinute()
+        return dateTime.minuteOfDay + addBufferMinutes(dateTime)
+    }
+
+    private fun addBufferMinutes(dateTime: DateTime): Int{
+        return if(dateTime.secondOfMinute > HALF_MINUTE_IN_SECS) 2 else 1
     }
 
     private fun setStartTimeViews() {

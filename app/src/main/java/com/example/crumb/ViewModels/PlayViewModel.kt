@@ -17,7 +17,6 @@ import com.example.crumb.UI.MyProgressBar
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.abs
 
 class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(application) {
 
@@ -52,9 +51,7 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
 
     fun updateTotal(list: List<Interval>, view: MyProgressBar) {
         viewModelScope.launch {
-            if (duration == null) {
-                duration = scheduleDao?.getDuration(id) ?: 0
-            }
+            duration = scheduleDao?.getDuration(id) ?: 0
             view.initialize(list)
             dataRetrieved = true
         }
@@ -93,7 +90,7 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
 
     fun computeCurrentPositon(view: MyProgressBar) {
         val now = Calendar.getInstance().timeInMillis
-        val end = (start + ((duration ?: 0) * SECOND_AS_MILLIS))
+        val end = (start + (duration * SECOND_AS_MILLIS))
         val relativeStartTime = start - now//* SECOND_AS_MILLIS
         if (relativeStartTime > 0) {
             view.active = false

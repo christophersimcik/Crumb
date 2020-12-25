@@ -40,12 +40,12 @@ class MainActivity : AppCompatActivity(), PlayViewModel.ActiveAlarms {
         toggleAddButton(view.height.toFloat() < previousRootYValue)
         previousRootYValue = view.height.toFloat()
     }
-    private val addButton: ButtonNew by lazy { findViewById<ButtonNew>(R.id.add_button) }
-    private val duplicateButton: ImageButton by lazy { findViewById<ImageButton>(R.id.duplicate_button) }
-    private val shareButton: ImageButton by lazy { findViewById<ImageButton>(R.id.share_button) }
-    private val displayNotesButton: ImageButton by lazy { findViewById<ImageButton>(R.id.notes_button) }
-    private val editButton: ImageButton by lazy { findViewById<ImageButton>(R.id.edit_button) }
-    private val headerTextView: TextView by lazy { findViewById<TextView>(R.id.heading) }
+    private val addButton: ButtonNew by lazy { findViewById(R.id.add_button) }
+    private val duplicateButton: ImageButton by lazy { findViewById(R.id.duplicate_button) }
+    private val shareButton: ImageButton by lazy { findViewById(R.id.share_button) }
+    private val displayNotesButton: ImageButton by lazy { findViewById(R.id.notes_button) }
+    private val editButton: ImageButton by lazy { findViewById(R.id.edit_button) }
+    private val headerTextView: TextView by lazy { findViewById(R.id.heading) }
     private val navHostFragment: NavHostFragment by lazy {
         fragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
     }

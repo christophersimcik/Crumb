@@ -12,7 +12,7 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toStartOf="@+id/hour"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name_input_field" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/hour"
@@ -23,7 +23,7 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toStartOf="@+id/min"
         app:layout_constraintStart_toEndOf="@+id/day"
-        app:layout_constraintTop_toBottomOf="@+id/name_input_field" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/min"
@@ -34,7 +34,7 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toStartOf="@+id/meridian"
         app:layout_constraintStart_toEndOf="@+id/hour"
-        app:layout_constraintTop_toBottomOf="@+id/name_input_field" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/meridian"
@@ -45,7 +45,7 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/min"
-        app:layout_constraintTop_toBottomOf="@+id/name_input_field" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker
         android:id="@+id/day_selector"
@@ -84,7 +84,6 @@
         app:mnpWrapped="true" />
 
     <View
-        android:id="@+id/view4"
         android:layout_width="1dp"
         android:layout_height="125dp"
         android:background="@color/inactive_light"
@@ -131,13 +130,12 @@
         app:mnpWrapped="false" />
 
     <View
-        android:id="@+id/view2"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/divider_light"
-        app:layout_constraintBottom_toTopOf="@+id/dismiss_button"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/hour_selector" />

@@ -28,9 +28,6 @@ interface IntervalDao {
     @Query("SELECT COUNT(alarm_on) from interval_table WHERE parent_id = :id AND alarm_on = 1")
     suspend fun getAlarmCount(id : Long) : Int
 
-    @Query("SELECT time FROM interval_table WHERE sequence = :sequence")
-    suspend fun getPreviousTime(sequence : Int): Int
-
     //updates
 
     @Update
@@ -48,22 +45,8 @@ interface IntervalDao {
     @Delete
     suspend fun delete(interval: Interval)
 
-    @Query("DELETE FROM schedule_table")
-    suspend fun deleteAll()
-
-    @Query("SELECT COUNT() FROM interval_table WHERE parent_id  = :parentID ")
-    suspend fun getCount(parentID : Long) : Int
-
-    @Query("SELECT COUNT(time) FROM interval_table WHERE parent_id  = :parentID AND time = :time")
-    suspend fun getLikeTimes(parentID : Long, time : Int) : Int
-
     @Query("UPDATE interval_table SET alarm_on = 1 - alarm_on WHERE primary_id  = :myID ")
     suspend fun toggleAlarm(myID : Long) : Int
-
-
-    @Query("DELETE FROM interval_table WHERE parent_id = :id AND time < 1 ")
-    suspend fun deleteEmpties(id : Long)
-
 
 
 }
