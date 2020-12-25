@@ -1,10 +1,15 @@
 package com.example.crumb.Fragments
 
 import android.app.Dialog
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.emoji.widget.EmojiEditText
@@ -38,14 +43,14 @@ class SavedRecipeFragment : Fragment(),
     StepDetailDialog.StepDialogListener,
     SavedRecipeAdapter.StepDetailCallback {
 
-    companion object{
+    companion object {
         val TAG = "SAVED_RECIPE_FRAGMENT"
     }
 
-    private lateinit var hourSelector : MaterialNumberPicker
-    private lateinit var daySelector : MaterialNumberPicker
-    private lateinit var minSelector : MaterialNumberPicker
-    private lateinit var mrdSelector : MaterialNumberPicker
+    private lateinit var hourSelector: MaterialNumberPicker
+    private lateinit var daySelector: MaterialNumberPicker
+    private lateinit var minSelector: MaterialNumberPicker
+    private lateinit var mrdSelector: MaterialNumberPicker
     private lateinit var editName: EmojiEditText
     private lateinit var nowButton: ImageButton
     private lateinit var meridianText: TextView
@@ -62,17 +67,18 @@ class SavedRecipeFragment : Fragment(),
             requireActivity()
         )
     }
+
     lateinit var scrollObserver: ScrollingCallback
-    private lateinit var timeHelper : TimeHelper
+    private lateinit var timeHelper: TimeHelper
     private var layoutCompleted = false
     private var dataRetrieved = false
 
     private val imageAM: Drawable? by lazy {
-            ContextCompat.getDrawable(requireContext(), R.drawable.am_image)
+        ContextCompat.getDrawable(requireContext(), R.drawable.am_image)
     }
 
     private val imagePM: Drawable? by lazy {
-           ContextCompat.getDrawable(requireContext(), R.drawable.pm_image)
+        ContextCompat.getDrawable(requireContext(), R.drawable.pm_image)
     }
 
     val viewModel: SavedRecipeViewModel by lazy {
@@ -154,13 +160,16 @@ class SavedRecipeFragment : Fragment(),
         layoutCompleted = false
         dataRetrieved = false
         myView = layoutInflater.inflate(R.layout.saved_recipe_fragment, container, false)
-        editName = myView.findViewById(R.id.name_edit_text)
+        editName = myView.findViewById<EmojiEditText>(R.id.name_edit_text).apply {
+            setOnEditorActionListener(getEditorActionListener())
+            addTextChangedListener(getNameTextWatcher())
+        }
         hourText = myView.findViewById(R.id.text_hour)
         minText = myView.findViewById(R.id.text_minute)
         meridianText = myView.findViewById(R.id.text_meridian)
         meridianImage = myView.findViewById(R.id.meridian_image)
         daySelector = myView.findViewById(R.id.day_selector)
-        daySelector.setOnValueChangedListener { numberPicker, i, i2 ->
+        daySelector.setOnValueChangedListener { _, _, _ ->
             viewModel.update(timeHelper.getMinutesFromViews())
         }
         hourSelector = myView.findViewById(R.id.hour_selector)
@@ -174,16 +183,16 @@ class SavedRecipeFragment : Fragment(),
             minText.text = df.format(numberPicker.value)
             viewModel.update(timeHelper.getMinutesFromViews())
         }
-        minSelector.setFormatter{df.format(it)}
+        minSelector.setFormatter { df.format(it) }
         mrdSelector = myView.findViewById(R.id.meridian_selector)
-        mrdSelector.displayedValues = arrayOf("AM","PM")
+        mrdSelector.displayedValues = arrayOf("AM", "PM")
         mrdSelector.setOnValueChangedListener { numberPicker, i, i2 ->
-            if(i == 0){
-                mrdSelector.separatorColor = resources.getColor(R.color.pm_color,null)
-            }else{
-                mrdSelector.separatorColor = resources.getColor(R.color.am_text,null)
+            if (i == 0) {
+                mrdSelector.separatorColor = resources.getColor(R.color.pm_color, null)
+            } else {
+                mrdSelector.separatorColor = resources.getColor(R.color.am_text, null)
             }
-            meridianText.text = when(numberPicker.value){
+            meridianText.text = when (numberPicker.value) {
                 0 -> "AM"
                 1 -> "PM"
                 else -> "n/a"
@@ -331,7 +340,7 @@ class SavedRecipeFragment : Fragment(),
         return (millisOfDay / 60000).addMinute()
     }
 
-    private fun setStartTimeViews(){
+    private fun setStartTimeViews() {
         hourText.text = timeHelper.getHoursAsString()
         hourText.invalidate()
         minText.text = timeHelper.getMinutesAsString()
@@ -342,5 +351,31 @@ class SavedRecipeFragment : Fragment(),
         meridianImage.invalidate()
     }
 
+    private fun getEditorActionListener(): TextView.OnEditorActionListener {
+        return TextView.OnEditorActionListener { view, id, event ->
+            Log.d(TAG, "registering views and id $id and event = $event")
+            if (id == EditorInfo.IME_ACTION_NEXT || event == null) {
+                (this@SavedRecipeFragment.context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).apply {
+                    hideSoftInputFromWindow(myView.windowToken, 0)
+                    viewModel.updateScheduleName(view.text.toString())
+                }
+            }
+            false
+        }
+    }
+
+    private fun getNameTextWatcher(): TextWatcher{
+        return object: TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun afterTextChanged(editable: Editable?) {
+                viewModel.nameField = editable.toString()
+            }
+        }
+    }
 
 }

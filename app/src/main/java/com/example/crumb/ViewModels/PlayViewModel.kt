@@ -1,10 +1,12 @@
 package com.example.crumb.ViewModels
 
 import android.app.Application
+import android.util.Log
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.crumb.Adapters.PlayAdapter
 import com.example.crumb.Dao.IntervalDao
 import com.example.crumb.Database.DatabaseScheduler
 import com.example.crumb.Dialogs.AlarmDialog
@@ -15,8 +17,16 @@ import com.example.crumb.UI.MyProgressBar
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(application) {
+
+    companion object {
+        const val SECOND_AS_MILLIS = 60000L
+        const val MINUTES_IN_DAY = 1440
+        const val MINUTES_IN_HOUR = 60
+    }
+
     private val database = DatabaseScheduler.getInstance(application)
     private val scheduleDao = database?.getScheduleDao()
     private val intervalDao: IntervalDao? = database?.getIntervalDao()
@@ -33,40 +43,33 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
     private var dataRetrieved: Boolean = false
     private val alarmDialog = AlarmDialog()
     private lateinit var alarmCancelObserver: AlarmCancelObserver
-    private lateinit var  activeAlarmsWatcher : ActiveAlarms
+    private lateinit var activeAlarmsWatcher: ActiveAlarms
 
     val relativeEndTime = MutableLiveData<String>()
     val notes = MutableLiveData<String>()
-
-    val start: Long by lazy {
-        application.getSharedPreferences(
-            SharedViewModel.SHARED_PREFERENCES,
-            0
-        ).getLong(AlarmHelper.START_TIME, 0L)
-    }
-    var duration: Int? = null
+    var duration: Int = 0
+    var start = 0L
 
     fun updateTotal(list: List<Interval>, view: MyProgressBar) {
         viewModelScope.launch {
             if (duration == null) {
-                duration = scheduleDao?.getDuration(id)
+                duration = scheduleDao?.getDuration(id) ?: 0
             }
             view.initialize(list)
             dataRetrieved = true
         }
     }
 
-    fun getIntervalNotes(step : Interval){
+    fun getIntervalNotes(step: Interval) {
         viewModelScope.launch {
             notes.postValue(intervalDao?.getNotes(step.id))
         }
     }
 
-    fun hasActiveAlarms(){
-        if(this::activeAlarmsWatcher.isInitialized) {
-            var countOfAlarms = 0
+    fun hasActiveAlarms() {
+        if (this::activeAlarmsWatcher.isInitialized) {
             viewModelScope.launch {
-                countOfAlarms = intervalDao?.getAlarmCount(id) ?: 0
+                val countOfAlarms = intervalDao?.getAlarmCount(id) ?: 0
                 if (countOfAlarms > 0) {
                     activeAlarmsWatcher.hasActiveAlarms()
                 } else {
@@ -76,22 +79,22 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
         }
     }
 
-    fun updateInterval(interval : Interval){
+    fun updateInterval(interval: Interval) {
         viewModelScope.launch {
             intervalDao?.update(interval)
         }
     }
 
-    fun getScheduleNotes(){
+    fun getScheduleNotes() {
         viewModelScope.launch {
             notes.postValue(scheduleDao?.getNotes(id) ?: "No Notes")
-    }
+        }
     }
 
     fun computeCurrentPositon(view: MyProgressBar) {
         val now = Calendar.getInstance().timeInMillis
-        val end = (start + ((duration ?: 0) * 60000))
-        val relativeStartTime = start - now
+        val end = (start + ((duration ?: 0) * SECOND_AS_MILLIS))
+        val relativeStartTime = start - now//* SECOND_AS_MILLIS
         if (relativeStartTime > 0) {
             view.active = false
             relativeEndTime.postValue("* Recipe Is Not In Progress Yet!")
@@ -127,7 +130,7 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
         alarmDialog.isCancelable = false
     }
 
-    fun showAlarmDialog(fragmentManager: FragmentManager, name : String, description : String) {
+    fun showAlarmDialog(fragmentManager: FragmentManager, name: String, description: String) {
         alarmDialog.show(fragmentManager, "alarm", name, description)
     }
 
@@ -150,10 +153,10 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
         alarmCancelObserver.onAlarmCancelled()
     }
 
-    private fun cancelAllAlarms(list : List<Interval>){
-        for(step in list){
-            if(step.alarm_on){
-                alarmHelper.cancelAnAlarm(step,getApplication())
+    private fun cancelAllAlarms(list: List<Interval>) {
+        for (step in list) {
+            if (step.alarm_on) {
+                alarmHelper.cancelAnAlarm(step, getApplication())
                 step.alarm_on = false
                 step.alarm_time = 0L
             }
@@ -161,10 +164,11 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
     }
 
     private fun convertMillisToText(millis: Long): String {
-        val days = millis / 86400000
-        val hours = (millis % 86400000) / 3600000
-        val mins = (millis % 86400000 % 3600000) / 60000
-        val secs = (millis % 86400000 % 3600000 % 60000) / 1000
+        Log.d("PLY ADAPTER", "millis = $millis")
+        val days = millis / PlayAdapter.MILLIS_IN_DAY
+        val hours = (millis % PlayAdapter.MILLIS_IN_DAY) / PlayAdapter.MILLIS_IN_HOUR
+        val mins = (millis % PlayAdapter.MILLIS_IN_DAY % PlayAdapter.MILLIS_IN_HOUR) / PlayAdapter.MILLIS_IN_MINUTE
+        val secs = (millis % PlayAdapter.MILLIS_IN_DAY % PlayAdapter.MILLIS_IN_HOUR % PlayAdapter.MILLIS_IN_MINUTE) / PlayAdapter.MILLIS_IN_SECOND
         var dayString = ""
         var hourString = ""
         var minString = ""
@@ -201,16 +205,14 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
     }
 
     fun convertMinutesToText(minutes: Int): String {
-        var days = 0
-        var hours = 0
-        var mins = 0
         var dayString = ""
         var hourString = ""
         var minString = ""
 
-        days = minutes / 1440
-        hours = minutes % 1440 / 60
-        mins = minutes % 1440 % 60
+        val days: Int = minutes / MINUTES_IN_DAY
+        val hours: Int = minutes % MINUTES_IN_DAY / MINUTES_IN_HOUR
+        val mins: Int = minutes % MINUTES_IN_DAY % MINUTES_IN_HOUR
+
         if (days > 0) {
             dayString = if (days > 1) {
                 "$days Days "
@@ -235,19 +237,19 @@ class PlayViewModel(application: Application, val id: Long) : AndroidViewModel(a
         return dayString + hourString + minString
     }
 
-    interface AlarmCancelObserver{
+    interface AlarmCancelObserver {
         fun onAlarmCancelled()
     }
 
-    fun registerActiveAlarmsWatcher(activeAlarmsWatcher : ActiveAlarms){
+    fun registerActiveAlarmsWatcher(activeAlarmsWatcher: ActiveAlarms) {
         this.activeAlarmsWatcher = activeAlarmsWatcher
     }
 
-    fun registerAlarmCancelObserver(alarmCancelObserver: AlarmCancelObserver){
+    fun registerAlarmCancelObserver(alarmCancelObserver: AlarmCancelObserver) {
         this.alarmCancelObserver = alarmCancelObserver
     }
 
-    interface ActiveAlarms{
+    interface ActiveAlarms {
         fun hasActiveAlarms()
         fun noActiveAlarms()
     }

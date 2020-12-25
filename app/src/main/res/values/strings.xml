@@ -35,4 +35,7 @@
     <string name="recipe_text"><b>Recipes</b></string>
     <!-- Start Button -->
     <string name="start_button">Start</string>
+    <!-- Play Adapter -->
+    <string name="completed"><b>Completed!</b></string>
+    <string name="alarm_in">Alarm in <b>%1$s</b></string>
 </resources>

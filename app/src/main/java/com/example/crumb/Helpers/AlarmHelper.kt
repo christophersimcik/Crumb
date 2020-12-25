@@ -5,7 +5,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.icu.util.TimeUnit
 import android.os.Bundle
+import android.util.Log
 import com.example.crumb.BroadcastRecievers.AlarmReceiver
 import com.example.crumb.Dao.IntervalDao
 import com.example.crumb.Database.DatabaseScheduler
@@ -30,6 +32,7 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
         const val DESCRIPTION = "description"
         const val ACTIVE_ALARMS = "active_alarms"
         const val ALARM_IS_ACTIVE = "alarm_is_active"
+        const val TAG = "ALARM_HELPER"
     }
 
     private var alarmManager: AlarmManager? = null
@@ -64,11 +67,11 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
     }
 
 
-    fun setSpecificAlarm(interval: Interval, context: Context): Interval {
+    fun setSpecificAlarm(start: Long, interval: Interval, context: Context): Interval {
         if (!interval.alarm_on) {
             alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val start = DateTime.now().withTimeAtStartOfDay().plusMinutes(interval.time)
-            val calendar = Calendar.getInstance().apply { timeInMillis = start.millis }
+            val start = start //+ interval.time * 60000
+            val calendar = Calendar.getInstance().apply { timeInMillis = start}
             val id = getNewPendingIntentId()
             val intent = Intent(context, AlarmReceiver::class.java)
             val myParentId: Long = interval.parentId
@@ -91,74 +94,81 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
         return interval
     }
 
-    fun setAlarms(list: List<Interval>, context: Context, parentID: Long): List<Interval> {
+    fun setAlarms(
+        time: Long,
+        list: List<Interval>,
+        context: Context,
+        parentID: Long
+    ): List<Interval> {
         alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val calendars = setCalendars(list)
-        for (i in 0 until calendars.size) {
-            if (!list[i].alarm_on) {
-                val counter = System.currentTimeMillis().toInt() + 1
-                val intent = Intent(context, AlarmReceiver::class.java)
-                intent.putExtra(PARENT_ID, parentID)
-                intent.putExtra(MY_ID, list[i].id)
-                intent.putExtra(DETAILS, bundles[i])
-                list[i].alarm_on = true
-                list[i].intent_id = ""
-                list[i].alarm_time = calendars[i].timeInMillis
-                list[i].pending_intent_id = counter
-                val alarmIntent = PendingIntent.getBroadcast(context, counter, intent, 0)
-                val build = android.os.Build.VERSION.SDK_INT
-                if (build >= 23) {
-                    alarmManager?.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP,
-                        list[i].alarm_time,
-                        alarmIntent
-                    )
-                } else {
-                    alarmManager?.setExact(AlarmManager.RTC_WAKEUP, list[i].alarm_time, alarmIntent)
-                }
-                sharedPreferences.edit().putLong(PARENT_ID, parentID).apply()
-                val count = sharedPreferences.getInt(ACTIVE_ALARMS, 0)
-                sharedPreferences.edit().putInt(ACTIVE_ALARMS, count + 1).apply()
-            }
+        val scheduleDao = DatabaseScheduler.getInstance(context)?.getScheduleDao()
+        val calendars = setCalendars(time, list)
+        calendars.forEach {
+            Log.d(TAG, "cal ${it.time}")
         }
+        CoroutineScope(Dispatchers.IO).launch {
+            scheduleDao?.updateStartTime(parentID,calendars.first().timeInMillis)
+        }
+        list.forEachIndexed { index, interval ->
+            // if (interval.alarm_on) {
+            val counter = System.currentTimeMillis().toInt() + 1
+            val intent = Intent(context, AlarmReceiver::class.java)
+            intent.putExtra(PARENT_ID, parentID)
+            intent.putExtra(MY_ID, interval.id)
+            intent.putExtra(DETAILS, bundles[index])
+            interval.alarm_on = true
+            interval.intent_id = ""
+            interval.alarm_time = calendars[index].timeInMillis
+            interval.pending_intent_id = counter
+            val alarmIntent = PendingIntent.getBroadcast(context, counter, intent, 0)
+            val build = android.os.Build.VERSION.SDK_INT
+            if (build >= 23) {
+                alarmManager?.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    interval.alarm_time,
+                    alarmIntent
+                )
+            } else {
+                alarmManager?.setExact(
+                    AlarmManager.RTC_WAKEUP,
+                    interval.alarm_time,
+                    alarmIntent
+                )
+            }
+            sharedPreferences.edit().putLong(PARENT_ID, parentID).apply()
+            val count = sharedPreferences.getInt(ACTIVE_ALARMS, 0)
+            sharedPreferences.edit().putInt(ACTIVE_ALARMS, count + 1).apply()
+        }
+
         return list
     }
 
-    private fun setCalendars(list: List<Interval>): ArrayList<Calendar> {
+    private fun setCalendars(time: Long, list: List<Interval>): ArrayList<Calendar> {
         val calendars = ArrayList<Calendar>()
         if (list.isNotEmpty()) {
-            val myTime = DateTime.now()
-            val now = myTime.minuteOfDay
-            val passed = checkIfPassed(now, list[0].time)
-            var startTime: DateTime
-            var targetTime: DateTime
-            startTime = if (passed) {
-                DateTime.now().withTimeAtStartOfDay().plusMinutes(list[0].time).plusDays(1)
+            val currentMinute = DateTime.now().minuteOfDay
+            val isPast = checkIfPassed(currentMinute, DateTime(time).minuteOfDay)
+            var startTime = if (isPast) {
+                DateTime.now().withTimeAtStartOfDay().plusDays(1)
             } else {
-                DateTime.now().withTimeAtStartOfDay().plusMinutes(list[0].time)
+                DateTime.now().withTimeAtStartOfDay()
             }
             val calendar = Calendar.getInstance().apply {
-                timeInMillis = System.currentTimeMillis()
+                set(Calendar.YEAR, startTime.year)
                 set(Calendar.DATE, startTime.dayOfMonth)
                 set(Calendar.HOUR_OF_DAY, startTime.hourOfDay)
                 set(Calendar.MINUTE, startTime.minuteOfHour)
                 set(Calendar.SECOND, 0)
             }
-            calendars.add(calendar)
-            bundles.add(createBundle(list[0]))
             sharedPreferences.edit().putLong(START_TIME, calendar.timeInMillis).apply()
-            for (item in 1 until list.size) {
-                targetTime = startTime.plusMinutes(list[item].span)
-                val myCalendar = Calendar.getInstance().apply {
-                    timeInMillis = System.currentTimeMillis()
-                    set(Calendar.DATE, targetTime.dayOfMonth)
-                    set(Calendar.HOUR_OF_DAY, targetTime.hourOfDay)
-                    set(Calendar.MINUTE, targetTime.minuteOfHour)
-                    set(Calendar.SECOND, 0)
-                }
-                calendars.add(myCalendar)
-                bundles.add(createBundle(list[item]))
-                startTime = targetTime
+            list.forEach { it ->
+             //   val alarm = DateTime(time).plusMinutes(it.time)
+                val alarm = startTime.plusMinutes(it.time)
+                Log.d(TAG, "alarm mills = ${alarm.millis}")
+                calendars.add(Calendar.getInstance().also { calendar ->
+                    calendar.timeInMillis = alarm.millis
+                })
+                bundles.add(createBundle(it))
             }
         }
         return calendars
@@ -174,6 +184,7 @@ class AlarmHelper(private val sharedPreferences: SharedPreferences) {
     }
 
     private fun checkIfPassed(now: Int, target: Int): Boolean {
+        Log.d(TAG, "now = $now and target = $target")
         return now > target
     }
 

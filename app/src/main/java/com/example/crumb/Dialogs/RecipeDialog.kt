@@ -5,10 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.Button
 import android.widget.TextView
 import androidx.emoji.widget.EmojiEditText
@@ -79,6 +76,7 @@ class RecipeDialog : DialogFragment() {
         val width = (displayMetrics.heightPixels.coerceAtMost(displayMetrics.widthPixels) * .90).toInt()
         val height = (width * .50).toInt()
         dialog?.window?.setLayout(width,height)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         layout.invalidate()
     }
 

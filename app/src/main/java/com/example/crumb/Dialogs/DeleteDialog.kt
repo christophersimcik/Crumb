@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.emoji.widget.EmojiEditText
 import androidx.fragment.app.DialogFragment
 import com.example.crumb.R

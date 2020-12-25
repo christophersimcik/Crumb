@@ -3,6 +3,7 @@ package com.example.crumb.UI
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import com.example.crumb.R
 
@@ -32,7 +33,7 @@ class MyItemProgressBar @JvmOverloads constructor(
             drawMessage(canvas)//JiheeWasHere
     }
 
-    fun update(now: Long, start: Long, end: Long, startAll: Long?, endAll: Int?) {
+    fun update(now: Long, start: Long, end: Long) {
         updateForegoundPosition(now, start, end)
         this.invalidate()
     }
@@ -135,6 +136,7 @@ class MyItemProgressBar @JvmOverloads constructor(
     }*/
 
     private fun updateForegoundPosition(now: Long, start: Long, end: Long) {
+     //   Log.d("PROG", "now = $now and start = $start and end =$end")
         val span: Long
         val pos: Long
         if (isFirst) {
